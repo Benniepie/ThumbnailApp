@@ -1,0 +1,348 @@
+        @font-face {
+            font-family: 'Berlin Sans FB Demi Bold';
+            src: url('fonts/BRLNSDB.woff') format('woff');
+            font-weight: bold;
+            font-style: normal;
+            font-display: swap;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+            transition: background-color 0.3s ease;
+        }
+        body.dark-mode {
+            background-color: #1a1a1a;
+            color: #ffffff;
+        }
+        .main-container {
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 20px;
+        }
+        .header {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .container {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .dark-mode .container {
+            background-color: #2d2d2d;
+            color: #ffffff;
+        }
+        .dark-mode input[type="text"],
+        .dark-mode input[type="number"],
+        .dark-mode textarea {
+            background-color: #3d3d3d;
+            color: #ffffff;
+            border-color: #4d4d4d;
+        }
+        .dark-mode .preset-btn {
+            background-color: #4d4d4d;
+        }
+        .dark-mode .preset-btn:hover {
+            background-color: #5d5d5d;
+        }
+        .theme-toggle {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .dark-mode .theme-toggle {
+            background-color: #45a049;
+        }
+        .canvas-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        canvas {
+            max-width: 100%;
+            border: 2px solid #ddd;
+            border-radius: 5px;
+        }
+        .controls {
+            display: grid;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .text-input-group {
+            margin-bottom: 0px; /* Space between text line groups */
+            border: 1px solid #eee;
+            padding: 0px;
+            border-radius: 5px;
+        }
+        .dark-mode .text-input-group {
+            border-color: #3a3a3a;
+        }
+        .text-position-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr auto auto auto; /* X, Y, L, C, R */
+            gap: 5px;
+            align-items: center;
+            margin-top: 8px;
+        }
+        .text-position-controls label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .pos-input {
+            width: 60px; /* Adjust as needed */
+        }
+        .align-btn {
+            padding: 5px 10px;
+            font-size: 14px;
+            background-color: #007bff; /* Blue for alignment */
+        }
+        .align-btn:hover {
+            background-color: #0056b3;
+        }
+        .dark-mode .align-btn {
+            background-color: #0056b3;
+        }
+        .dark-mode .align-btn:hover {
+            background-color: #004085;
+        }
+
+        .text-input {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 5px;
+            align-items: center;
+        }
+        .color-input-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .color-preview {
+            width: 30px;
+            height: 30px;
+            border: 2px solid #ddd;
+            border-radius: 4px;
+            position: static;
+        }
+        .presets {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 5px;
+            margin: 5px 0;
+        }
+        .layout-presets {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr); /* NEW: Strictly 5 columns */            
+            gap: 5px;
+            margin: 5px 0;
+        }
+        .layout-btn {
+            background-color: #9C27B0;
+            color: white;
+            padding: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+        .layout-btn:hover {
+            background-color: #7B1FA2;
+        }
+        .layout-icon {
+            width: 60px;
+            height: 40px;
+            background-color: rgba(255,255,255,0.2);
+            border-radius: 2px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 2px;
+        }
+        .layout-line {
+            height: 2px;
+            background: white;
+            margin: 2px;
+        }
+        .preset-btn {
+            background-color: #607D8B;
+            color: white;
+            padding: 5px 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .preset-btn:hover {
+            background-color: #455A64;
+        }
+        .opacity-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        input[type="text"], input[type="color"], input[type="number"], input[type="range"] {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        textarea {
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            height: 60px;
+            resize: vertical;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .upload-btn {
+            background-color: #2196F3;
+        }
+        .upload-btn:hover {
+            background-color: #1976D2;
+        }
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .text-style-controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            align-items: center;
+            margin-top: 4px;
+            font-size: 0.9em; /* Smaller font for these controls */
+        }
+        .text-style-controls label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .text-style-controls input[type="color"] {
+            width: 40px; /* Smaller color pickers */
+            height: 25px;
+            padding: 2px;
+        }
+        .text-style-controls input[type="checkbox"] {
+            margin-right: 2px;
+        }
+        .toggle-controls-container {
+            display: flex;
+            gap: 5px;
+            margin-top: 5px;
+        }
+        .toggle-btn {
+            flex-grow: 1;
+            background-color: #6c757d;
+            padding: 8px;
+            font-size: 14px;
+        }
+        .toggle-btn:hover {
+            background-color: #5a6268;
+        }
+        .toggle-btn.active {
+            background-color: #007bff; /* Blue when active */
+        }
+        .collapsible-controls {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            padding: 0 0px; /* No padding when collapsed */
+            background-color: #f8f9fa;
+            border-radius: 4px;
+            margin-top: 0px;
+        }
+        .dark-mode .collapsible-controls {
+            background-color: #3a3a3a;
+        }
+        .collapsible-controls.show {
+            max-height: 100px; /* A height large enough to show content */
+            padding: 5px; /* Add padding back when expanded */
+        }
+        .logo-controls-container {
+            border-top: 2px solid #eee;
+            padding-top: 15px;
+        }
+        .dark-mode .logo-controls-container {
+            border-top-color: #3a3a3a;
+        }
+        .logo-selection {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .logo-thumb {
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            object-fit: contain;
+            background-color: #444444;
+            border: 2px solid transparent;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: border-color 0.2s;
+        }
+        .dark-mode .logo-thumb {
+            background-color: #444;
+        }
+        .logo-thumb:hover {
+            border-color: #007bff;
+        }
+        .logo-thumb.active {
+            border-color: #007bff;
+            box-shadow: 0 0 8px rgba(0, 123, 255, 0.6);
+        }
+        .logo-position-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        .logo-pos-btn {
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            background-color: #444444;
+            cursor: pointer;
+        }
+        .dark-mode .logo-pos-btn {
+            background-color: #444;
+            border-color: #666;
+        }
+        .logo-pos-btn.active {
+            background-color: #007bff;
+            color: white;
+            border-color: #007bff;
+        }
+        .logo-size-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }

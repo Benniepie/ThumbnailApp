@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thumbnail Maker</title>
+    <!-- Link to the external stylesheet -->
+    <link rel="stylesheet" href="style.css">
+    <!-- Link to the external JavaScript files. 'defer' is important! -->
+    <script src="templates.js" defer></script>
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <!-- The entire body of your index3.html file goes here, unchanged. -->
+    <!-- For brevity, I'm not pasting the 500+ lines of body HTML, -->
+    <!-- but you should copy it directly from your index3.html file. -->
+    <div class="header">
+        <h1>Thumbnail Maker</h1>
+        <button class="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+    </div>
+    <div class="main-container">
+
+        <div class="container">
+            <h2 style="margin: 10px 0; color: #666; font-size: 1.2em;">Choose a layout</h2>
+            <div class="controls">
+                <div class="layout-presets">
+                    <!-- Existing 6 layouts -->
+                    <button class="layout-btn" onclick="setLayout(1)">
+                        <div class="layout-icon">
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                        </div>
+                        Part 1 (Old)
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(2)">
+                        <div class="layout-icon">
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                        </div>
+                        Part 2 (Old)
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(3)">
+                        <div class="layout-icon">
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                        </div>
+                        Part 3 (Old)
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(4)">
+                        <div class="layout-icon">
+                            <div style="display: flex; justify-content: center">
+                                <div class="layout-line" style="width: 45%"></div>
+                                <div class="layout-line" style="width: 45%"></div>
+                            </div>
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                        </div>
+                        Extra (Old)
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(5)">
+                        <div class="layout-icon">
+                            <div style="display: flex; justify-content: center">
+                                <div class="layout-line" style="width: 65%"></div>
+                                <div class="layout-line" style="width: 30%"></div>
+                            </div>
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                        </div>
+                        Mapping Update
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(6)">
+                        <div class="layout-icon">
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                        </div>
+                        Breaking (Old)
+                    </button>
+
+                    <!-- NEW ROW OF 5 LAYOUTS (Generic) -->
+                    <button class="layout-btn" onclick="setLayout(7)">
+                        <div class="layout-icon"> <!-- Generic Icon -->
+                            <div style="display: flex; justify-content: center">
+                                <div class="layout-line" style="width: 45%"></div>
+                                <div class="layout-line" style="width: 45%"></div>
+                            </div>
+                            <div class="layout-line" style="width: 90%; margin-bottom: 15px; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: auto"></div>
+                        </div>
+                        Breaking Gap (Old)
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(8)">
+                        <div class="layout-icon"> <!-- Generic Icon -->
+                            <div class="layout-line" style="width: 40%; margin-left: 0; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 50%; margin-left: 0; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 40%; margin-left: 0; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 70%; margin-left: auto; margin-right: 0"></div>
+                        </div>
+                        3 L + 1 R
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(9)">
+                        <div class="layout-icon"> <!-- Generic Icon -->
+                            <div class="layout-line" style="width: 40%; margin-left: auto; margin-right: 0"></div>
+                            <div class="layout-line" style="width: 50%; margin-left: auto; margin-right: 0"></div>
+                            <div class="layout-line" style="width: 40%; margin-left: auto; margin-right: 0"></div>
+                            <div class="layout-line" style="width: 70%; margin-left: 0; margin-right: auto"></div>
+                        </div>
+                        3 R + 1 L
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(10)">
+                        <div class="layout-icon"> <!-- Generic Icon -->
+                            <div class="layout-line" style="width: 30%; margin-bottom: 10px; margin-left: auto; margin-right: 0"></div>
+                        </div>
+                        BOOM!
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(11)">
+                        <div class="layout-icon" style="background-color: #db8f0a">
+                            <div style="display: flex; justify-content: center">
+                                <div class="layout-line" style="width: 50%"></div>
+                                <div class="layout-line" style="width: 50%"></div>
+                            </div>
+                            <div class="layout-line" style="width: 30%; margin-bottom: 10px; margin-left: 5; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: 0"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: 0"></div>
+
+                        </div>
+                        Hits & Losses
+                    </button>
+                    <!-- END NEW ROW OF 5 LAYOUTS -->
+
+                    <!-- NEW ROW OF 4 LAYOUTS (to make it 15 total) -->
+                     <button class="layout-btn" onclick="setLayout(12)">
+                        <div class="layout-icon" style="background-color: #0edb0a"> <!-- Generic Icon -->
+                            <div style="display: flex; justify-content: center">
+                                <div class="layout-line" style="width: 50%"></div>
+                                <div class="layout-line" style="width: 50%"></div>
+                            </div>
+                            <div class="layout-line" style="width: 30%; margin-bottom: 10px; margin-left: 5; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: 0"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: 0"></div>
+
+
+                        </div>
+                        Military Aid
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(13)">
+                        <div class="layout-icon" style="background-color: #db0ad8"> <!-- Generic Icon -->
+                            <div style="display: flex; justify-content: center">
+                                <div class="layout-line" style="width: 50%"></div>
+                                <div class="layout-line" style="width: 50%"></div>
+                            </div>
+                            <div class="layout-line" style="width: 30%; margin-bottom: 10px; margin-left: 5; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: 0"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: 0"></div>
+
+                        </div>
+                        Geopol News
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(14)">
+                        <div class="layout-icon" style="background-color: #ffff00"> <!-- Generic Icon -->
+                            <div style="display: flex; justify-content: center">
+                                <div class="layout-line" style="width: 50%"></div>
+                                <div class="layout-line" style="width: 50%"></div>
+                            </div>
+                            <div class="layout-line" style="width: 30%; margin-bottom: 10px; margin-left: 5; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: 0"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: 0"></div>
+
+                        </div>
+                        Extra / Specials
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(15)">
+                        <div class="layout-icon" style="background-color: #000000"> <!-- Generic Icon -->
+                            <div style="display: flex; justify-content: center">
+                                <div class="layout-line" style="width: 50%"></div>
+                                <div class="layout-line" style="width: 50%"></div>
+                            </div>
+                            <div class="layout-line" style="width: 30%; margin-bottom: 10px; margin-left: 5; margin-right: auto"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: 0"></div>
+                            <div class="layout-line" style="width: 80%; margin-left: auto; margin-right: 0"></div>
+
+                        </div>
+                        Breaking news
+                    </button>
+                <!-- END NEW ROW OF 4 LAYOUTS -->
+                    <button class="layout-btn" onclick="setLayout(16)" style="height: 100%">
+                        <div class="layout-icon" style="background-color: #db8f0a; height: 5px">
+    
+
+                        </div>
+                        ALT
+                    </button>
+                                    <!-- NEW ROW OF 4 LAYOUTS (to make it 15 total) -->
+                     <button class="layout-btn" onclick="setLayout(17)">
+                        <div class="layout-icon" style="background-color: #0edb0a; height: 5px"> <!-- Generic Icon -->
+
+
+
+                        </div>
+                       Alt
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(18)">
+                        <div class="layout-icon" style="background-color: #db0ad8; height: 5px"> <!-- Generic Icon -->
+
+
+                        </div>
+                        Alt
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(19)">
+                        <div class="layout-icon" style="background-color: #ffff00; height: 5px"> <!-- Generic Icon -->
+
+
+                        </div>
+                        Alt
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(20)">
+                        <div class="layout-icon" style="background-color: #000000; height: 5px"> <!-- Generic Icon -->
+
+
+                        </div>
+                        Alt
+                    </button>
+                        <button class="layout-btn" onclick="setLayout(21)" style="height: 100%">
+                        <div class="layout-icon" style="background-color: #db8f0a; height: 5px">
+    
+
+                        </div>
+                        Rule-6s (R)
+                    </button>
+                                    <!-- NEW ROW OF 4 LAYOUTS (to make it 15 total) -->
+                     <button class="layout-btn" onclick="setLayout(22)">
+                        <div class="layout-icon" style="background-color: #0edb0a; height: 5px"> <!-- Generic Icon -->
+
+
+
+                        </div>
+                        Rule-6s (R)
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(23)">
+                        <div class="layout-icon" style="background-color: #db0ad8; height: 5px"> <!-- Generic Icon -->
+
+
+                        </div>
+                        Rule-6s (R)
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(24)">
+                        <div class="layout-icon" style="background-color: #ffff00; height: 5px"> <!-- Generic Icon -->
+
+
+                        </div>
+                        Rule-6s (R)
+                    </button>
+                    <button class="layout-btn" onclick="setLayout(25)">
+                        <div class="layout-icon" style="background-color: #000000; height: 5px"> <!-- Generic Icon -->
+
+
+                        </div>
+                        Rule-6s (R)
+                    </button>
+                <!-- END NEW ROW OF 4 LAYOUTS -->
+                </div>
+                <h2 style="margin: 20px 0 10px; color: #666; font-size: 1.2em;">Customise Text</h2>
+                
+                <div class="text-input-group">
+                    <div class="text-input">
+                        <input type="text" id="text1" value="UKRAINE WAR" placeholder="Text Line 1">
+                        <div class="color-input-container">
+                            <input type="color" id="color1" value="#0000ff">
+                            <div class="color-preview" id="preview1"></div>
+                        </div>
+                        <input type="number" id="size1" value="160" min="10" max="200">
+                    </div>
+                    <div class="toggle-controls-container">
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos1')">Position</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'stroke1')">Stroke</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg1')">Background</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow1')">Shadow</button>
+                    </div>
+                    <div id="pos1" class="collapsible-controls">
+                        <div class="text-position-controls">
+                            <label>X: <input type="number" id="x1" class="pos-input" value="960"></label>
+                            <label>Y: <input type="number" id="y1" class="pos-input" value="756"></label>
+                            <button class="align-btn" onclick="setTextAlignment(0, 'left')">L</button>
+                            <button class="align-btn" onclick="setTextAlignment(0, 'center')">C</button>
+                            <button class="align-btn" onclick="setTextAlignment(0, 'right')">R</button>
+                        </div>
+                    </div>
+                    <div id="stroke1" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>Stroke: <input type="color" id="strokeColor1" value="#000000"></label>
+                            <label>Thick: <input type="number" id="strokeThickness1" class="pos-input" value="2" min="0" max="50"></label>
+                        </div>
+                    </div>
+                    <div id="bg1" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>BG: <input type="color" id="bgColor1" value="#ffffff"></label> <!-- Default to white, alpha will be set by JS -->
+                            <label><input type="checkbox" id="bgFullWidth1"> Full BG</label>
+                            <label>BG Pad: <input type="number" id="bgPadding1" class="pos-input" value="10" min="0" max="50"></label>
+                            <label>BG Alpha: <input type="range" id="bgAlpha1" min="0" max="100" value="0" step="5"> <span id="bgAlphaValue1">0%</span></label>
+                        </div>
+                    </div>
+                    <div id="shadow1" class="collapsible-controls">
+                        <div class="text-style-controls">                    
+                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled1"> Shdw</label>
+                            <label>ShdClr: <input type="color" id="shadowColor1" value="#000000"></label>
+                            <label>ShdAlpha: <input type="range" id="shadowAlpha1" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue1">50%</span></label>
+                            <label>Blur: <input type="number" id="shadowBlur1" class="pos-input" value="5" min="0" max="50"></label>
+                            <label>ShdX: <input type="number" id="shadowOffsetX1" class="pos-input" value="2" min="-50" max="50"></label>
+                            <label>ShdY: <input type="number" id="shadowOffsetY1" class="pos-input" value="2" min="-50" max="50"></label>
+                        </div>
+                    </div>    
+                </div>
+                <div class="presets" id="titlePresets">
+                    <button class="preset-btn" onclick="setTitle('UKRAINE WAR')">Ukraine War</button>
+                    <button class="preset-btn" onclick="setTitle('US POLITICS')">US Politics</button>
+                    <button class="preset-btn" onclick="setTitle('UPDATE')">Update</button>
+                </div>
+                <div class="text-input-group">
+                    <div class="text-input">
+                        <input type="text" id="text2" value="NEWS UPDATE" placeholder="Text Line 2">
+                        <div class="color-input-container">
+                            <input type="color" id="color2" value="#ffff00">
+                            <div class="color-preview" id="preview2"></div>
+                        </div>
+                        <input type="number" id="size2" value="160" min="10" max="200">
+                    </div>
+                    <div class="toggle-controls-container">
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos2')">Position</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'stroke2')">Stroke</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg2')">Background</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow2')">Shadow</button>
+                    </div>
+                    <div id="pos2" class="collapsible-controls">
+                        <div class="text-position-controls">
+                            <label>X: <input type="number" id="x2" class="pos-input" value="960"></label>
+                            <label>Y: <input type="number" id="y2" class="pos-input" value="756"></label>
+                            <button class="align-btn" onclick="setTextAlignment(1, 'left')">L</button>
+                            <button class="align-btn" onclick="setTextAlignment(1, 'center')">C</button>
+                            <button class="align-btn" onclick="setTextAlignment(1, 'right')">R</button>
+                        </div>
+                    </div>
+                    <div id="stroke2" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>Stroke: <input type="color" id="strokeColor2" value="#000000"></label>
+                            <label>Thick: <input type="number" id="strokeThickness2" class="pos-input" value="2" min="0" max="50"></label>
+                        </div>
+                    </div>
+                    <div id="bg2" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>BG: <input type="color" id="bgColor2" value="#ffffff"></label> <!-- Default to white, alpha will be set by JS -->
+                            <label><input type="checkbox" id="bgFullWidth2"> Full BG</label>
+                            <label>BG Pad: <input type="number" id="bgPadding2" class="pos-input" value="10" min="0" max="50"></label>
+                            <label>BG Alpha: <input type="range" id="bgAlpha2" min="0" max="100" value="0" step="5"> <span id="bgAlphaValue2">0%</span></label>
+                        </div>
+                    </div>
+                    <div id="shadow2" class="collapsible-controls">
+                        <div class="text-style-controls">                    
+                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled2"> Shdw</label>
+                            <label>ShdClr: <input type="color" id="shadowColor2" value="#000000"></label>
+                            <label>ShdAlpha: <input type="range" id="shadowAlpha2" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue2">50%</span></label>
+                            <label>Blur: <input type="number" id="shadowBlur2" class="pos-input" value="5" min="0" max="50"></label>
+                            <label>ShdX: <input type="number" id="shadowOffsetX2" class="pos-input" value="2" min="-50" max="50"></label>
+                            <label>ShdY: <input type="number" id="shadowOffsetY2" class="pos-input" value="2" min="-50" max="50"></label>
+                        </div>
+                    </div>    
+                </div>
+                <div class="presets" id="subtitlePresets">
+                    <button class="preset-btn" onclick="setSubtitle('NEWS UPDATE')">News Update</button>
+                    <button class="preset-btn" onclick="setSubtitle('UPDATE EXTRA')">Update Extra</button>
+                    <button class="preset-btn" onclick="setSubtitle('SPECIAL')">Special</button>
+                    <button class="preset-btn" onclick="setSubtitle('BREAKING NEWS UPDATE')">Breaking News Update</button>
+                    <button class="preset-btn" onclick="setSubtitle('BUMPER NEWS UPDATE')">Bumper News Update</button>
+                    <button class="preset-btn" onclick="setSubtitle('UPDATE')">Update</button>
+                </div>
+                <div class="text-input-group">
+                    <div class="text-input">
+                        <input type="text" id="text3" value="MAR-01 - Pt 1" placeholder="Text Line 3">
+                        <div class="color-input-container">
+                            <input type="color" id="color3" value="#ff0000">
+                            <div class="color-preview" id="preview3"></div>
+                        </div>
+                        <input type="number" id="size3" value="160" min="10" max="200">
+                    </div>
+                    <div class="toggle-controls-container">
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos3')">Position</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'stroke3')">Stroke</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg3')">Background</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow3')">Shadow</button>
+                    </div>
+                    <div id="pos3" class="collapsible-controls">
+                        <div class="text-position-controls">
+                            <label>X: <input type="number" id="x3" class="pos-input" value="960"></label>
+                            <label>Y: <input type="number" id="y3" class="pos-input" value="756"></label>
+                            <button class="align-btn" onclick="setTextAlignment(2, 'left')">L</button>
+                            <button class="align-btn" onclick="setTextAlignment(2, 'center')">C</button>
+                            <button class="align-btn" onclick="setTextAlignment(2, 'right')">R</button>
+                        </div>
+                    </div>
+                    <div id="stroke3" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>Stroke: <input type="color" id="strokeColor3" value="#000000"></label>
+                            <label>Thick: <input type="number" id="strokeThickness3" class="pos-input" value="2" min="0" max="50"></label>
+                        </div>
+                    </div>
+                    <div id="bg3" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>BG: <input type="color" id="bgColor3" value="#ffffff"></label> <!-- Default to white, alpha will be set by JS -->
+                            <label><input type="checkbox" id="bgFullWidth3"> Full BG</label>
+                            <label>BG Pad: <input type="number" id="bgPadding3" class="pos-input" value="10" min="0" max="50"></label>
+                            <label>BG Alpha: <input type="range" id="bgAlpha3" min="0" max="100" value="0" step="5"> <span id="bgAlphaValue3">0%</span></label>
+                        </div>
+                    </div>
+                    <div id="shadow3" class="collapsible-controls">
+                        <div class="text-style-controls">                    
+                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled3"> Shdw</label>
+                            <label>ShdClr: <input type="color" id="shadowColor3" value="#000000"></label>
+                            <label>ShdAlpha: <input type="range" id="shadowAlpha3" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue3">50%</span></label>
+                            <label>Blur: <input type="number" id="shadowBlur3" class="pos-input" value="5" min="0" max="50"></label>
+                            <label>ShdX: <input type="number" id="shadowOffsetX3" class="pos-input" value="2" min="-50" max="50"></label>
+                            <label>ShdY: <input type="number" id="shadowOffsetY3" class="pos-input" value="2" min="-50" max="50"></label>
+                        </div>
+                    </div>                        
+                </div>
+                <div class="presets" id="datePresets">
+                    <button class="preset-btn" onclick="setDate('{Date} - Pt 1')">{Date} - Pt 1</button>
+                    <button class="preset-btn" onclick="setDate('{Date} - Pt 2')">{Date} - Pt 2</button>
+                    <button class="preset-btn" onclick="setDate('{Date} - Pt 3')">{Date} - Pt 3</button>
+                    <button class="preset-btn" onclick="updateDate()">Update Date</button>
+                    <button class="preset-btn" onclick="setDate('LIVE CHAT & UPDATE')">LIVE CHAT & UPDATE</button>
+                    <button class="preset-btn" onclick="setDate('FULL FRONT LINE')">Full Front Line</button>
+                </div>            
+                <div class="text-input-group">
+                    <div class="text-input">
+                        <textarea id="text4" placeholder="Text Line 4">HITS, STRIKES, LOSSES, OTHER</textarea>
+                        <div class="color-input-container">
+                            <input type="color" id="color4" value="#ff0000">
+                            <div class="color-preview" id="preview4"></div>
+                        </div>
+                        <input type="number" id="size4" value="100" min="10" max="200">
+                    </div>
+                    <div class="toggle-controls-container">
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos4')">Position</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'stroke4')">Stroke</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg4')">Background</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow4')">Shadow</button>
+                    </div>
+                    <div id="pos4" class="collapsible-controls">
+                        <div class="text-position-controls">
+                            <label>X: <input type="number" id="x4" class="pos-input" value="960"></label>
+                            <label>Y: <input type="number" id="y4" class="pos-input" value="756"></label>
+                            <button class="align-btn" onclick="setTextAlignment(3, 'left')">L</button>
+                            <button class="align-btn" onclick="setTextAlignment(3, 'center')">C</button>
+                            <button class="align-btn" onclick="setTextAlignment(3, 'right')">R</button>
+                        </div>
+                    </div>
+                    <div id="stroke4" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>Stroke: <input type="color" id="strokeColor4" value="#000000"></label>
+                            <label>Thick: <input type="number" id="strokeThickness4" class="pos-input" value="2" min="0" max="50"></label>
+                        </div>
+                    </div>
+                    <div id="bg4" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>BG: <input type="color" id="bgColor4" value="#ffffff"></label> <!-- Default to white, alpha will be set by JS -->
+                            <label><input type="checkbox" id="bgFullWidth4"> Full BG</label>
+                            <label>BG Pad: <input type="number" id="bgPadding4" class="pos-input" value="10" min="0" max="50"></label>
+                            <label>BG Alpha: <input type="range" id="bgAlpha4" min="0" max="100" value="0" step="5"> <span id="bgAlphaValue4">0%</span></label>
+                        </div>
+                    </div>
+                    <div id="shadow4" class="collapsible-controls">
+                        <div class="text-style-controls">                    
+                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled4"> Shdw</label>
+                            <label>ShdClr: <input type="color" id="shadowColor4" value="#000000"></label>
+                            <label>ShdAlpha: <input type="range" id="shadowAlpha4" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue4">50%</span></label>
+                            <label>Blur: <input type="number" id="shadowBlur4" class="pos-input" value="5" min="0" max="50"></label>
+                            <label>ShdX: <input type="number" id="shadowOffsetX4" class="pos-input" value="2" min="-50" max="50"></label>
+                            <label>ShdY: <input type="number" id="shadowOffsetY4" class="pos-input" value="2" min="-50" max="50"></label>
+                        </div>
+                    </div>   
+                </div> 
+                <div class="presets" id="line4Presets">
+                    <button class="preset-btn" onclick="setLine4('HITS, STRIKES, LOSSES, OTHER')">Hits, Losses, Strikes, Other</button>
+                    <button class="preset-btn" onclick="setLine4('MILITARY AID')">Military Aid</button>
+                    <button class="preset-btn" onclick="setLine4('GEOPOLITICAL NEWS')">Geopolitical news</button>
+                    <button class="preset-btn" onclick="setLine4('WITH JONATHAN FINK')">With Jonathan Fink</button>
+                    <button class="preset-btn" onclick="setLine4('3 DAY UPDATE')">3 Day Update</button>
+                </div>
+            </div>
+                    <!-- At the very end of the left-side .container div, after all the text groups -->
+        <div style="margin-top: 20px; border-top: 2px solid #eee; padding-top: 20px;">
+            <h2 style="margin: 0 0 10px; color: #666; font-size: 1.2em;">Export Layout</h2>
+            <p style="font-size: 0.9em; color: #888;">Copy the current text styles to the clipboard to use in a layout preset.</p>
+            <button onclick="exportLayoutToClipboard()" class="upload-btn" style="width: 100%;">Copy Current Layout to Clipboard</button>
+            <div id="copy-feedback" style="text-align: center; margin-top: 10px; color: #4CAF50; font-weight: bold;"></div>
+        </div>
+        </div>
+        <div class="container right-panel">
+            <h2 style="margin: 0 0 15px; color: #666; font-size: 1.2em;">Thumbnail Preview</h2>
+            <div>
+                <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                <button class="upload-btn" onclick="document.getElementById('imageInput').click()">Upload Image</button>
+            </div>
+            <div class="opacity-control">
+                <label for="imageOpacity">Image Brightness:</label>
+                <input type="range" id="imageOpacity" min="0" max="100" value="100" step="5">
+                <span id="opacityValue">100%</span>
+            </div>
+            <!-- NEW: Zoom Control -->
+            <div class="opacity-control">
+                <label for="imageZoom">Image Zoom:</label>
+                <input type="range" id="imageZoomSlider" min="100" max="300" value="100" step="10">
+                <span id="zoomValue">100%</span>
+            </div>
+            <div class="logo-controls-container">
+                <h2 style="margin: 0 0 15px; color: #666; font-size: 1.2em;">Logo Overlay</h2>
+                
+                <div class="logo-selection">
+                    <!-- Use img tags for thumbnails. The 'data-src' holds the actual image file name. -->
+                    <img src="logo-none.png" alt="No Logo" class="logo-thumb active" onclick="selectLogo(this, null)">
+                    <img src="logo1.png" alt="Logo 1" class="logo-thumb" onclick="selectLogo(this, 'logo1.png')">
+                    <img src="logo2.png" alt="Logo 2" class="logo-thumb" onclick="selectLogo(this, 'logo2.png')">
+                    <img src="logo3.png" alt="Logo 3" class="logo-thumb" onclick="selectLogo(this, 'logo3.png')">
+                    <img src="logo4.png" alt="Logo 4" class="logo-thumb" onclick="selectLogo(this, 'logo4.png')">
+                    <img src="logo5.png" alt="Logo 5" class="logo-thumb" onclick="selectLogo(this, 'logo5.png')">
+                    <img src="logo6.png" alt="Logo 6" class="logo-thumb" onclick="selectLogo(this, 'logo6.png')">
+                    <img src="logo7.png" alt="Logo 7" class="logo-thumb" onclick="selectLogo(this, 'logo7.png')">
+                </div>
+
+                <div class="logo-position-controls">
+                    <label>Position:</label>
+                    <button class="logo-pos-btn" onclick="setLogoPosition('top-left')">TL</button>
+                    <button class="logo-pos-btn" onclick="setLogoPosition('top-right')">TR</button>
+                    <button class="logo-pos-btn active" onclick="setLogoPosition('bottom-left')">BL</button> <!-- MODIFIED: Changed default to BL -->
+                    <button class="logo-pos-btn" onclick="setLogoPosition('bottom-right')">BR</button>
+                </div>
+
+                <div class="logo-size-controls">
+                    <label for="logoScale">Size:</label>
+                    <input type="range" id="logoScale" min="5" max="50" value="15" step="1">
+                    <span id="logoScaleValue">15%</span>
+                </div>
+            </div>
+            <!-- END NEW -->
+            <div class="canvas-container">
+                <canvas id="thumbnailCanvas"></canvas>
+            </div>
+            <button onclick="downloadThumbnail()">Download Thumbnail</button>
+        </div>
+    </div>
+</body>
+</html>
