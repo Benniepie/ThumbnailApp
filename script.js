@@ -901,6 +901,8 @@
                     document.getElementById('opacityValue').textContent = e.target.value + '%';
                 } else if (targetId === 'imageZoomSlider') {
                     document.getElementById('zoomValue').textContent = e.target.value + '%';
+                } else if (targetId === 'canvasBgColor') {
+                    // This will be redrawn by drawThumbnail() anyway
                 }
 
                 if (redrawNeeded) {
@@ -1268,7 +1270,9 @@
 
         function drawThumbnail() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = '#000000';
+            // Get the selected background color
+            const canvasBgColor = document.getElementById('canvasBgColor').value;
+            ctx.fillStyle = canvasBgColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (currentImage) {
