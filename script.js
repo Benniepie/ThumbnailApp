@@ -1,6 +1,41 @@
    
         const canvas = document.getElementById('thumbnailCanvas');
         const ctx = canvas.getContext('2d');
+        // ADD THIS CODE AT THE TOP OF script.js
+
+        let objectIdCounter = 0;
+
+        // This array will hold all new draggable objects (shapes, images, text snippets)
+        let canvasObjects = []; 
+        let selectedObjectIndex = -1; // Index in canvasObjects of the selected item
+
+        // State for background image filters
+        let backgroundImageState = {
+            brightness: 100,
+            contrast: 100,
+            saturate: 100,
+            // We keep the old zoom properties here for the background image
+            zoom: 100,
+            offsetX: 0,
+            offsetY: 0,
+            baseCoverZoom: 1
+        };
+
+        // ADD THIS TO THE TOP OF script.js
+
+        // This object will manage all drag operations
+        let dragState = {
+            isDragging: false,
+            target: null, // 'background', 'text', or 'object'
+            index: -1,    // index of the item being dragged
+            startX: 0,
+            startY: 0,
+            elementStartX: 0,
+            elementStartY: 0
+        };
+
+// We will also move the old image pan/zoom variables into this object later.
+// For now, your existing `imageOffsetX`, `imageOffsetY` etc. will continue to work.
         let currentImage = null;
         let currentLayout = 1;
 
@@ -13,15 +48,15 @@
             padding: 20 // Pixels from the edge
         };
 
-        let selectedTextElementIndex = -1; // Index of the textElement being dragged, -1 if none
-        let dragStartX, dragStartY;         // Mouse position when drag started
-        let elementStartPosX, elementStartPosY; // Text element's position when drag started
+        //let selectedTextElementIndex = -1; // Index of the textElement being dragged, -1 if none
+        //let dragStartX, dragStartY;         // Mouse position when drag started
+        //let elementStartPosX, elementStartPosY; // Text element's position when drag started
         // MODIFIED/NEW: Variables for image state
         let currentImageBaseCoverZoom = 1; // Base zoom factor for the current image to cover the canvas
         let imageOffsetX = 0;
         let imageOffsetY = 0;
-        let isDraggingImage = false;
-        let lastMouseX, lastMouseY;
+        //let isDraggingImage = false;
+        //let lastMouseX, lastMouseY;
         let textElements = [
             { id: 'text1', inputId: 'text1', colorId: 'color1', sizeId: 'size1', x: canvas.width * 0.5, y: canvas.height * 0.3, align: 'center', text: '', wrap: false, size: 100, color: '#0000ff',
               strokeColor: '#000000', strokeThickness: 2, bgColor: 'rgba(255,255,255,0)', bgFullWidth: false, bgPadding: 10, shadowEnabled: false, shadowColor: 'rgba(0,0,0,0.7)', shadowBlur: 5, shadowOffsetX: 2, shadowOffsetY: 2 },
@@ -297,35 +332,55 @@
             }
             return -1; // No text element found at this position
         }
+            // REPLACE your existing 'mousedown' listener with this
+            canvas.addEventListener('mousedown', (e) => {
+                const { x, y } = getCanvasMousePos(e); // Using a helper we'll add
 
-        // Modify existing canvas mousedown listener or add a new one
-        canvas.addEventListener('mousedown', (e) => {
-            // This is the existing mousedown for image panning
-            if (currentImage && !e.target.closest('.controls')) { // Check if not clicking on UI controls over canvas
-                // Get mouse position relative to canvas, scaled to canvas internal resolution
-                const rect = canvas.getBoundingClientRect();
-                const canvasMouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
-                const canvasMouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+                // Priority 1: Check for new objects (we'll write getObjectAt next)
+                const clickedObjectIndex = getObjectAt(x, y);
+                if (clickedObjectIndex > -1) {
+                    dragState.isDragging = true;
+                    dragState.target = 'object';
+                    dragState.index = clickedObjectIndex;
+                    selectObject(clickedObjectIndex); // Selects the object and shows its properties
 
-                selectedTextElementIndex = getTextElementAt(canvasMouseX, canvasMouseY);
-
-                if (selectedTextElementIndex !== -1) {
-                    isDraggingImage = false; // Prevent image panning if text is selected
+                    dragState.startX = x;
+                    dragState.startY = y;
+                    dragState.elementStartX = canvasObjects[clickedObjectIndex].x;
+                    dragState.elementStartY = canvasObjects[clickedObjectIndex].y;
                     canvas.style.cursor = 'move';
-                    dragStartX = canvasMouseX;
-                    dragStartY = canvasMouseY;
-                    elementStartPosX = textElements[selectedTextElementIndex].x;
-                    elementStartPosY = textElements[selectedTextElementIndex].y;
-                } else {
-                    // If no text element is selected, proceed with image panning logic
-                    isDraggingImage = true; // Use a separate flag for image dragging
-                    lastMouseX = canvasMouseX; // lastMouseX/Y are for image panning
-                    lastMouseY = canvasMouseY;
+                    return; // Stop here
+                }
+
+                // Priority 2: Check for main text lines
+                const clickedTextIndex = getTextElementAt(x, y);
+                if (clickedTextIndex > -1) {
+                    dragState.isDragging = true;
+                    dragState.target = 'text';
+                    dragState.index = clickedTextIndex;
+                    deselectAll(); // Deselect any new objects if we click on main text
+
+                    dragState.startX = x;
+                    dragState.startY = y;
+                    dragState.elementStartX = textElements[clickedTextIndex].x;
+                    dragState.elementStartY = textElements[clickedTextIndex].y;
+                    canvas.style.cursor = 'move';
+                    return; // Stop here
+                }
+
+                // Fallback: Drag the background
+                if (currentImage) {
+                    dragState.isDragging = true;
+                    dragState.target = 'background';
+                    deselectAll(); // Deselect any new objects
+
+                    dragState.startX = x;
+                    dragState.startY = y;
+                    dragState.elementStartX = imageOffsetX;
+                    dragState.elementStartY = imageOffsetY;
                     canvas.style.cursor = 'grabbing';
                 }
-            }
-        });
-
+            });
 
         // NEW: Helper function to apply a logo preset from a layout
         function applyLogoPreset(preset) {
@@ -944,61 +999,162 @@
             }
         });
 
+        // REPLACE your existing 'mousemove' listener with this
         canvas.addEventListener('mousemove', (e) => {
-            const rect = canvas.getBoundingClientRect();
-            const canvasMouseX = (e.clientX - rect.left) * (canvas.width / rect.width);
-            const canvasMouseY = (e.clientY - rect.top) * (canvas.height / rect.height);
+            if (!dragState.isDragging) return;
 
-            if (selectedTextElementIndex !== -1) { // Dragging text
-                const dx = canvasMouseX - dragStartX;
-                const dy = canvasMouseY - dragStartY;
+            const { x, y } = getCanvasMousePos(e);
+            const dx = x - dragState.startX;
+            const dy = y - dragState.startY;
 
-                textElements[selectedTextElementIndex].x = elementStartPosX + dx;
-                textElements[selectedTextElementIndex].y = elementStartPosY + dy;
-
-                // Update UI input fields for X and Y
-                document.getElementById(`x${selectedTextElementIndex + 1}`).value = Math.round(textElements[selectedTextElementIndex].x);
-                document.getElementById(`y${selectedTextElementIndex + 1}`).value = Math.round(textElements[selectedTextElementIndex].y);
-
-                drawThumbnail();
-            } else if (isDraggingImage && currentImage) { // Dragging image
-                const dx = canvasMouseX - lastMouseX;
-                const dy = canvasMouseY - lastMouseY;
-
-                imageOffsetX += dx; // imageOffsetX/Y are for background image
-                imageOffsetY += dy;
-
-                lastMouseX = canvasMouseX;
-                lastMouseY = canvasMouseY;
-                drawThumbnail();
+            switch (dragState.target) {
+                case 'object':
+                    canvasObjects[dragState.index].x = dragState.elementStartX + dx;
+                    canvasObjects[dragState.index].y = dragState.elementStartY + dy;
+                    break;
+                case 'text':
+                    const textEl = textElements[dragState.index];
+                    textEl.x = dragState.elementStartX + dx;
+                    textEl.y = dragState.elementStartY + dy;
+                    document.getElementById(`x${dragState.index + 1}`).value = Math.round(textEl.x);
+                    document.getElementById(`y${dragState.index + 1}`).value = Math.round(textEl.y);
+                    break;
+                case 'background':
+                    imageOffsetX = dragState.elementStartX + dx;
+                    imageOffsetY = dragState.elementStartY + dy;
+                    break;
             }
+            drawThumbnail();
         });
-
+        // REPLACE your existing 'mouseup' and 'mouseleave' listeners with this
         canvas.addEventListener('mouseup', () => {
-            if (selectedTextElementIndex !== -1) {
-                selectedTextElementIndex = -1;
-                canvas.style.cursor = 'default'; // Or 'grab' if over image
-            }
-            if (isDraggingImage) {
-                isDraggingImage = false;
-                canvas.style.cursor = 'default';
-            }
-            // One final draw if needed, though mousemove should handle it
-            // drawThumbnail(); 
-        });
-
-        canvas.addEventListener('mouseleave', () => {
-            // Similar to mouseup, stop any active dragging
-            if (selectedTextElementIndex !== -1) {
-                selectedTextElementIndex = -1;
-                // Consider if you want to finalize position or revert on mouseleave
-            }
-            if (isDraggingImage) {
-                isDraggingImage = false;
-            }
+            dragState.isDragging = false;
+            dragState.target = null;
             canvas.style.cursor = 'default';
         });
+        canvas.addEventListener('mouseleave', () => { // Also stop dragging if mouse leaves canvas
+            if (dragState.isDragging) {
+                onCanvasMouseUp();
+            }
+        });
 
+
+        // ADD THESE NEW FUNCTIONS to script.js
+
+        function getCanvasMousePos(e) {
+            const rect = canvas.getBoundingClientRect();
+            return {
+                x: (e.clientX - rect.left) * (canvas.width / rect.width),
+                y: (e.clientY - rect.top) * (canvas.height / rect.height)
+            };
+        }
+
+        function selectObject(index) {
+            selectedObjectIndex = index;
+            updateObjectPropertiesPanel(); // We will create this function next
+            drawThumbnail();
+        }
+
+        function deselectAll() {
+            if (selectedObjectIndex !== -1) {
+                selectedObjectIndex = -1;
+                document.getElementById('object-properties-panel').style.display = 'none';
+                drawThumbnail();
+            }
+        }
+        // REPLACE the empty getObjectAt function in script.js
+        function getObjectAt(mouseX, mouseY) {
+            // Iterate backwards to select topmost object
+            for (let i = canvasObjects.length - 1; i >= 0; i--) {
+                const obj = canvasObjects[i];
+                const halfW = obj.width / 2;
+                const halfH = obj.height / 2;
+                if (mouseX >= obj.x - halfW && mouseX <= obj.x + halfW &&
+                    mouseY >= obj.y - halfH && mouseY <= obj.y + halfH) {
+                    return i;
+                }
+            }
+            return -1; // Nothing found
+        }
+
+        // REPLACE the empty updateObjectPropertiesPanel function in script.js
+        function updateObjectPropertiesPanel() {
+            const panel = document.getElementById('object-properties-panel');
+            const contentDiv = document.getElementById('properties-content');
+            
+            if (selectedObjectIndex < 0) {
+                panel.style.display = 'none';
+                return;
+            }
+
+            const obj = canvasObjects[selectedObjectIndex];
+            let html = '<div class="prop-grid">';
+
+            // Type-specific properties
+            if (obj.type === 'shape') {
+                html += `
+                    <label for="obj-fill-color">Fill</label>
+                    <input type="color" id="obj-fill-color" value="${obj.fill}">
+                `;
+            } else if (obj.type === 'text') {
+                html += `
+                    <label for="obj-text-content">Text</label>
+                    <input type="text" id="obj-text-content" value="${obj.text}">
+                    
+                    <label for="obj-text-color">Color</label>
+                    <input type="color" id="obj-text-color" value="${obj.color}">
+
+                    <label for="obj-font-size">Size</label>
+                    <input type="range" id="obj-font-size" min="20" max="400" value="${obj.size}">
+                `;
+            }
+
+            // Common properties for all objects
+            html += `
+                <label for="obj-stroke-color">Stroke</label>
+                <input type="color" id="obj-stroke-color" value="${obj.stroke}">
+                
+                <label for="obj-stroke-width">Stroke Width</label>
+                <input type="range" id="obj-stroke-width" min="0" max="50" value="${obj.strokeWidth}">
+                
+                <label for="obj-shadow-enabled">Shadow</label>
+                <input type="checkbox" id="obj-shadow-enabled" ${obj.shadow.enabled ? 'checked' : ''}>
+
+                <label for="obj-shadow-color">Shadow Color</label>
+                <input type="color" id="obj-shadow-color" value="${obj.shadow.color}">
+
+                <label for="obj-shadow-blur">Shadow Blur</label>
+                <input type="range" id="obj-shadow-blur" min="0" max="50" value="${obj.shadow.blur}">
+            `;
+
+            html += '</div>';
+            contentDiv.innerHTML = html;
+            panel.style.display = 'block';
+        }
+// ADD THIS NEW FUNCTION to script.js
+// ADD THIS NEW FUNCTION to script.js
+        function handleObjectPropertyChange(e) {
+            if (selectedObjectIndex < 0) return;
+            
+            const obj = canvasObjects[selectedObjectIndex];
+            const { id, value, type, checked } = e.target;
+
+            switch (id) {
+                // Shape-specific
+                case 'obj-fill-color': obj.fill = value; break;
+                // Text-specific
+                case 'obj-text-content': obj.text = value; break;
+                case 'obj-text-color': obj.color = value; break;
+                case 'obj-font-size': obj.size = parseFloat(value); break;
+                // Common
+                case 'obj-stroke-color': obj.stroke = value; break;
+                case 'obj-stroke-width': obj.strokeWidth = parseFloat(value); break;
+                case 'obj-shadow-enabled': obj.shadow.enabled = checked; break;
+                case 'obj-shadow-color': obj.shadow.color = value; break;
+                case 'obj-shadow-blur': obj.shadow.blur = parseFloat(value); break;
+            }
+            drawThumbnail();
+        }
         function setupPositionInputListeners() {
             textElements.forEach((el, index) => {
                 const xInput = document.getElementById(`x${index + 1}`);
@@ -1031,7 +1187,58 @@
             });
         }
 
+        // REPLACE/ADD this function in script.js
+        // ADD THIS NEW FUNCTION to script.js
 
+        function addEventListeners() {
+            // We will move all listeners here
+        }
+        function addObject(type, options = {}) {
+            objectIdCounter++;
+            const newObject = {
+                id: objectIdCounter,
+                type: type,
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                width: 300,
+                height: 300,
+                rotation: 0,
+                // Default styles
+                stroke: '#000000',
+                strokeWidth: 5,
+                shadow: { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 },
+                ...options // Overwrite defaults with specific options from the button click
+            };
+
+            // Type-specific defaults
+            if (type === 'shape') {
+                newObject.fill = '#ff0000'; // Default red fill for shapes
+            } else if (type === 'text') {
+                newObject.text = 'New Text';
+                newObject.font = 'Berlin Sans FB Demi Bold';
+                newObject.size = 100;
+                newObject.color = '#ffffff'; // Use 'color' for text fill
+            } else if (type === 'image' && newObject.src) {
+                const img = new Image();
+                img.onload = () => {
+                    newObject.img = img;
+                    // Set initial size based on image, but capped
+                    const maxDim = 400;
+                    if (img.width > img.height) {
+                        newObject.width = maxDim;
+                        newObject.height = img.height * (maxDim / img.width);
+                    } else {
+                        newObject.height = maxDim;
+                        newObject.width = img.width * (maxDim / img.height);
+                    }
+                    drawThumbnail();
+                };
+                img.src = newObject.src;
+            }
+
+            canvasObjects.push(newObject);
+            selectObject(canvasObjects.length - 1); // Select the new object immediately
+        }
 
 
         function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
@@ -1222,7 +1429,43 @@
 
 
             });
+            // PASTE THIS CODE BLOCK into drawThumbnail()
 
+            // 3. Draw All Canvas Objects
+            canvasObjects.forEach(obj => {
+                ctx.save();
+                // Apply shadow if enabled
+                if (obj.shadow && obj.shadow.enabled) {
+                    ctx.shadowColor = obj.shadow.color;
+                    ctx.shadowBlur = obj.shadow.blur;
+                    ctx.shadowOffsetX = obj.shadow.offsetX;
+                    ctx.shadowOffsetY = obj.shadow.offsetY;
+                }
+                
+                // Translate and rotate for all objects
+                ctx.translate(obj.x, obj.y);
+                ctx.rotate(obj.rotation * Math.PI / 180);
+
+                // Call the correct drawing function based on type
+                switch (obj.type) {
+                    case 'shape': drawShape(obj); break;
+                    case 'image': drawImageObject(obj); break;
+                    case 'text': drawTextSnippet(obj); break;
+                }
+                ctx.restore();
+            });
+
+            // 5. Draw Selection Handles (if not for download)
+            if (selectedObjectIndex > -1) {
+                const obj = canvasObjects[selectedObjectIndex];
+                ctx.save();
+                ctx.translate(obj.x, obj.y);
+                ctx.rotate(obj.rotation * Math.PI / 180);
+                ctx.strokeStyle = '#007bff';
+                ctx.lineWidth = 4;
+                ctx.strokeRect(-obj.width / 2, -obj.height / 2, obj.width, obj.height);
+                ctx.restore();
+            }
 
             if (selectedLogo.img) {
                 const logo = selectedLogo.img;
@@ -1257,6 +1500,11 @@
             }
 
         }
+
+
+        // PASTE THIS ENTIRE BLOCK of new functions into script.js
+
+
 
         function downloadThumbnail() {
             // Get current date in YYYYMMDD format
@@ -1343,3 +1591,69 @@
             document.body.classList.toggle('dark-mode');
             drawThumbnail(); // Redraw to ensure proper contrast
         }
+
+        // ADD THESE NEW FUNCTIONS to script.js
+
+        function drawShape(obj) {
+            ctx.fillStyle = obj.fill;
+            ctx.strokeStyle = obj.stroke;
+            ctx.lineWidth = obj.strokeWidth;
+            
+            const w = obj.width;
+            const h = obj.height;
+
+            ctx.beginPath();
+            // The coordinates are relative to the object's center (0,0)
+            // because we used ctx.translate()
+            switch (obj.shapeType) {
+                case 'square':
+                    ctx.rect(-w / 2, -h / 2, w, h);
+                    break;
+                case 'circle':
+                    ctx.arc(0, 0, w / 2, 0, 2 * Math.PI);
+                    break;
+                case 'arrow':
+                    // A simple block arrow shape
+                    ctx.moveTo(-w / 2, -h / 4); // Top-left of tail
+                    ctx.lineTo(0, -h / 4);      // Top-right of tail
+                    ctx.lineTo(0, -h / 2);      // Top of arrowhead
+                    ctx.lineTo(w / 2, 0);       // Point of arrowhead
+                    ctx.lineTo(0, h / 2);       // Bottom of arrowhead
+                    ctx.lineTo(0, h / 4);       // Bottom-right of tail
+                    ctx.lineTo(-w / 2, h / 4);  // Bottom-left of tail
+                    ctx.closePath();
+                    break;
+            }
+            if (obj.fill && obj.fill !== 'transparent') ctx.fill();
+            if (obj.strokeWidth > 0) ctx.stroke();
+        }
+
+        function drawImageObject(obj) {
+            if (obj.img) { // Only draw if the image has loaded
+                ctx.drawImage(obj.img, -obj.width / 2, -obj.height / 2, obj.width, obj.height);
+                if (obj.strokeWidth > 0) {
+                    ctx.strokeStyle = obj.stroke;
+                    ctx.lineWidth = obj.strokeWidth;
+                    ctx.strokeRect(-obj.width / 2, -obj.height / 2, obj.width, obj.height);
+                }
+            }
+        }
+
+        function drawTextSnippet(obj) {
+            ctx.font = `bold ${obj.size}px "${obj.font}"`;
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            
+            // For text snippets, the main color is `obj.color`
+            ctx.fillStyle = obj.color;
+            ctx.strokeStyle = obj.stroke;
+            ctx.lineWidth = obj.strokeWidth;
+
+            if (obj.strokeWidth > 0) {
+                ctx.strokeText(obj.text, 0, 0);
+            }
+            ctx.fillText(obj.text, 0, 0);
+        }
+
+        // PASTE THIS LINE at the very end of script.js
+document.getElementById('object-properties-panel').addEventListener('input', handleObjectPropertyChange);

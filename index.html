@@ -193,7 +193,6 @@
                         </div>
                         Breaking news
                     </button>
-                <!-- END NEW ROW OF 4 LAYOUTS -->
                     <button class="layout-btn" onclick="setLayout(16)" style="height: 100%">
                         <div class="layout-icon" style="background-color: #db8f0a; height: 5px">
     
@@ -270,6 +269,34 @@
                     </button>
                 <!-- END NEW ROW OF 4 LAYOUTS -->
                 </div>
+                <!-- PASTE THIS CODE IN index.html -->
+
+<h2 class="section-header">Add Objects</h2>
+<div class="add-object-grid">
+    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'arrow' })">Arrow</button>
+    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'circle' })">Circle</button>
+    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'square' })">Square</button>
+    <button class="add-object-btn" onclick="addObject('text')">Text Snippet</button>
+</div>
+<div style="margin-top: 10px;">
+    <label for="image-select">Add Image:</label>
+    <select id="image-select" onchange="if(this.value) addObject('image', { src: this.value })">
+        <option value="">-- Select Person --</option>
+        <option value="zelensky-happy.png">Zelensky (Happy)</option>
+        <option value="zelensky-grumpy.png">Zelensky (Grumpy)</option>
+        <!-- Add more preset images here -->
+    </select>
+</div>
+
+<!-- This panel is hidden by default and appears when an object is selected -->
+<div id="object-properties-panel" class="controls-section">
+    <h2 class="section-header">Selected Object Properties</h2>
+    
+    <!-- This div will be populated by JavaScript based on the selected object -->
+    <div id="properties-content"></div>
+
+    <button onclick="deleteSelectedObject()" style="background-color: #f44336; margin-top: 15px;">Delete Selected Object</button>
+</div>
                 <h2 style="margin: 20px 0 10px; color: #666; font-size: 1.2em;">Customise Text</h2>
                 
                 <div class="text-input-group">
@@ -511,6 +538,35 @@
                 <input type="file" id="imageInput" accept="image/*" style="display: none;">
                 <button class="upload-btn" onclick="document.getElementById('imageInput').click()">Upload Image</button>
             </div>
+            <!-- PASTE THIS CODE IN index.html, inside .right-panel -->
+
+<!-- This replaces the old "Image Brightness" control -->
+<div class="controls-section">
+    <h2 class="section-header">Background Image Filters</h2>
+    <div class="opacity-control">
+        <label for="bg-brightness">Brightness:</label>
+        <input type="range" id="bg-brightness" min="0" max="200" value="100" step="5">
+        <span id="bg-brightness-value">100%</span>
+    </div>
+    <div class="opacity-control">
+        <label for="bg-contrast">Contrast:</label>
+        <input type="range" id="bg-contrast" min="0" max="200" value="100" step="5">
+        <span id="bg-contrast-value">100%</span>
+    </div>
+    <div class="opacity-control">
+        <label for="bg-saturate">Saturation:</label>
+        <input type="range" id="bg-saturate" min="0" max="200" value="100" step="5">
+        <span id="bg-saturate-value">100%</span>
+    </div>
+</div>
+
+<div class="controls-section">
+    <h2 class="section-header">Alignment Overlays</h2>
+    <div class="text-style-controls">
+        <label><input type="checkbox" id="overlay-thirds" onchange="drawThumbnail()"> Rule of Thirds</label>
+        <label><input type="checkbox" id="overlay-center" onchange="drawThumbnail()"> Center Lines</label>
+    </div>
+</div>
             <div class="opacity-control">
                 <label for="imageOpacity">Image Brightness:</label>
                 <input type="range" id="imageOpacity" min="0" max="100" value="100" step="5">
