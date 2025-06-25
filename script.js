@@ -1270,28 +1270,68 @@
 
         function drawThumbnail() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            // Get the selected background color
             const canvasBgColor = document.getElementById('canvasBgColor').value;
             ctx.fillStyle = canvasBgColor;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (currentImage) {
-                // ... (image drawing logic - no changes here) ...
                 const sliderValue = parseFloat(document.getElementById('imageZoomSlider').value);
                 const sliderZoomFactor = sliderValue / 100;
+
+                // effectiveImageZoom is the zoom level needed to make currentImage cover the canvas *at slider 100%*
+                // and then scaled by the sliderZoomFactor.
+                // This value is used to determine the portion of the source image (sx, sy, sw, sh).
                 const effectiveImageZoom = currentImageBaseCoverZoom * sliderZoomFactor;
+
+                // Calculate the source rectangle (sx, sy, sw, sh) from the original image
+                // srcVisibleWidth/Height is how much of the source image should be visible given the effectiveImageZoom
                 const srcVisibleWidth = canvas.width / effectiveImageZoom;
                 const srcVisibleHeight = canvas.height / effectiveImageZoom;
+
+                // sx, sy are the top-left coords of the source rect, centered and then panned
                 let sx = (currentImage.width - srcVisibleWidth) / 2 - (imageOffsetX / effectiveImageZoom);
                 let sy = (currentImage.height - srcVisibleHeight) / 2 - (imageOffsetY / effectiveImageZoom);
-                sx = Math.max(0, Math.min(currentImage.width - srcVisibleWidth, sx));
-                sy = Math.max(0, Math.min(currentImage.height - srcVisibleHeight, sy));
-                const finalSrcWidth = Math.min(srcVisibleWidth, currentImage.width - sx);
-                const finalSrcHeight = Math.min(srcVisibleHeight, currentImage.height - sy);
-                ctx.drawImage(currentImage, sx, sy, finalSrcWidth, finalSrcHeight, 0, 0, canvas.width, canvas.height);
-                const brightnessOpacity = (100 - document.getElementById('imageOpacity').value) / 100;
-                ctx.fillStyle = `rgba(255, 255, 255, ${brightnessOpacity})`;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Clamp sx, sy and calculate final sw, sh to stay within image bounds
+                const sw = Math.min(srcVisibleWidth, currentImage.width - Math.max(0, sx));
+                const sh = Math.min(srcVisibleHeight, currentImage.height - Math.max(0, sy));
+                sx = Math.max(0, sx);
+                sy = Math.max(0, sy);
+
+                // Calculate destination rectangle (dx, dy, dw, dh) on the canvas
+                let dw, dh; // The final width and height of the image drawn on the canvas
+                const imageAspectRatio = currentImage.width / currentImage.height;
+
+                // Determine the dimensions the image would have if it were to cover the canvas
+                // (this is before applying the sliderZoomFactor for sub-100% zoom)
+                let coverDw, coverDh;
+                const canvasAspectRatio = canvas.width / canvas.height;
+                if (imageAspectRatio > canvasAspectRatio) { // Image is wider than canvas aspect ratio
+                    coverDh = canvas.height;               // So, it covers by height
+                    coverDw = coverDh * imageAspectRatio;
+                } else { // Image is taller or same aspect ratio
+                    coverDw = canvas.width;                // So, it covers by width
+                    coverDh = coverDw / imageAspectRatio;
+                }
+
+                // The actual display width/height on canvas is the "cover" size scaled by the slider
+                dw = coverDw * sliderZoomFactor;
+                dh = coverDh * sliderZoomFactor;
+
+                // Calculate dx, dy to center this dw, dh on the canvas
+                let dx = (canvas.width - dw) / 2;
+                let dy = (canvas.height - dh) / 2;
+
+                ctx.drawImage(currentImage, sx, sy, sw, sh, dx, dy, dw, dh);
+
+                // Apply brightness filter (white overlay)
+                const brightnessValue = document.getElementById('imageOpacity').value;
+                if (brightnessValue !== "100") { // 100 means no change
+                    const brightnessOpacity = (100 - parseFloat(brightnessValue)) / 100;
+                    ctx.fillStyle = `rgba(255, 255, 255, ${brightnessOpacity})`;
+                    // Apply brightness only over the drawn image area
+                    ctx.fillRect(dx, dy, dw, dh);
+                }
             }
 
             textElements.forEach((el, index) => {
