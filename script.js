@@ -901,8 +901,6 @@
                     document.getElementById('opacityValue').textContent = e.target.value + '%';
                 } else if (targetId === 'imageZoomSlider') {
                     document.getElementById('zoomValue').textContent = e.target.value + '%';
-                } else if (targetId === 'canvasBgColor') {
-                    // This will be redrawn by drawThumbnail() anyway
                 }
 
                 if (redrawNeeded) {
@@ -1270,76 +1268,26 @@
 
         function drawThumbnail() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            const canvasBgColor = document.getElementById('canvasBgColor').value;
-            ctx.fillStyle = canvasBgColor;
+            ctx.fillStyle = '#000000';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (currentImage) {
+                // ... (image drawing logic - no changes here) ...
                 const sliderValue = parseFloat(document.getElementById('imageZoomSlider').value);
                 const sliderZoomFactor = sliderValue / 100;
-
-                // This is the scale factor of the original image to its displayed size on canvas
-                const renderedImageScale = currentImageBaseCoverZoom * sliderZoomFactor;
-
-                // Destination Dimensions (dw, dh) on the canvas
-                // These are calculated by scaling the original image dimensions.
-                // This inherently preserves the image's aspect ratio.
-                const dw = currentImage.width * renderedImageScale;
-                const dh = currentImage.height * renderedImageScale;
-
-                // Destination Position (dx, dy) on the canvas
-                // This centers the image and applies the total accumulated pan from dragging.
-                const dx = (canvas.width - dw) / 2 + imageOffsetX;
-                const dy = (canvas.height - dh) / 2 + imageOffsetY;
-
-                // Source Rectangle (sx, sy, sw, sh) from the original image
-                // This defines what portion of the source image to draw.
-                // It's effectively the canvas viewport translated into source image coordinates.
-                let sx = -imageOffsetX / renderedImageScale;
-                let sy = -imageOffsetY / renderedImageScale;
-                // Adjust sx, sy so they are relative to the top-left of the *centered* source image part
-                // that would be shown if there were no panning and dw,dh were canvas.width, canvas.height
-                sx += (currentImage.width - (canvas.width / renderedImageScale)) / 2;
-                sy += (currentImage.height - (canvas.height / renderedImageScale)) / 2;
-
-                let sw = canvas.width / renderedImageScale;
-                let sh = canvas.height / renderedImageScale;
-
-                // Clamp source rectangle to image bounds
-                if (sx < 0) {
-                    sw += sx; // Reduce width by the amount sx is negative
-                    sx = 0;
-                }
-                if (sy < 0) {
-                    sh += sy; // Reduce height by the amount sy is negative
-                    sy = 0;
-                }
-
-                if (sx + sw > currentImage.width) {
-                    sw = currentImage.width - sx;
-                }
-                if (sy + sh > currentImage.height) {
-                    sh = currentImage.height - sy;
-                }
-
-                // Ensure sw and sh are not negative (can happen if image is smaller than canvas and panned far)
-                sw = Math.max(0, sw);
-                sh = Math.max(0, sh);
-
-
-                if (sw > 0 && sh > 0) { // Only draw if there's a valid source area
-                    ctx.drawImage(currentImage, sx, sy, sw, sh, dx, dy, dw, dh);
-                }
-
-
-                // Apply brightness filter (white overlay)
-                const brightnessValue = document.getElementById('imageOpacity').value;
-                if (brightnessValue !== "100") { // 100 means no change
-                    const brightnessOpacity = (100 - parseFloat(brightnessValue)) / 100;
-                    ctx.fillStyle = `rgba(255, 255, 255, ${brightnessOpacity})`;
-                    // Apply brightness only over the drawn image area (dx, dy, dw, dh)
-                    ctx.fillRect(dx, dy, dw, dh);
-                }
+                const effectiveImageZoom = currentImageBaseCoverZoom * sliderZoomFactor;
+                const srcVisibleWidth = canvas.width / effectiveImageZoom;
+                const srcVisibleHeight = canvas.height / effectiveImageZoom;
+                let sx = (currentImage.width - srcVisibleWidth) / 2 - (imageOffsetX / effectiveImageZoom);
+                let sy = (currentImage.height - srcVisibleHeight) / 2 - (imageOffsetY / effectiveImageZoom);
+                sx = Math.max(0, Math.min(currentImage.width - srcVisibleWidth, sx));
+                sy = Math.max(0, Math.min(currentImage.height - srcVisibleHeight, sy));
+                const finalSrcWidth = Math.min(srcVisibleWidth, currentImage.width - sx);
+                const finalSrcHeight = Math.min(srcVisibleHeight, currentImage.height - sy);
+                ctx.drawImage(currentImage, sx, sy, finalSrcWidth, finalSrcHeight, 0, 0, canvas.width, canvas.height);
+                const brightnessOpacity = (100 - document.getElementById('imageOpacity').value) / 100;
+                ctx.fillStyle = `rgba(255, 255, 255, ${brightnessOpacity})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
             textElements.forEach((el, index) => {
