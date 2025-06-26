@@ -1278,58 +1278,66 @@
                 const sliderValue = parseFloat(document.getElementById('imageZoomSlider').value);
                 const sliderZoomFactor = sliderValue / 100;
 
-                // effectiveImageZoom is the zoom level needed to make currentImage cover the canvas *at slider 100%*
-                // and then scaled by the sliderZoomFactor.
-                // This value is used to determine the portion of the source image (sx, sy, sw, sh).
-                const effectiveImageZoom = currentImageBaseCoverZoom * sliderZoomFactor;
+                // This is the scale factor of the original image to its displayed size on canvas
+                const renderedImageScale = currentImageBaseCoverZoom * sliderZoomFactor;
 
-                // Calculate the source rectangle (sx, sy, sw, sh) from the original image
-                // srcVisibleWidth/Height is how much of the source image should be visible given the effectiveImageZoom
-                const srcVisibleWidth = canvas.width / effectiveImageZoom;
-                const srcVisibleHeight = canvas.height / effectiveImageZoom;
+                // Destination Dimensions (dw, dh) on the canvas
+                // These are calculated by scaling the original image dimensions.
+                // This inherently preserves the image's aspect ratio.
+                const dw = currentImage.width * renderedImageScale;
+                const dh = currentImage.height * renderedImageScale;
 
-                // sx, sy are the top-left coords of the source rect, centered and then panned
-                let sx = (currentImage.width - srcVisibleWidth) / 2 - (imageOffsetX / effectiveImageZoom);
-                let sy = (currentImage.height - srcVisibleHeight) / 2 - (imageOffsetY / effectiveImageZoom);
+                // Destination Position (dx, dy) on the canvas
+                // This centers the image and applies the total accumulated pan from dragging.
+                const dx = (canvas.width - dw) / 2 + imageOffsetX;
+                const dy = (canvas.height - dh) / 2 + imageOffsetY;
 
-                // Clamp sx, sy and calculate final sw, sh to stay within image bounds
-                const sw = Math.min(srcVisibleWidth, currentImage.width - Math.max(0, sx));
-                const sh = Math.min(srcVisibleHeight, currentImage.height - Math.max(0, sy));
-                sx = Math.max(0, sx);
-                sy = Math.max(0, sy);
+                // Source Rectangle (sx, sy, sw, sh) from the original image
+                // This defines what portion of the source image to draw.
+                // It's effectively the canvas viewport translated into source image coordinates.
+                let sx = -imageOffsetX / renderedImageScale;
+                let sy = -imageOffsetY / renderedImageScale;
+                // Adjust sx, sy so they are relative to the top-left of the *centered* source image part
+                // that would be shown if there were no panning and dw,dh were canvas.width, canvas.height
+                sx += (currentImage.width - (canvas.width / renderedImageScale)) / 2;
+                sy += (currentImage.height - (canvas.height / renderedImageScale)) / 2;
 
-                // Calculate destination rectangle (dx, dy, dw, dh) on the canvas
-                let dw, dh; // The final width and height of the image drawn on the canvas
-                const imageAspectRatio = currentImage.width / currentImage.height;
+                let sw = canvas.width / renderedImageScale;
+                let sh = canvas.height / renderedImageScale;
 
-                // Determine the dimensions the image would have if it were to cover the canvas
-                // (this is before applying the sliderZoomFactor for sub-100% zoom)
-                let coverDw, coverDh;
-                const canvasAspectRatio = canvas.width / canvas.height;
-                if (imageAspectRatio > canvasAspectRatio) { // Image is wider than canvas aspect ratio
-                    coverDh = canvas.height;               // So, it covers by height
-                    coverDw = coverDh * imageAspectRatio;
-                } else { // Image is taller or same aspect ratio
-                    coverDw = canvas.width;                // So, it covers by width
-                    coverDh = coverDw / imageAspectRatio;
+                // Clamp source rectangle to image bounds
+                if (sx < 0) {
+                    sw += sx; // Reduce width by the amount sx is negative
+                    sx = 0;
+                }
+                if (sy < 0) {
+                    sh += sy; // Reduce height by the amount sy is negative
+                    sy = 0;
                 }
 
-                // The actual display width/height on canvas is the "cover" size scaled by the slider
-                dw = coverDw * sliderZoomFactor;
-                dh = coverDh * sliderZoomFactor;
+                if (sx + sw > currentImage.width) {
+                    sw = currentImage.width - sx;
+                }
+                if (sy + sh > currentImage.height) {
+                    sh = currentImage.height - sy;
+                }
 
-                // Calculate dx, dy to center this dw, dh on the canvas
-                let dx = (canvas.width - dw) / 2;
-                let dy = (canvas.height - dh) / 2;
+                // Ensure sw and sh are not negative (can happen if image is smaller than canvas and panned far)
+                sw = Math.max(0, sw);
+                sh = Math.max(0, sh);
 
-                ctx.drawImage(currentImage, sx, sy, sw, sh, dx, dy, dw, dh);
+
+                if (sw > 0 && sh > 0) { // Only draw if there's a valid source area
+                    ctx.drawImage(currentImage, sx, sy, sw, sh, dx, dy, dw, dh);
+                }
+
 
                 // Apply brightness filter (white overlay)
                 const brightnessValue = document.getElementById('imageOpacity').value;
                 if (brightnessValue !== "100") { // 100 means no change
                     const brightnessOpacity = (100 - parseFloat(brightnessValue)) / 100;
                     ctx.fillStyle = `rgba(255, 255, 255, ${brightnessOpacity})`;
-                    // Apply brightness only over the drawn image area
+                    // Apply brightness only over the drawn image area (dx, dy, dw, dh)
                     ctx.fillRect(dx, dy, dw, dh);
                 }
             }
