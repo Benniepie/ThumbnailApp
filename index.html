@@ -9,20 +9,22 @@
     <!-- Link to the external JavaScript files. 'defer' is important! -->
     <script src="templates.js" defer></script>
     <script src="script.js" defer></script>
+    <script src="style-presets.js" defer></script>
 </head>
 <body>
     <!-- The entire body of your index3.html file goes here, unchanged. -->
     <!-- For brevity, I'm not pasting the 500+ lines of body HTML, -->
     <!-- but you should copy it directly from your index3.html file. -->
-    <div class="header">
-        <h1>Thumbnail Maker</h1>
-        <button class="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
-    </div>
-    <div class="main-container">
+    <div class="app-grid">
+        <header class="app-header">
+            <h1>Thumbnail Maker</h1>
+            <button class="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+        </header>
 
-        <div class="container">
-            <h2 style="margin: 10px 0; color: #666; font-size: 1.2em;">Choose a layout</h2>
-            <div class="controls">
+        <aside class="left-panel">
+            <!-- All the layout presets and text line controls go here -->
+            <div class="panel-section">
+                <h2>Layouts</h2>
                 <div class="layout-presets">
                     <!-- Existing 6 layouts -->
                     <button class="layout-btn" onclick="setLayout(1)">
@@ -270,35 +272,19 @@
                 <!-- END NEW ROW OF 4 LAYOUTS -->
                 </div>
                 <!-- PASTE THIS CODE IN index.html -->
+            </div>
 
-<h2 class="section-header">Add Objects</h2>
-<div class="add-object-grid">
-    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'arrow' })">Arrow</button>
-    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'circle' })">Circle</button>
-    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'square' })">Square</button>
-    <button class="add-object-btn" onclick="addObject('text')">Text Snippet</button>
-</div>
-<div style="margin-top: 10px;">
-    <label for="image-select">Add Image:</label>
-    <select id="image-select" onchange="if(this.value) addObject('image', { src: this.value })">
-        <option value="">-- Select Person --</option>
-        <option value="zelensky-happy.png">Zelensky (Happy)</option>
-        <option value="zelensky-grumpy.png">Zelensky (Grumpy)</option>
-        <!-- Add more preset images here -->
-    </select>
-</div>
-
-<!-- This panel is hidden by default and appears when an object is selected -->
-<div id="object-properties-panel" class="controls-section">
-    <h2 class="section-header">Selected Object Properties</h2>
-    
-    <!-- This div will be populated by JavaScript based on the selected object -->
-    <div id="properties-content"></div>
-
-    <button onclick="deleteSelectedObject()" style="background-color: #f44336; margin-top: 15px;">Delete Selected Object</button>
-</div>
-                <h2 style="margin: 20px 0 10px; color: #666; font-size: 1.2em;">Customise Text</h2>
-                
+            <div class="panel-section">
+                <h2>Add Elements</h2>
+                <div class="add-object-grid">
+                    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'arrow' })">Arrow</button>
+                    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'circle' })">Circle</button>
+                    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'square' })">Square</button>
+                    <button class="add-object-btn" onclick="showPresetPickerForSnippet()">Add Styled Text</button>
+                </div>
+            </div>
+            <div class="panel-section">
+                <h2>Text Lines</h2>    
                 <div class="text-input-group">
                     <div class="text-input">
                         <input type="text" id="text1" value="UKRAINE WAR" placeholder="Text Line 1">
@@ -310,9 +296,13 @@
                     </div>
                     <div class="toggle-controls-container">
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos1')">Position</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'stroke1')">Stroke</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'style1')">Style</button>
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg1')">Background</button>
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow1')">Shadow</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'fx1')">FX</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'presets1')">Presets</button>
+
+
                     </div>
                     <div id="pos1" class="collapsible-controls">
                         <div class="text-position-controls">
@@ -323,7 +313,7 @@
                             <button class="align-btn" onclick="setTextAlignment(0, 'right')">R</button>
                         </div>
                     </div>
-                    <div id="stroke1" class="collapsible-controls">
+                    <div id="style1" class="collapsible-controls">
                         <div class="text-style-controls">
                             <label>Stroke: <input type="color" id="strokeColor1" value="#000000"></label>
                             <label>Thick: <input type="number" id="strokeThickness1" class="pos-input" value="2" min="0" max="50"></label>
@@ -347,6 +337,42 @@
                             <label>ShdY: <input type="number" id="shadowOffsetY1" class="pos-input" value="2" min="-50" max="50"></label>
                         </div>
                     </div>    
+                    <div id="fx1" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>Font:
+                                <select id="fontFamily1">
+                                    <option value="'Berlin Sans FB Demi Bold', sans-serif">Berlin Sans</option>
+                                    <option value="'Bangers', cursive">Bangers</option>
+                                    <option value="'Suez One', serif">Suez One</option>
+                                    <option value="'VT323', monospace">VT323</option>
+                                    <option value="'Bruno Ace SC', sans-serif">Bruno Ace SC</option>
+                                    <option value="'Oswald', sans-serif">Oswald</option>
+                                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                                </select>
+                            </label>
+                            <label>Effect:
+                                <select id="advancedEffectType1">
+                                    <option value="none">None</option>
+                                    <option value="neon">Neon</option>
+                                    <option value="splice">Splice</option>
+                                    <option value="echo">Echo</option>
+                                    <option value="glitch">Glitch</option>
+                                </select>
+                            </label>
+                        </div>
+                        <!-- Contextual controls for effects, hidden by default -->
+                        <div id="fx-params1" class="text-style-controls fx-params">
+                            <label class="fx-param-control" data-fx-for="neon splice echo glitch">FX C1: <input type="color" id="effectColor1_1"></label>
+                            <label class="fx-param-control" data-fx-for="neon splice echo glitch">FX C2: <input type="color" id="effectColor2_1"></label>
+                            <label class="fx-param-control" data-fx-for="glitch">FX C3: <input type="color" id="effectColor3_1"></label>
+                            <label class="fx-param-control" data-fx-for="splice echo glitch">Dist: <input type="range" id="effectDistance1" min="0" max="50" value="10"></label>
+                            <label class="fx-param-control" data-fx-for="splice echo">Angle: <input type="range" id="effectAngle1" min="-180" max="180" value="-45"></label>
+                            <label class="fx-param-control" data-fx-for="neon">Glow: <input type="range" id="effectGlowSize1" min="0" max="100" value="20"></label>
+                        </div>
+                    </div>
+                    <div id="presets1" class="collapsible-controls preset-gallery">
+                            <!-- Preset previews will be generated here by JS -->
+                    </div>  
                 </div>
                 <div class="presets" id="titlePresets">
                     <button class="preset-btn" onclick="setTitle('UKRAINE WAR')">Ukraine War</button>
@@ -364,9 +390,11 @@
                     </div>
                     <div class="toggle-controls-container">
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos2')">Position</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'stroke2')">Stroke</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'style2')">Style</button>
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg2')">Background</button>
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow2')">Shadow</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'fx2')">FX</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'presets2')">Presets</button>
                     </div>
                     <div id="pos2" class="collapsible-controls">
                         <div class="text-position-controls">
@@ -377,7 +405,7 @@
                             <button class="align-btn" onclick="setTextAlignment(1, 'right')">R</button>
                         </div>
                     </div>
-                    <div id="stroke2" class="collapsible-controls">
+                    <div id="style2" class="collapsible-controls">
                         <div class="text-style-controls">
                             <label>Stroke: <input type="color" id="strokeColor2" value="#000000"></label>
                             <label>Thick: <input type="number" id="strokeThickness2" class="pos-input" value="2" min="0" max="50"></label>
@@ -400,6 +428,42 @@
                             <label>ShdX: <input type="number" id="shadowOffsetX2" class="pos-input" value="2" min="-50" max="50"></label>
                             <label>ShdY: <input type="number" id="shadowOffsetY2" class="pos-input" value="2" min="-50" max="50"></label>
                         </div>
+                    </div>
+                    <div id="fx2" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>Font:
+                                <select id="fontFamily2">
+                                    <option value="'Berlin Sans FB Demi Bold', sans-serif">Berlin Sans</option>
+                                    <option value="'Bangers', cursive">Bangers</option>
+                                    <option value="'Suez One', serif">Suez One</option>
+                                    <option value="'VT323', monospace">VT323</option>
+                                    <option value="'Bruno Ace SC', sans-serif">Bruno Ace SC</option>
+                                    <option value="'Oswald', sans-serif">Oswald</option>
+                                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                                </select>
+                            </label>
+                            <label>Effect:
+                                <select id="advancedEffectType2">
+                                    <option value="none">None</option>
+                                    <option value="neon">Neon</option>
+                                    <option value="splice">Splice</option>
+                                    <option value="echo">Echo</option>
+                                    <option value="glitch">Glitch</option>
+                                </select>
+                            </label>
+                        </div>
+                        <!-- Contextual controls for effects, hidden by default -->
+                        <div id="fx-params2" class="text-style-controls fx-params">
+                            <label class="fx-param-control" data-fx-for="neon splice echo glitch">FX C1: <input type="color" id="effectColor1_2"></label>
+                            <label class="fx-param-control" data-fx-for="neon splice echo glitch">FX C2: <input type="color" id="effectColor2_2"></label>
+                            <label class="fx-param-control" data-fx-for="glitch">FX C3: <input type="color" id="effectColor3_2"></label>
+                            <label class="fx-param-control" data-fx-for="splice echo glitch">Dist: <input type="range" id="effectDistance2" min="0" max="50" value="10"></label>
+                            <label class="fx-param-control" data-fx-for="splice echo">Angle: <input type="range" id="effectAngle2" min="-180" max="180" value="-45"></label>
+                            <label class="fx-param-control" data-fx-for="neon">Glow: <input type="range" id="effectGlowSize2" min="0" max="100" value="20"></label>
+                        </div>
+                    </div>
+                    <div id="presets2" class="collapsible-controls preset-gallery">
+                        <!-- Preset previews will be generated here by JS -->
                     </div>    
                 </div>
                 <div class="presets" id="subtitlePresets">
@@ -421,9 +485,11 @@
                     </div>
                     <div class="toggle-controls-container">
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos3')">Position</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'stroke3')">Stroke</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'style3')">Style</button>
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg3')">Background</button>
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow3')">Shadow</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'fx3')">FX</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'presets3')">Presets</button>
                     </div>
                     <div id="pos3" class="collapsible-controls">
                         <div class="text-position-controls">
@@ -434,7 +500,7 @@
                             <button class="align-btn" onclick="setTextAlignment(2, 'right')">R</button>
                         </div>
                     </div>
-                    <div id="stroke3" class="collapsible-controls">
+                    <div id="style3" class="collapsible-controls">
                         <div class="text-style-controls">
                             <label>Stroke: <input type="color" id="strokeColor3" value="#000000"></label>
                             <label>Thick: <input type="number" id="strokeThickness3" class="pos-input" value="2" min="0" max="50"></label>
@@ -457,6 +523,42 @@
                             <label>ShdX: <input type="number" id="shadowOffsetX3" class="pos-input" value="2" min="-50" max="50"></label>
                             <label>ShdY: <input type="number" id="shadowOffsetY3" class="pos-input" value="2" min="-50" max="50"></label>
                         </div>
+                    </div>
+                    <div id="fx3" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>Font:
+                                <select id="fontFamily3">
+                                    <option value="'Berlin Sans FB Demi Bold', sans-serif">Berlin Sans</option>
+                                    <option value="'Bangers', cursive">Bangers</option>
+                                    <option value="'Suez One', serif">Suez One</option>
+                                    <option value="'VT323', monospace">VT323</option>
+                                    <option value="'Bruno Ace SC', sans-serif">Bruno Ace SC</option>
+                                    <option value="'Oswald', sans-serif">Oswald</option>
+                                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                                </select>
+                            </label>
+                            <label>Effect:
+                                <select id="advancedEffectType3">
+                                    <option value="none">None</option>
+                                    <option value="neon">Neon</option>
+                                    <option value="splice">Splice</option>
+                                    <option value="echo">Echo</option>
+                                    <option value="glitch">Glitch</option>
+                                </select>
+                            </label>
+                        </div>
+                        <!-- Contextual controls for effects, hidden by default -->
+                        <div id="fx-params3" class="text-style-controls fx-params">
+                            <label class="fx-param-control" data-fx-for="neon splice echo glitch">FX C1: <input type="color" id="effectColor1_3"></label>
+                            <label class="fx-param-control" data-fx-for="neon splice echo glitch">FX C2: <input type="color" id="effectColor2_3"></label>
+                            <label class="fx-param-control" data-fx-for="glitch">FX C3: <input type="color" id="effectColor3_3"></label>
+                            <label class="fx-param-control" data-fx-for="splice echo glitch">Dist: <input type="range" id="effectDistance3" min="0" max="50" value="10"></label>
+                            <label class="fx-param-control" data-fx-for="splice echo">Angle: <input type="range" id="effectAngle3" min="-180" max="180" value="-45"></label>
+                            <label class="fx-param-control" data-fx-for="neon">Glow: <input type="range" id="effectGlowSize3" min="0" max="100" value="20"></label>
+                        </div>
+                    </div>
+                    <div id="presets3" class="collapsible-controls preset-gallery">
+                        <!-- Preset previews will be generated here by JS -->
                     </div>                        
                 </div>
                 <div class="presets" id="datePresets">
@@ -478,9 +580,11 @@
                     </div>
                     <div class="toggle-controls-container">
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos4')">Position</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'stroke4')">Stroke</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'style4')">Style</button>
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg4')">Background</button>
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow4')">Shadow</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'fx4')">FX</button>
+                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'presets4')">Presets</button>
                     </div>
                     <div id="pos4" class="collapsible-controls">
                         <div class="text-position-controls">
@@ -491,7 +595,7 @@
                             <button class="align-btn" onclick="setTextAlignment(3, 'right')">R</button>
                         </div>
                     </div>
-                    <div id="stroke4" class="collapsible-controls">
+                    <div id="style4" class="collapsible-controls">
                         <div class="text-style-controls">
                             <label>Stroke: <input type="color" id="strokeColor4" value="#000000"></label>
                             <label>Thick: <input type="number" id="strokeThickness4" class="pos-input" value="2" min="0" max="50"></label>
@@ -514,6 +618,42 @@
                             <label>ShdX: <input type="number" id="shadowOffsetX4" class="pos-input" value="2" min="-50" max="50"></label>
                             <label>ShdY: <input type="number" id="shadowOffsetY4" class="pos-input" value="2" min="-50" max="50"></label>
                         </div>
+                    </div>
+                    <div id="fx4" class="collapsible-controls">
+                        <div class="text-style-controls">
+                            <label>Font:
+                                <select id="fontFamily4">
+                                    <option value="'Berlin Sans FB Demi Bold', sans-serif">Berlin Sans</option>
+                                    <option value="'Bangers', cursive">Bangers</option>
+                                    <option value="'Suez One', serif">Suez One</option>
+                                    <option value="'VT323', monospace">VT323</option>
+                                    <option value="'Bruno Ace SC', sans-serif">Bruno Ace SC</option>
+                                    <option value="'Oswald', sans-serif">Oswald</option>
+                                    <option value="'Montserrat', sans-serif">Montserrat</option>
+                                </select>
+                            </label>
+                            <label>Effect:
+                                <select id="advancedEffectType4">
+                                    <option value="none">None</option>
+                                    <option value="neon">Neon</option>
+                                    <option value="splice">Splice</option>
+                                    <option value="echo">Echo</option>
+                                    <option value="glitch">Glitch</option>
+                                </select>
+                            </label>
+                        </div>
+                        <!-- Contextual controls for effects, hidden by default -->
+                        <div id="fx-params4" class="text-style-controls fx-params">
+                            <label class="fx-param-control" data-fx-for="neon splice echo glitch">FX C1: <input type="color" id="effectColor1_4"></label>
+                            <label class="fx-param-control" data-fx-for="neon splice echo glitch">FX C2: <input type="color" id="effectColor2_4"></label>
+                            <label class="fx-param-control" data-fx-for="glitch">FX C3: <input type="color" id="effectColor3_4"></label>
+                            <label class="fx-param-control" data-fx-for="splice echo glitch">Dist: <input type="range" id="effectDistance4" min="0" max="50" value="10"></label>
+                            <label class="fx-param-control" data-fx-for="splice echo">Angle: <input type="range" id="effectAngle4" min="-180" max="180" value="-45"></label>
+                            <label class="fx-param-control" data-fx-for="neon">Glow: <input type="range" id="effectGlowSize4" min="0" max="100" value="20"></label>
+                        </div>
+                    </div>
+                    <div id="presets4" class="collapsible-controls preset-gallery">
+                        <!-- Preset previews will be generated here by JS -->
                     </div>   
                 </div> 
                 <div class="presets" id="line4Presets">
@@ -524,95 +664,164 @@
                     <button class="preset-btn" onclick="setLine4('3 DAY UPDATE')">3 Day Update</button>
                 </div>
             </div>
-                    <!-- At the very end of the left-side .container div, after all the text groups -->
-        <div style="margin-top: 20px; border-top: 2px solid #eee; padding-top: 20px;">
-            <h2 style="margin: 0 0 10px; color: #666; font-size: 1.2em;">Export Layout</h2>
-            <p style="font-size: 0.9em; color: #888;">Copy the current text styles to the clipboard to use in a layout preset.</p>
-            <button onclick="exportLayoutToClipboard()" class="upload-btn" style="width: 100%;">Copy Current Layout to Clipboard</button>
-            <div id="copy-feedback" style="text-align: center; margin-top: 10px; color: #4CAF50; font-weight: bold;"></div>
-        </div>
-        </div>
-        <div class="container right-panel">
-            <h2 style="margin: 0 0 15px; color: #666; font-size: 1.2em;">Thumbnail Preview</h2>
-            <div>
-                <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                <button class="upload-btn" onclick="document.getElementById('imageInput').click()">Upload Image</button>
-            </div>
-            <!-- PASTE THIS CODE IN index.html, inside .right-panel -->
 
-<!-- This replaces the old "Image Brightness" control -->
-<div class="controls-section">
-    <h2 class="section-header">Background Image Filters</h2>
-    <div class="opacity-control">
-        <label for="bg-brightness">Brightness:</label>
-        <input type="range" id="bg-brightness" min="0" max="200" value="100" step="5">
-        <span id="bg-brightness-value">100%</span>
-    </div>
-    <div class="opacity-control">
-        <label for="bg-contrast">Contrast:</label>
-        <input type="range" id="bg-contrast" min="0" max="200" value="100" step="5">
-        <span id="bg-contrast-value">100%</span>
-    </div>
-    <div class="opacity-control">
-        <label for="bg-saturate">Saturation:</label>
-        <input type="range" id="bg-saturate" min="0" max="200" value="100" step="5">
-        <span id="bg-saturate-value">100%</span>
-    </div>
-</div>
-
-<div class="controls-section">
-    <h2 class="section-header">Alignment Overlays</h2>
-    <div class="text-style-controls">
-        <label><input type="checkbox" id="overlay-thirds" onchange="drawThumbnail()"> Rule of Thirds</label>
-        <label><input type="checkbox" id="overlay-center" onchange="drawThumbnail()"> Center Lines</label>
-    </div>
-</div>
-            <div class="opacity-control">
-                <label for="imageOpacity">Image Brightness:</label>
-                <input type="range" id="imageOpacity" min="0" max="100" value="100" step="5">
-                <span id="opacityValue">100%</span>
+            <div class="panel-section">
+                <h2>Export</h2>
+                <button onclick="exportLayoutToClipboard()" class="upload-btn" style="width: 100%;">Copy Layout Code</button>
+                <div id="copy-feedback"></div>
             </div>
-            <!-- NEW: Zoom Control -->
-            <div class="opacity-control">
-                <label for="imageZoom">Image Zoom:</label>
-                <input type="range" id="imageZoomSlider" min="100" max="300" value="100" step="10">
-                <span id="zoomValue">100%</span>
-            </div>
-            <div class="logo-controls-container">
-                <h2 style="margin: 0 0 15px; color: #666; font-size: 1.2em;">Logo Overlay</h2>
-                
-                <div class="logo-selection">
-                    <!-- Use img tags for thumbnails. The 'data-src' holds the actual image file name. -->
-                    <img src="logo-none.png" alt="No Logo" class="logo-thumb active" onclick="selectLogo(this, null)">
-                    <img src="logo1.png" alt="Logo 1" class="logo-thumb" onclick="selectLogo(this, 'logo1.png')">
-                    <img src="logo2.png" alt="Logo 2" class="logo-thumb" onclick="selectLogo(this, 'logo2.png')">
-                    <img src="logo3.png" alt="Logo 3" class="logo-thumb" onclick="selectLogo(this, 'logo3.png')">
-                    <img src="logo4.png" alt="Logo 4" class="logo-thumb" onclick="selectLogo(this, 'logo4.png')">
-                    <img src="logo5.png" alt="Logo 5" class="logo-thumb" onclick="selectLogo(this, 'logo5.png')">
-                    <img src="logo6.png" alt="Logo 6" class="logo-thumb" onclick="selectLogo(this, 'logo6.png')">
-                    <img src="logo7.png" alt="Logo 7" class="logo-thumb" onclick="selectLogo(this, 'logo7.png')">
-                </div>
+        </aside>
 
-                <div class="logo-position-controls">
-                    <label>Position:</label>
-                    <button class="logo-pos-btn" onclick="setLogoPosition('top-left')">TL</button>
-                    <button class="logo-pos-btn" onclick="setLogoPosition('top-right')">TR</button>
-                    <button class="logo-pos-btn active" onclick="setLogoPosition('bottom-left')">BL</button> <!-- MODIFIED: Changed default to BL -->
-                    <button class="logo-pos-btn" onclick="setLogoPosition('bottom-right')">BR</button>
-                </div>
 
-                <div class="logo-size-controls">
-                    <label for="logoScale">Size:</label>
-                    <input type="range" id="logoScale" min="5" max="50" value="15" step="1">
-                    <span id="logoScaleValue">15%</span>
-                </div>
+        <main class="center-panel">
+            <!-- The canvas and its direct controls go here -->
+            <div class="canvas-controls">
+                 <button class="upload-btn" onclick="document.getElementById('imageInput').click()">Upload Image</button>
+                 <input type="file" id="imageInput" accept="image/*" style="display: none;">
+                 <button class="upload-btn" style="background-color: #9C27B0;" onclick="showAiModal()">Generate AI Image</button>
             </div>
-            <!-- END NEW -->
             <div class="canvas-container">
                 <canvas id="thumbnailCanvas"></canvas>
             </div>
-            <button onclick="downloadThumbnail()">Download Thumbnail</button>
+            <button onclick="downloadThumbnail()" style="width: 100%; font-size: 20px; padding: 15px;">Download Thumbnail</button>
+        </main>
+
+        <aside class="right-panel">
+            <!-- All the context-sensitive properties go here -->
+            <div class="panel-section">
+                <h2>Background Image</h2>
+
+
+                <div class="opacity-control">
+                    <label for="bg-brightness">Brightness:</label>
+                    <input type="range" id="bg-brightness" min="0" max="200" value="100" step="5">
+                    <span id="bg-brightness-value">100%</span>
+                </div>
+                <div class="opacity-control">
+                    <label for="bg-contrast">Contrast:</label>
+                    <input type="range" id="bg-contrast" min="0" max="200" value="100" step="5">
+                    <span id="bg-contrast-value">100%</span>
+                </div>
+                <div class="opacity-control">
+                    <label for="bg-saturate">Saturation:</label>
+                    <input type="range" id="bg-saturate" min="0" max="200" value="100" step="5">
+                    <span id="bg-saturate-value">100%</span>
+                </div>
+                <div class="opacity-control">
+                    <label for="imageOpacity">Image Opacity:</label>
+                    <input type="range" id="imageOpacity" min="0" max="100" value="100" step="5">
+                    <span id="opacityValue">100%</span>
+                </div>
+                
+                <!-- NEW: Zoom Control -->
+                <div class="opacity-control">
+                    <label for="imageZoom">Image Zoom:</label>
+                    <input type="range" id="imageZoomSlider" min="100" max="300" value="100" step="10">
+                    <span id="zoomValue">100%</span>
+                </div>
+            </div>
+            <div class="panel-section">            
+                <h2 class="section-header">Alignment Guides</h2>
+                <div class="text-style-controls">
+                    <label><input type="checkbox" id="overlay-thirds" onchange="drawThumbnail()"> Rule of Thirds</label>
+                    <label><input type="checkbox" id="overlay-center" onchange="drawThumbnail()"> Center Lines</label>
+                </div>
+            </div>
+            <div class="panel-section">
+                <h2>Logo Overlay</h2>
+                <div class="logo-controls-container">
+                    <div class="logo-selection">
+                        <!-- Use img tags for thumbnails. The 'data-src' holds the actual image file name. -->
+                        <img src="logo-none.png" alt="No Logo" class="logo-thumb active" onclick="selectLogo(this, null)">
+                        <img src="logo1.png" alt="Logo 1" class="logo-thumb" onclick="selectLogo(this, 'logo1.png')">
+                        <img src="logo2.png" alt="Logo 2" class="logo-thumb" onclick="selectLogo(this, 'logo2.png')">
+                        <img src="logo3.png" alt="Logo 3" class="logo-thumb" onclick="selectLogo(this, 'logo3.png')">
+                        <img src="logo4.png" alt="Logo 4" class="logo-thumb" onclick="selectLogo(this, 'logo4.png')">
+                        <img src="logo5.png" alt="Logo 5" class="logo-thumb" onclick="selectLogo(this, 'logo5.png')">
+                        <img src="logo6.png" alt="Logo 6" class="logo-thumb" onclick="selectLogo(this, 'logo6.png')">
+                        <img src="logo7.png" alt="Logo 7" class="logo-thumb" onclick="selectLogo(this, 'logo7.png')">
+                    </div>
+                    <div class="logo-position-controls">
+                        <label>Position:</label>
+                        <button class="logo-pos-btn" onclick="setLogoPosition('top-left')">TL</button>
+                        <button class="logo-pos-btn" onclick="setLogoPosition('top-right')">TR</button>
+                        <button class="logo-pos-btn active" onclick="setLogoPosition('bottom-left')">BL</button> <!-- MODIFIED: Changed default to BL -->
+                        <button class="logo-pos-btn" onclick="setLogoPosition('bottom-right')">BR</button>
+                    </div>    
+                    <div class="logo-size-controls">
+                        <label for="logoScale">Size:</label>
+                        <input type="range" id="logoScale" min="5" max="50" value="15" step="1">
+                        <span id="logoScaleValue">15%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="panel-section" id="object-properties-panel">
+                <!-- This is the new home for selected object properties -->
+                <h2 class="section-header">Selected Object Properties</h2>
+                <div id="properties-content"></div>  
+                      <button onclick="deleteSelectedObject()" style="background-color: #f44336; margin-top: 15px; display: none;" id="delete-object-btn">Delete Selected Object</button>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- AI Image Generation Modal -->
+    <div id="ai-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2>AI Image Generation</h2>
+            <div class="ai-controls">
+                <textarea id="ai-prompt" placeholder="Describe the image you want to create..."></textarea>
+                <div class="ai-row">
+                    <label>Preset:</label>
+                    <select id="ai-preset-prompts">
+                        <option value="">-- Custom Prompt --</option>
+                        <option value="The motherland monument in Kyiv, Ukraine, stylistic artist impression, cinematic, wide shot, 8k, hyperrealistic">Motherland Monument</option>
+                        <option value="A dramatic explosion in a modern city street, cinematic, fire and smoke, high action, 8k photo">City Explosion</option>
+                        <option value="Abstract background, blue and yellow energy waves, digital art, futuristic, clean">Abstract Energy</option>
+                    </select>
+                    <label>API Key:</label>
+                    <input type="password" id="ai-api-key" placeholder="Replicate API Key">
+                </div>
+                <button class="toggle-btn" onclick="this.nextElementSibling.classList.toggle('show')">Advanced</button>
+                <div class="collapsible-controls">
+                    <div class="ai-row">
+                        <label>Seed:</label>
+                        <input type="text" id="ai-seed" placeholder="Leave blank for random">
+                        <label>Guidance:</label>
+                        <input type="range" id="ai-guidance" min="0" max="10" value="2.5" step="0.1">
+                        <span id="ai-guidance-value">2.5</span>
+                    </div>
+                </div>
+            </div>
+            <div class="ai-actions">
+                <button id="ai-generate-btn" onclick="generateAiImage()">Generate</button>
+                <button id="ai-download-btn" onclick="downloadAiImage()" disabled>Download</button>
+                <button id="ai-set-bg-btn" onclick="setAiImageAsBackground()" disabled>Download & Set Background</button>
+            </div>
+            <div id="ai-preview-container">
+                <div id="ai-loader" class="loader" style="display: none;"></div>
+                <img id="ai-preview-img" src="" alt="AI Generated Image Preview"/>
+            </div>
+            <button onclick="closeAiModal()" style="margin-top: 20px; background-color: #f44336;">Close</button>
+        </div>
+    </div>
+    <div id="snippet-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <div id="snippet-step1">
+                <h2>Step 1: Choose a Style</h2>
+                <div id="snippet-preset-gallery" class="preset-gallery">
+                <!-- Snippet preset previews will be generated here -->
+                </div>
+            </div>
+            <div id="snippet-step2" style="display: none;">
+                <h2>Step 2: Choose a Word</h2>
+                <div id="snippet-word-choices" class="presets">
+                <!-- Word choice buttons will be generated here -->
+                </div>
+            </div>
+            <button onclick="closeSnippetModal()" style="margin-top: 20px; background-color: #f44336;">Cancel</button>
         </div>
     </div>
 </body>
+
 </html>

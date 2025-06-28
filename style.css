@@ -1,154 +1,68 @@
-        @font-face {
-            font-family: 'Berlin Sans FB Demi Bold';
-            src: url('fonts/BRLNSDB.woff') format('woff');
-            font-weight: bold;
-            font-style: normal;
-            font-display: swap;
-        }
-        body {
-            font-family: 'Arial', sans-serif;
-            max-width: 1600px;
-            margin: 0 auto;
-            padding: 20px;
-            background-color: #f5f5f5;
-            transition: background-color 0.3s ease;
-        }
-        body.dark-mode {
-            background-color: #1a1a1a;
-            color: #ffffff;
-        }
-        .main-container {
-            display: grid;
-            grid-template-columns: 1fr 400px;
-            gap: 20px;
-        }
-        .header {
-            grid-column: 1 / -1;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .container {
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: background-color 0.3s ease, color 0.3s ease;
-        }
-        .dark-mode .container {
-            background-color: #2d2d2d;
-            color: #ffffff;
-        }
-        .dark-mode input[type="text"],
-        .dark-mode input[type="number"],
-        .dark-mode textarea {
-            background-color: #3d3d3d;
-            color: #ffffff;
-            border-color: #4d4d4d;
-        }
-        .dark-mode .preset-btn {
-            background-color: #4d4d4d;
-        }
-        .dark-mode .preset-btn:hover {
-            background-color: #5d5d5d;
-        }
-        .theme-toggle {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .dark-mode .theme-toggle {
-            background-color: #45a049;
-        }
-        .canvas-container {
-            margin: 20px 0;
-            text-align: center;
-        }
-        canvas {
-            max-width: 100%;
-            border: 2px solid #ddd;
-            border-radius: 5px;
-        }
-        .controls {
-            display: grid;
-            gap: 10px;
-            margin: 10px 0;
-        }
-        .text-input-group {
-            margin-bottom: 0px; /* Space between text line groups */
-            border: 1px solid #eee;
-            padding: 0px;
-            border-radius: 5px;
-        }
-        .dark-mode .text-input-group {
-            border-color: #3a3a3a;
-        }
-        .text-position-controls {
-            display: grid;
-            grid-template-columns: 1fr 1fr auto auto auto; /* X, Y, L, C, R */
-            gap: 5px;
-            align-items: center;
-            margin-top: 8px;
-        }
-        .text-position-controls label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .pos-input {
-            width: 60px; /* Adjust as needed */
-        }
-        .align-btn {
-            padding: 5px 10px;
-            font-size: 14px;
-            background-color: #007bff; /* Blue for alignment */
-        }
-        .align-btn:hover {
-            background-color: #0056b3;
-        }
-        .dark-mode .align-btn {
-            background-color: #0056b3;
-        }
-        .dark-mode .align-btn:hover {
-            background-color: #004085;
-        }
+@font-face {
+    font-family: 'Berlin Sans FB Demi Bold';
+    src: url('fonts/BRLNSDB.woff') format('woff');
+    font-weight: bold; font-style: normal; font-display: swap;
+}
+body {
+    font-family: 'Arial', sans-serif;
+    margin: 0;
+    background-color: #f0f0f0;
+    color: #333;
+    transition: background-color 0.3s, color 0.3s;
+}
+body.dark-mode { background-color: #1a1a1a; color: #e0e0e0; }
 
-        .text-input {
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 5px;
-            align-items: center;
-        }
-        .color-input-container {
-            position: relative;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .color-preview {
-            width: 30px;
-            height: 30px;
-            border: 2px solid #ddd;
-            border-radius: 4px;
-            position: static;
-        }
-        .presets {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-            gap: 5px;
-            margin: 5px 0;
-        }
-        .layout-presets {
-            display: grid;
-            grid-template-columns: repeat(5, 1fr); /* NEW: Strictly 5 columns */            
-            gap: 5px;
-            margin: 5px 0;
-        }
+/* Main App Grid Layout */
+.app-grid {
+    display: grid;
+    grid-template-columns: 380px 1fr 380px;
+    grid-template-rows: auto 1fr;
+    grid-template-areas:
+        "header header header"
+        "left-panel center-panel right-panel";
+    height: 100vh;
+    gap: 10px;
+    padding: 10px;
+    box-sizing: border-box;
+}
+.app-header { grid-area: header; display: flex; justify-content: space-between; align-items: center; padding-bottom: 10px; }
+.left-panel { grid-area: left-panel; overflow-y: auto; }
+.center-panel { grid-area: center-panel; display: flex; flex-direction: column; }
+.right-panel { grid-area: right-panel; overflow-y: auto; }
+
+/* Panel & Section Styling */
+.left-panel, .right-panel {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+.dark-mode .left-panel, .dark-mode .right-panel { background-color: #2d2d2d; }
+.panel-section { margin-bottom: 25px; }
+.panel-section h2 { margin-top: 0; margin-bottom: 15px; font-size: 1.1em; color: #007bff; border-bottom: 1px solid #eee; padding-bottom: 8px; }
+.dark-mode .panel-section h2 { color: #4dabf7; border-bottom-color: #444; }
+
+/* Center Panel & Canvas */
+.canvas-controls { display: flex; gap: 10px; margin-bottom: 15px; }
+.canvas-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; background: #e0e0e0; border-radius: 8px; padding: 10px; }
+.dark-mode .canvas-container { background: #252525; }
+canvas { max-width: 100%; max-height: 100%; object-fit: contain; border: 1px solid #ccc; }
+.dark-mode canvas { border-color: #555; }
+
+/* General UI Elements (Buttons, Inputs, etc.) */
+button, input, select, textarea { font-family: inherit; font-size: 14px; }
+button { background-color: #007bff; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
+button:hover { background-color: #0056b3; }
+button:disabled { background-color: #ccc; cursor: not-allowed; }
+.dark-mode button:disabled { background-color: #555; }
+.upload-btn { background-color: #28a745; }
+.upload-btn:hover { background-color: #218838; }
+input[type="text"], input[type="password"], input[type="number"], textarea, select {
+    padding: 8px; border: 1px solid #ccc; border-radius: 4px; width: 100%; box-sizing: border-box;
+}
+.dark-mode input, .dark-mode textarea, .dark-mode select { background-color: #3d3d3d; color: #e0e0e0; border-color: #555; }
+
+.layout-presets { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 8px; }
         .layout-btn {
             background-color: #9C27B0;
             color: white;
@@ -180,113 +94,15 @@
             background: white;
             margin: 2px;
         }
-        .preset-btn {
-            background-color: #607D8B;
-            color: white;
-            padding: 5px 10px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .preset-btn:hover {
-            background-color: #455A64;
-        }
-        .opacity-control {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin: 10px 0;
-        }
-        input[type="text"], input[type="color"], input[type="number"], input[type="range"] {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-        }
-        textarea {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            height: 60px;
-            resize: vertical;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        button:hover {
-            background-color: #45a049;
-        }
-        .upload-btn {
-            background-color: #2196F3;
-        }
-        .upload-btn:hover {
-            background-color: #1976D2;
-        }
-        .right-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .text-style-controls {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 5px;
-            align-items: center;
-            margin-top: 4px;
-            font-size: 0.9em; /* Smaller font for these controls */
-        }
-        .text-style-controls label {
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .text-style-controls input[type="color"] {
-            width: 40px; /* Smaller color pickers */
-            height: 25px;
-            padding: 2px;
-        }
-        .text-style-controls input[type="checkbox"] {
-            margin-right: 2px;
-        }
-        .toggle-controls-container {
-            display: flex;
-            gap: 5px;
-            margin-top: 5px;
-        }
-        .toggle-btn {
-            flex-grow: 1;
-            background-color: #6c757d;
-            padding: 8px;
-            font-size: 14px;
-        }
-        .toggle-btn:hover {
-            background-color: #5a6268;
-        }
-        .toggle-btn.active {
-            background-color: #007bff; /* Blue when active */
-        }
-        .collapsible-controls {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-            padding: 0 0px; /* No padding when collapsed */
-            background-color: #f8f9fa;
-            border-radius: 4px;
-            margin-top: 0px;
-        }
-        .dark-mode .collapsible-controls {
-            background-color: #3a3a3a;
-        }
-        .collapsible-controls.show {
-            max-height: 100px; /* A height large enough to show content */
-            padding: 5px; /* Add padding back when expanded */
-        }
+.text-input-group { border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; margin-bottom: 10px; }
+.dark-mode .text-input-group { border-color: #444; }
+.toggle-controls-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
+.toggle-btn { flex-grow: 1; background-color: #6c757d; font-size: 12px; padding: 6px; }
+.toggle-btn.active { background-color: #007bff; }
+.collapsible-controls { max-height: 0; overflow: hidden; transition: all 0.3s ease-out; background-color: #f8f9fa; border-radius: 4px; margin-top: 5px; }
+.dark-mode .collapsible-controls { background-color: #3a3a3a; }
+.collapsible-controls.show { max-height: 200px; padding: 10px; }
+      
         .logo-controls-container {
             border-top: 2px solid #eee;
             padding-top: 15px;
@@ -346,3 +162,75 @@
             align-items: center;
             gap: 10px;
         }
+        /* Styles for the new FX controls */
+        .fx-params .fx-param-control {
+            display: none; /* Hidden by default */
+        }
+        .text-style-controls select {
+            padding: 5px;
+            background-color: #fff;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .dark-mode .text-style-controls select {
+            background-color: #3d3d3d;
+            color: #fff;
+            border-color: #4d4d4d;
+        }
+
+        /* Styles for the preset gallery */
+        .preset-gallery {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            padding-top: 10px;
+        }
+        .preset-preview-canvas {
+            width: 100%;
+            aspect-ratio: 2 / 1;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+            background-color: #333; /* Dark background for previews */
+        }
+        .preset-preview-canvas:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.7);
+        }
+
+        /* Styles for the snippet modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 900px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        .dark-mode .modal-content {
+            background-color: #2d2d2d;
+        }
+        /* AI Modal Styles */
+        .ai-controls { display: flex; flex-direction: column; gap: 10px; }
+        .ai-controls textarea { height: 80px; width: 100%; box-sizing: border-box; }
+        .ai-row { display: flex; gap: 10px; align-items: center; }
+        .ai-row input[type="password"], .ai-row input[type="text"] { flex-grow: 1; }
+        .ai-actions { margin: 15px 0; display: flex; gap: 10px; }
+        #ai-preview-container { position: relative; min-height: 200px; background-color: #222; border-radius: 5px; margin-top: 15px; display: flex; align-items: center; justify-content: center; }
+        #ai-preview-img { max-width: 100%; max-height: 40vh; display: none; }
+        .loader { border: 8px solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1.5s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }

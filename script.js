@@ -1,4 +1,6 @@
-   
+   // ADD THIS
+        let activeSnippetStyleId = null; // For the two-step snippet adder
+        const googleFontsToLoad = ['Bangers', 'Suez One', 'VT323', 'Bruno Ace SC', 'Oswald', 'Montserrat'];
         const canvas = document.getElementById('thumbnailCanvas');
         const ctx = canvas.getContext('2d');
         // ADD THIS CODE AT THE TOP OF script.js
@@ -58,39 +60,150 @@
         //let isDraggingImage = false;
         //let lastMouseX, lastMouseY;
         let textElements = [
-            { id: 'text1', inputId: 'text1', colorId: 'color1', sizeId: 'size1', x: canvas.width * 0.5, y: canvas.height * 0.3, align: 'center', text: '', wrap: false, size: 100, color: '#0000ff',
-              strokeColor: '#000000', strokeThickness: 2, bgColor: 'rgba(255,255,255,0)', bgFullWidth: false, bgPadding: 10, shadowEnabled: false, shadowColor: 'rgba(0,0,0,0.7)', shadowBlur: 5, shadowOffsetX: 2, shadowOffsetY: 2 },
-            { id: 'text2', inputId: 'text2', colorId: 'color2', sizeId: 'size2', x: canvas.width * 0.5, y: canvas.height * 0.5, align: 'center', text: '', wrap: false, size: 100, color: '#0000ff',
-              strokeColor: '#000000', strokeThickness: 2, bgColor: 'rgba(255,255,255,0)', bgFullWidth: false, bgPadding: 10, shadowEnabled: false, shadowColor: 'rgba(0,0,0,0.7)', shadowBlur: 5, shadowOffsetX: 2, shadowOffsetY: 2 },
-            { id: 'text3', inputId: 'text3', colorId: 'color3', sizeId: 'size3', x: canvas.width * 0.5, y: canvas.height * 0.7, align: 'center', text: '', wrap: false, size: 100, color: '#0000ff',
-              strokeColor: '#000000', strokeThickness: 2, bgColor: 'rgba(255,255,255,0)', bgFullWidth: false, bgPadding: 10, shadowEnabled: false, shadowColor: 'rgba(0,0,0,0.7)', shadowBlur: 5, shadowOffsetX: 2, shadowOffsetY: 2 },
-            { id: 'text4', inputId: 'text4', colorId: 'color4', sizeId: 'size4', x: canvas.width * 0.5, y: canvas.height * 0.85, align: 'center', text: '', wrap: false, size: 100, color: '#0000ff',
-              strokeColor: '#000000', strokeThickness: 2, bgColor: 'rgba(255,255,255,0)', bgFullWidth: false, bgPadding: 10, shadowEnabled: false, shadowColor: 'rgba(0,0,0,0.7)', shadowBlur: 5, shadowOffsetX: 2, shadowOffsetY: 2 } // Line 4 often wraps
-        ];
+            // We'll create 4 empty elements. setLayout will populate them.
+            {}, {}, {}, {}
+        ].map((el, i) => ({
+            id: `text${i+1}`, inputId: `text${i+1}`, colorId: `color${i+1}`, sizeId: `size${i+1}`,
+            x: canvas.width * 0.5, y: canvas.height * 0.3, align: 'center', text: '', wrap: false, size: 100,
+            fontFamily: "'Berlin Sans FB Demi Bold', sans-serif",
+            color: '#FFFFFF',
+            strokeColor: '#000000', strokeThickness: 2,
+            bgColor: 'rgba(255,255,255,0)', bgFullWidth: false, bgPadding: 10,
+            shadowEnabled: false, shadowColor: 'rgba(0,0,0,0.7)', shadowBlur: 5, shadowOffsetX: 2, shadowOffsetY: 2,
+            advancedEffect: {
+                type: 'none',
+                color1: '#ff0000', color2: '#00ff00', color3: '#0000ff',
+                distance: 10, angle: -45, glowSize: 20
+            }
+        }));
         // Add font loading check
-        const font = new FontFace('Berlin Sans FB Demi Bold', 'url(fonts/BRLNSDB.woff)');
-        font.load().then(function(loadedFont) {
-            document.fonts.add(loadedFont);
-            console.log('Berlin Sans FB Demi Bold font loaded.');
-            // Initialize textElements with default values before first setLayout
-            textElements.forEach((el, index) => {
-                el.text = document.getElementById(el.inputId).value;
-                el.color = document.getElementById(el.colorId).value;
-                el.size = parseFloat(document.getElementById(el.sizeId).value);
-                // Initial X, Y will be set by setLayout
-            });
+        Promise.all([
+            new FontFace('Berlin Sans FB Demi Bold', 'url(fonts/BRLNSDB.woff)').load(),
+            ...googleFontsToLoad.map(family => new FontFace(family, `url(https://fonts.gstatic.com/s/a/files/${family.replace(/ /g, '')}-v29-latin-regular.woff2)`).load())
+        ]).then(loadedFonts => {
+            loadedFonts.forEach(font => document.fonts.add(font));
+            console.log('All fonts loaded.');
+            
+            // Initial setup
             updateColorPreviews();
             setLayout(1); // Sets initial layout, text, positions, and calls drawThumbnail
+            populateStylePresets(); // Draw the preset previews
+
         }).catch(function(error) {
-            console.error("Font could not be loaded: ", error);
+            console.error("A font could not be loaded: ", error);
+            // Still try to run the app
             updateColorPreviews();
             setLayout(1);
+            populateStylePresets();
         });
+
         
 
         // Set canvas dimensions
         canvas.width = 1920;
         canvas.height = 1080;
+
+
+        // ADD THESE NEW FUNCTIONS
+
+        function populateStylePresets() {
+            const galleries = document.querySelectorAll('.preset-gallery');
+            galleries.forEach(gallery => {
+                gallery.innerHTML = ''; // Clear existing
+                stylePresets.forEach(preset => {
+                    const canvasEl = document.createElement('canvas');
+                    canvasEl.width = 300; // Higher res for preview
+                    canvasEl.height = 150;
+                    canvasEl.className = 'preset-preview-canvas';
+                    
+                    const galleryId = gallery.id; // e.g., "presets1" or "snippet-preset-gallery"
+
+                    if (galleryId.startsWith('presets')) {
+                        const textIndex = parseInt(galleryId.replace('presets', '')) - 1;
+                        canvasEl.onclick = () => applyStylePreset(textIndex, preset.id);
+                    } else { // It's for the snippet modal
+                        canvasEl.onclick = () => selectSnippetStyle(preset.id);
+                    }
+
+                    gallery.appendChild(canvasEl);
+
+                    // Draw the preview
+                    const pCtx = canvasEl.getContext('2d');
+                    const previewTextElement = {
+                        ...preset, // Copy all style properties from the preset
+                        text: 'Style',
+                        size: 60,
+                        x: canvasEl.width / 2,
+                        y: canvasEl.height / 2,
+                        align: 'center'
+                    };
+                    pCtx.fillStyle = '#333';
+                    pCtx.fillRect(0, 0, canvasEl.width, canvasEl.height);
+                    drawTextWithEffect(pCtx, previewTextElement);
+                });
+            });
+        }
+
+        function applyStylePreset(elementIndex, presetId) {
+            const preset = stylePresets.find(p => p.id === presetId);
+            if (!preset || !textElements[elementIndex]) return;
+
+            // Copy all style properties from the preset to the text element
+            const textEl = textElements[elementIndex];
+            Object.assign(textEl, preset);
+
+            updateTextControlsFromState(); // Update all UI controls to match
+            drawThumbnail();
+        }
+
+        function showPresetPickerForSnippet() {
+            document.getElementById('snippet-modal').style.display = 'flex';
+            document.getElementById('snippet-step1').style.display = 'block';
+            document.getElementById('snippet-step2').style.display = 'none';
+        }
+
+        function closeSnippetModal() {
+            document.getElementById('snippet-modal').style.display = 'none';
+        }
+
+        function selectSnippetStyle(presetId) {
+            activeSnippetStyleId = presetId;
+            const wordContainer = document.getElementById('snippet-word-choices');
+            wordContainer.innerHTML = ''; // Clear old words
+            snippetWords.forEach(word => {
+                const btn = document.createElement('button');
+                btn.className = 'preset-btn';
+                btn.textContent = word;
+                btn.onclick = () => addStyledSnippet(word);
+                wordContainer.appendChild(btn);
+            });
+
+            document.getElementById('snippet-step1').style.display = 'none';
+            document.getElementById('snippet-step2').style.display = 'block';
+        }
+
+        function addStyledSnippet(word) {
+            const preset = stylePresets.find(p => p.id === activeSnippetStyleId);
+            if (!preset) return;
+
+            const styleOptions = { ...preset, text: word, size: 150 };
+            addObject('text', styleOptions);
+            closeSnippetModal();
+        }
+
+        function updateFxControlsVisibility(elementIndex) {
+            const fxType = document.getElementById(`advancedEffectType${elementIndex + 1}`).value;
+            const paramsContainer = document.getElementById(`fx-params${elementIndex + 1}`);
+            paramsContainer.querySelectorAll('.fx-param-control').forEach(control => {
+                const fxFor = control.dataset.fxFor.split(' ');
+                if (fxFor.includes(fxType)) {
+                    control.style.display = 'flex';
+                } else {
+                    control.style.display = 'none';
+                }
+            });
+        }
+
 
         function updateTextControlsFromState() {
             textElements.forEach((el, index) => {
@@ -112,14 +225,13 @@
 
                 const rgbaMatch = el.bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
                 if (rgbaMatch) {
-                    bgColorInput.value = `#${parseInt(rgbaMatch[1]).toString(16).padStart(2,'0')}${parseInt(rgbaMatch[2]).toString(16).padStart(2,'0')}${parseInt(rgbaMatch[3]).toString(16).padStart(2,'0')}`;
+                    const r = parseInt(rgbaMatch[1]).toString(16).padStart(2, '0');
+                    const g = parseInt(rgbaMatch[2]).toString(16).padStart(2, '0');
+                    const b = parseInt(rgbaMatch[3]).toString(16).padStart(2, '0');
+                    bgColorInput.value = `#${r}${g}${b}`;
                     const alpha = rgbaMatch[4] !== undefined ? parseFloat(rgbaMatch[4]) : 1;
                     bgAlphaInput.value = Math.round(alpha * 100);
                     bgAlphaValueSpan.textContent = `${Math.round(alpha * 100)}%`;
-                } else { // Fallback if not rgba (e.g. hex from picker initially)
-                    bgColorInput.value = el.bgColor; // This might be just a hex
-                    bgAlphaInput.value = el.bgColor.startsWith('#') && el.bgColor.length > 7 ? parseInt(el.bgColor.substring(7,9), 16) / 255 * 100 : (el.bgColor === 'transparent' ? 0 : 100) ; // crude alpha from hex
-                    bgAlphaValueSpan.textContent = `${Math.round(bgAlphaInput.value)}%`;
                 }
 
 
@@ -142,7 +254,23 @@
                     shadowAlphaValueSpan.textContent = `${Math.round(alpha * 100)}%`;
                 }
 
-
+                                // NEW: Update FX controls
+                document.getElementById(`fontFamily${i}`).value = el.fontFamily;
+                if (el.advancedEffect) { // Check if effect object exists
+                    document.getElementById(`advancedEffectType${i}`).value = el.advancedEffect.type ?? 'none';
+                    document.getElementById(`effectColor1_${i}`).value = el.advancedEffect.color1 ?? '#ff0000';
+                    document.getElementById(`effectColor2_${i}`).value = el.advancedEffect.color2 ?? '#00ff00';
+                    document.getElementById(`effectColor3_${i}`).value = el.advancedEffect.color3 ?? '#0000ff';
+                    document.getElementById(`effectDistance${i}`).value = el.advancedEffect.distance ?? 10;
+                    document.getElementById(`effectAngle${i}`).value = el.advancedEffect.angle ?? -45;
+                    document.getElementById(`effectGlowSize${i}`).value = el.advancedEffect.glowSize ?? 20;
+                    updateFxControlsVisibility(index);
+                } else {
+            // As a final fallback, if the entire advancedEffect object is missing,
+            // set the UI to 'none' to prevent errors.
+                    document.getElementById(`advancedEffectType${i}`).value = 'none';
+                    updateFxControlsVisibility(index);
+                }
             });
             updateColorPreviews();
         }
@@ -431,27 +559,40 @@
             currentLayout = layout;
             const layoutPreset = getLayoutPositions(layout); // Get the entire preset object
 
+
+                // Define a clean, default state for a text element
+            const defaultTextElement = {
+                fontFamily: "'Berlin Sans FB Demi Bold', sans-serif",
+                color: '#FFFFFF',
+                strokeColor: '#000000', strokeThickness: 0,
+                bgColor: 'rgba(255,255,255,0)', bgFullWidth: false, bgPadding: 10,
+                shadowEnabled: false, shadowColor: 'rgba(0,0,0,0.7)', shadowBlur: 5, shadowOffsetX: 2, shadowOffsetY: 2,
+                advancedEffect: {
+                    type: 'none',
+                    color1: '#ff0000', color2: '#00ff00', color3: '#0000ff',
+                    distance: 10, angle: -45, glowSize: 20
+                }
+            };
             // Handle Text Elements
             layoutPreset.text.forEach((preset, index) => {
-                const el = textElements[index];
-                if (preset) {
-                    el.x = preset.x;
-                    el.y = preset.y;
-                    el.align = preset.align;
-                    el.wrap = preset.wrap || false;
-                    el.color = preset.color || '#FFFFFF';
-                    el.strokeColor = preset.strokeColor || '#000000';
-                    el.strokeThickness = preset.strokeThickness !== undefined ? preset.strokeThickness : 0;
-                    el.bgColor = preset.bgColor || 'rgba(255,255,255,0)';
-                    el.bgFullWidth = preset.bgFullWidth || false;
-                    el.bgPadding = preset.bgPadding !== undefined ? preset.bgPadding : 10;
-                    el.shadowEnabled = preset.shadowEnabled || false;
-                    el.shadowColor = preset.shadowColor || 'rgba(0,0,0,0.5)';
-                    el.shadowBlur = preset.shadowBlur !== undefined ? preset.shadowBlur : 0;
-                    el.shadowOffsetX = preset.shadowOffsetX !== undefined ? preset.shadowOffsetX : 0;
-                    el.shadowOffsetY = preset.shadowOffsetY !== undefined ? preset.shadowOffsetY : 0;
+                if (textElements[index] && preset) {
+                    // 1. Get the current text and size, which we want to preserve
+                    const currentText = textElements[index].text;
+                    const currentSize = textElements[index].size;
+
+                    // 2. Create a new, clean object by merging the default and the preset
+                    const newElementState = { ...defaultTextElement, ...preset };
+
+                    // 3. Assign this clean state to our main text element
+                    Object.assign(textElements[index], newElementState);
+
+                    // 4. Restore the text and size if they weren't in the preset
+                    // (Your switch case below will usually override this, which is fine)
+                    if (!preset.text) textElements[index].text = currentText;
+                    if (!preset.size) textElements[index].size = currentSize;
                 }
             });
+
 
             // Handle Logo
             applyLogoPreset(layoutPreset.logo);
@@ -780,118 +921,177 @@
 
 // Global input listener
         // Replace your existing global input listener with this complete version
-        document.querySelectorAll('input[type="text"], input[type="number"], textarea, input[type="range"], input[type="color"], input[type="checkbox"]').forEach(input => {
-            input.addEventListener('input', function(e) {
-                const targetId = e.target.id;
-                let redrawNeeded = true;
+            document.querySelectorAll('input, textarea, select').forEach(input => {
+                input.addEventListener('input', function(e) {
+                    const targetId = e.target.id;
+                    let redrawNeeded = true;
 
-                // Extracts prefix and number from id like "text1", "bgColor2", "shadowEnabled3"
-                const match = targetId.match(/([a-zA-Z]+)(\d+)/);
-                if (match) {
-                    const prefix = match[1];
-                    const elementIndex = parseInt(match[2]) - 1;
+                    //const match = targetId.match(/([a-zA-Z_]+)(\d+)/);
+                    const match = targetId.match(/^([a-zA-Z]+)(\d+)$/);
+                    const fxMatch = targetId.match(/^(effectColor|effectDistance|effectAngle|effectGlowSize|advancedEffectType|fontFamily)(\d+)?_?(\d*)$/);
 
-                    if (elementIndex >= 0 && textElements[elementIndex]) {
-                        switch (prefix) {
-                            // --- Existing Cases ---
-                            case 'text':
-                                textElements[elementIndex].text = e.target.value;
-                                break;
-                            case 'size':
-                                textElements[elementIndex].size = parseFloat(e.target.value);
-                                break;
-                            case 'color':
-                                textElements[elementIndex].color = e.target.value;
-                                updateColorPreviews();
-                                break;
-                            case 'x':
-                                textElements[elementIndex].x = parseFloat(e.target.value);
-                                break;
-                            case 'y':
-                                textElements[elementIndex].y = parseFloat(e.target.value);
-                                break;
-                            
-                            // --- Stroke Cases ---
-                            case 'strokeColor':
-                                textElements[elementIndex].strokeColor = e.target.value;
-                                break;
-                            case 'strokeThickness':
-                                textElements[elementIndex].strokeThickness = parseFloat(e.target.value);
-                                break;
+                    if (fxMatch) {
+                        const prefix = fxMatch[1];
+                        // For IDs like "effectColor1_2", fxMatch[2] is "1" and fxMatch[3] is "2"
+                        // For IDs like "fontFamily1", fxMatch[2] is "1" and fxMatch[3] is ""
+                        const elementIndex = parseInt(fxMatch[3] || fxMatch[2]) - 1;
 
-                            // --- Background Cases ---
-                            case 'bgColor':
-                                {
-                                    const newColorHex = e.target.value; // #RRGGBB
-                                    const currentAlpha = parseFloat(document.getElementById(`bgAlpha${elementIndex + 1}`).value) / 100;
-                                    const r = parseInt(newColorHex.slice(1, 3), 16);
-                                    const g = parseInt(newColorHex.slice(3, 5), 16);
-                                    const b = parseInt(newColorHex.slice(5, 7), 16);
-                                    textElements[elementIndex].bgColor = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`;
-                                }
-                                break;
-                            case 'bgAlpha':
-                                {
-                                    const newAlpha = parseFloat(e.target.value) / 100;
-                                    document.getElementById(`bgAlphaValue${elementIndex + 1}`).textContent = `${Math.round(newAlpha * 100)}%`;
-                                    const rgbaMatch = textElements[elementIndex].bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-                                    if (rgbaMatch) {
-                                        textElements[elementIndex].bgColor = `rgba(${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]}, ${newAlpha})`;
-                                    } else {
-                                        const hexColor = document.getElementById(`bgColor${elementIndex + 1}`).value;
-                                        const r = parseInt(hexColor.slice(1, 3), 16);
-                                        const g = parseInt(hexColor.slice(3, 5), 16);
-                                        const b = parseInt(hexColor.slice(5, 7), 16);
-                                        textElements[elementIndex].bgColor = `rgba(${r}, ${g}, ${b}, ${newAlpha})`;
+                        if (elementIndex >= 0 && textElements[elementIndex]) {
+                            const el = textElements[elementIndex];
+                            switch (prefix) {
+                                case 'fontFamily':
+                                    el.fontFamily = e.target.value;
+                                    break;
+                                case 'advancedEffectType':
+                                    el.advancedEffect.type = e.target.value;
+                                    updateFxControlsVisibility(elementIndex);
+                                    break;
+                                case 'effectColor':
+                                    const colorNum = fxMatch[2]; // This will be '1', '2', or '3'
+                                    el.advancedEffect[`color${colorNum}`] = e.target.value;
+                                    break;
+                                case 'effectDistance':
+                                    el.advancedEffect.distance = parseFloat(e.target.value);
+                                    break;
+                                case 'effectAngle':
+                                    el.advancedEffect.angle = parseFloat(e.target.value);
+                                    break;
+                                case 'effectGlowSize':
+                                    el.advancedEffect.glowSize = parseFloat(e.target.value);
+                                    break;
+                            }
+                        }
+                    } else if (match) {
+                        const prefix = match[1];
+                        const elementIndex = parseInt(match[2]) - 1;
+
+                        if (elementIndex >= 0 && textElements[elementIndex]) {
+
+                            switch (prefix) {
+                                // --- Existing Cases ---
+                                case 'text':
+                                    textElements[elementIndex].text = e.target.value;
+                                    break;
+                                case 'size':
+                                    textElements[elementIndex].size = parseFloat(e.target.value);
+                                    break;
+                                case 'color':
+                                    textElements[elementIndex].color = e.target.value;
+                                    updateColorPreviews();
+                                    break;
+                                case 'x':
+                                    textElements[elementIndex].x = parseFloat(e.target.value);
+                                    break;
+                                case 'y':
+                                    textElements[elementIndex].y = parseFloat(e.target.value);
+                                    break;
+                                
+                                // --- Stroke Cases ---
+                                case 'strokeColor':
+                                    textElements[elementIndex].strokeColor = e.target.value;
+                                    break;
+                                case 'strokeThickness':
+                                    textElements[elementIndex].strokeThickness = parseFloat(e.target.value);
+                                    break;
+
+                                // --- Background Cases ---
+                                case 'bgColor':
+                                    {
+                                        const newColorHex = e.target.value; // #RRGGBB
+                                        const currentAlpha = parseFloat(document.getElementById(`bgAlpha${elementIndex + 1}`).value) / 100;
+                                        const r = parseInt(newColorHex.slice(1, 3), 16);
+                                        const g = parseInt(newColorHex.slice(3, 5), 16);
+                                        const b = parseInt(newColorHex.slice(5, 7), 16);
+                                        textElements[elementIndex].bgColor = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`;
                                     }
-                                }
-                                break;
-                            case 'bgFullWidth': // For the checkbox
-                                textElements[elementIndex].bgFullWidth = e.target.checked;
-                                break;
-                            case 'bgPadding':
-                                textElements[elementIndex].bgPadding = parseFloat(e.target.value);
-                                break;
-
-                            // --- NEW: Shadow Cases ---
-                            case 'shadowEnabled': // For the checkbox
-                                textElements[elementIndex].shadowEnabled = e.target.checked;
-                                break;
-                            case 'shadowColor':
-                                {
-                                    const newColorHex = e.target.value;
-                                    const currentAlpha = parseFloat(document.getElementById(`shadowAlpha${elementIndex + 1}`).value) / 100;
-                                    const r = parseInt(newColorHex.slice(1, 3), 16);
-                                    const g = parseInt(newColorHex.slice(3, 5), 16);
-                                    const b = parseInt(newColorHex.slice(5, 7), 16);
-                                    textElements[elementIndex].shadowColor = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`;
-                                }
-                                break;
-                            case 'shadowAlpha':
-                                {
-                                    const newAlpha = parseFloat(e.target.value) / 100;
-                                    document.getElementById(`shadowAlphaValue${elementIndex + 1}`).textContent = `${Math.round(newAlpha * 100)}%`;
-                                    const rgbaMatch = textElements[elementIndex].shadowColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-                                    if (rgbaMatch) {
-                                        textElements[elementIndex].shadowColor = `rgba(${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]}, ${newAlpha})`;
-                                    } else {
-                                        const hexColor = document.getElementById(`shadowColor${elementIndex + 1}`).value;
-                                        const r = parseInt(hexColor.slice(1, 3), 16);
-                                        const g = parseInt(hexColor.slice(3, 5), 16);
-                                        const b = parseInt(hexColor.slice(5, 7), 16);
-                                        textElements[elementIndex].shadowColor = `rgba(${r}, ${g}, ${b}, ${newAlpha})`;
+                                    break;
+                                case 'bgAlpha':
+                                    {
+                                        const newAlpha = parseFloat(e.target.value) / 100;
+                                        document.getElementById(`bgAlphaValue${elementIndex + 1}`).textContent = `${Math.round(newAlpha * 100)}%`;
+                                        const rgbaMatch = textElements[elementIndex].bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+                                        if (rgbaMatch) {
+                                            textElements[elementIndex].bgColor = `rgba(${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]}, ${newAlpha})`;
+                                        } else {
+                                            const hexColor = document.getElementById(`bgColor${elementIndex + 1}`).value;
+                                            const r = parseInt(hexColor.slice(1, 3), 16);
+                                            const g = parseInt(hexColor.slice(3, 5), 16);
+                                            const b = parseInt(hexColor.slice(5, 7), 16);
+                                            textElements[elementIndex].bgColor = `rgba(${r}, ${g}, ${b}, ${newAlpha})`;
+                                        }
                                     }
-                                }
-                                break;
-                            case 'shadowBlur':
-                                textElements[elementIndex].shadowBlur = parseFloat(e.target.value);
-                                break;
-                            case 'shadowOffsetX':
-                                textElements[elementIndex].shadowOffsetX = parseFloat(e.target.value);
-                                break;
-                            case 'shadowOffsetY':
-                                textElements[elementIndex].shadowOffsetY = parseFloat(e.target.value);
-                                break;
+                                    break;
+                                case 'bgFullWidth': // For the checkbox
+                                    textElements[elementIndex].bgFullWidth = e.target.checked;
+                                    break;
+                                case 'bgPadding':
+                                    textElements[elementIndex].bgPadding = parseFloat(e.target.value);
+                                    break;
+
+                                // --- NEW: Shadow Cases ---
+                                case 'shadowEnabled': // For the checkbox
+                                    textElements[elementIndex].shadowEnabled = e.target.checked;
+                                    break;
+                                case 'shadowColor':
+                                    {
+                                        const newColorHex = e.target.value;
+                                        const currentAlpha = parseFloat(document.getElementById(`shadowAlpha${elementIndex + 1}`).value) / 100;
+                                        const r = parseInt(newColorHex.slice(1, 3), 16);
+                                        const g = parseInt(newColorHex.slice(3, 5), 16);
+                                        const b = parseInt(newColorHex.slice(5, 7), 16);
+                                        textElements[elementIndex].shadowColor = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`;
+                                    }
+                                    break;
+                                case 'shadowAlpha':
+                                    {
+                                        const newAlpha = parseFloat(e.target.value) / 100;
+                                        document.getElementById(`shadowAlphaValue${elementIndex + 1}`).textContent = `${Math.round(newAlpha * 100)}%`;
+                                        const rgbaMatch = textElements[elementIndex].shadowColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+                                        if (rgbaMatch) {
+                                            textElements[elementIndex].shadowColor = `rgba(${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]}, ${newAlpha})`;
+                                        } else {
+                                            const hexColor = document.getElementById(`shadowColor${elementIndex + 1}`).value;
+                                            const r = parseInt(hexColor.slice(1, 3), 16);
+                                            const g = parseInt(hexColor.slice(3, 5), 16);
+                                            const b = parseInt(hexColor.slice(5, 7), 16);
+                                            textElements[elementIndex].shadowColor = `rgba(${r}, ${g}, ${b}, ${newAlpha})`;
+                                        }
+                                    }
+                                    break;
+                                case 'shadowBlur':
+                                    textElements[elementIndex].shadowBlur = parseFloat(e.target.value);
+                                    break;
+                                case 'shadowOffsetX':
+                                    textElements[elementIndex].shadowOffsetX = parseFloat(e.target.value);
+                                    break;
+                                case 'shadowOffsetY':
+                                    textElements[elementIndex].shadowOffsetY = parseFloat(e.target.value);
+                                    break;
+                                case 'fontFamily':
+                                    el.fontFamily = e.target.value;
+                                    break;
+                                case 'advancedEffectType':
+                                    el.advancedEffect.type = e.target.value;
+                                    updateFxControlsVisibility(elementIndex);
+                                    break;
+                                case 'effectColor1_':
+                                    el.advancedEffect.color1 = e.target.value;
+                                    break;
+                                case 'effectColor2_':
+                                    el.advancedEffect.color2 = e.target.value;
+                                    break;
+                                case 'effectColor3_':
+                                    el.advancedEffect.color3 = e.target.value;
+                                    break;
+                                case 'effectDistance':
+                                    el.advancedEffect.distance = parseFloat(e.target.value);
+                                    break;
+                                case 'effectAngle':
+                                    el.advancedEffect.angle = parseFloat(e.target.value);
+                                    break;
+                                case 'effectGlowSize':
+                                    el.advancedEffect.glowSize = parseFloat(e.target.value);
+                                    break;
                         }
                     }
                 }
@@ -1195,19 +1395,41 @@
         }
         function addObject(type, options = {}) {
             objectIdCounter++;
-            const newObject = {
-                id: objectIdCounter,
-                type: type,
-                x: canvas.width / 2,
-                y: canvas.height / 2,
-                width: 300,
-                height: 300,
-                rotation: 0,
-                // Default styles
-                stroke: '#000000',
-                strokeWidth: 5,
-                shadow: { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 },
-                ...options // Overwrite defaults with specific options from the button click
+            let newObject;
+
+            if (type === 'text') {
+                // Create a text object with the full, consistent data structure
+                newObject = {
+                    id: objectIdCounter,
+                    type: 'text',
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    width: 500, // Set a default width for selection box
+                    height: 200, // Set a default height for selection box
+                    rotation: 0,
+                    text: 'New Text',
+                    size: 100,
+                    align: 'center',
+                    wrap: false,
+                    // Apply all style properties from the options (passed from the preset)
+                    ...options
+                };
+            } else {
+                // Your existing logic for shapes and images
+                newObject = {
+                    id: objectIdCounter,
+                    type: type,
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    width: 300,
+                    height: 300,
+                    rotation: 0,
+                    stroke: '#000000',
+                    strokeWidth: 5,
+                    shadow: { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 },
+                    ...options
+                };
+
             };
 
             // Type-specific defaults
@@ -1290,143 +1512,54 @@
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
             }
 
-            textElements.forEach((el, index) => {
-                const text = el.text || document.getElementById(el.inputId).value;
-                const color = el.color || document.getElementById(el.colorId).value;
-                const size = parseFloat(el.size || document.getElementById(el.sizeId).value); // Ensure size is a number
-                const xPos = el.x;
-                const yPos = el.y; // This Y is now the TOP of the text
-                const alignment = el.align;
-                const strokeColor = el.strokeColor;
-                const strokeThickness = el.strokeThickness;
-                const bgColor = el.bgColor; // This is now rgba string
-                const bgFullWidth = el.bgFullWidth;
-                const bgPadding = el.bgPadding;
-                const shadowEnabled = el.shadowEnabled;
-                const shadowColor = el.shadowColor;
-                const shadowBlur = el.shadowBlur;
-                const shadowOffsetX = el.shadowOffsetX;
-                const shadowOffsetY = el.shadowOffsetY;
+            textElements.forEach((el) => {
+                // Set font for measurement
+                ctx.font = `bold ${el.size}px ${el.fontFamily}`;
+                ctx.textBaseline = 'top'; // Use 'top' for background calculation
+                ctx.textAlign = el.align;
 
-                ctx.font = `bold ${size}px "Berlin Sans FB Demi Bold"`;
-                ctx.textAlign = alignment;
-                ctx.textBaseline = 'top'; // CHANGED FROM 'middle' to 'top'
+                const lineHeight = el.size * 1.2;
+                const lines = el.wrap ? wrapText(ctx, el.text, el.x, el.y, canvas.width * 0.9, lineHeight) : [el.text];
 
-
-                const lineHeight = size * 1.2; // Recalculate line height based on actual size
-
-                // --- 1. Draw Text Background (if any) ---
-                if (bgColor !== 'rgba(255,255,255,0)' && !bgColor.endsWith(', 0)')) { // Check if not fully transparent
-                    ctx.fillStyle = bgColor;
-                    let bgX, bgY, bgW, bgH;
+                // --- Draw Text Background (if enabled) ---
+                // This is the "more robust" logic from your original code, now correctly integrated.
+                if (el.bgColor && !el.bgColor.endsWith(', 0)')) {
                     let textBlockVisualWidth = 0;
-                    let textBlockVisualHeight = 0; // This will be the height of the actual text glyphs
+                    lines.forEach(line => {
+                        textBlockVisualWidth = Math.max(textBlockVisualWidth, ctx.measureText(line.trim()).width);
+                    });
 
-                    const lines = [];
-                    if (el.wrap) {
-                        let wrapMaxWidthCalc = canvas.width * 0.9; // Simplified for measurement
-                        if (alignment === 'left') wrapMaxWidthCalc = canvas.width - xPos - (canvas.width * 0.02);
-                        else if (alignment === 'right') wrapMaxWidthCalc = xPos - (canvas.width * 0.02);
-                        else wrapMaxWidthCalc = canvas.width * 0.8;
-                        wrapMaxWidthCalc = Math.max(50, wrapMaxWidthCalc);
-
-                        const wrappedLines = wrapText(ctx, text, xPos, yPos, wrapMaxWidthCalc, lineHeight);
-                        wrappedLines.forEach(line => {
-                            lines.push(line.trim());
-                            textBlockVisualWidth = Math.max(textBlockVisualWidth, ctx.measureText(line.trim()).width);
-                        });
-                        // For height, it's number of lines * font size, plus (n-1)*leading
-                        // A simpler approximation for visual height:
-                        textBlockVisualHeight = lines.length * size;
-                        if (lines.length > 1) {
-                            textBlockVisualHeight += (lines.length - 1) * (lineHeight - size); // Add inter-line spacing
-                        }
-
-                    } else {
-                        lines.push(text);
-                        textBlockVisualWidth = ctx.measureText(text).width;
-                        textBlockVisualHeight = size; // For a single line, visual height is approx. the font size
+                    // For height, it's number of lines * font size, plus (n-1)*leading
+                    // A simpler approximation for visual height:
+                    let textBlockVisualHeight = lines.length * el.size;
+                    if (lines.length > 1) {
+                        textBlockVisualHeight += (lines.length - 1) * (lineHeight - el.size); // Add inter-line spacing
                     }
-                    
-                    // Ensure minimum dimensions if text is empty but background is on
-                    if (text.trim() === "") {
-                        textBlockVisualWidth = size / 2; // Arbitrary small width for empty text
-                        textBlockVisualHeight = size;
+                    if (el.text.trim() === "") {
+                        textBlockVisualWidth = el.size / 2;
+                        textBlockVisualHeight = el.size;
                     }
 
-
-                    if (bgFullWidth) {
+                    let bgX, bgY, bgW, bgH;
+                    if (el.bgFullWidth) {
                         bgX = 0;
                         bgW = canvas.width;
-                        // yPos is the top of the text. Background Y starts padding amount above it.
-                        bgY = yPos - bgPadding;
-                        // Background height is text visual height + padding on top & bottom.
-                        bgH = textBlockVisualHeight + (bgPadding * 2);
+                        bgY = el.y - el.bgPadding;
+                        bgH = textBlockVisualHeight + (el.bgPadding * 2);
                     } else {
-                        if (alignment === 'left')    bgX = xPos - bgPadding;
-                        else if (alignment === 'right') bgX = xPos - textBlockVisualWidth - bgPadding;
-                        else /* center */            bgX = xPos - (textBlockVisualWidth / 2) - bgPadding;
-                        
-                        bgY = yPos - bgPadding;
-                        bgW = textBlockVisualWidth + (bgPadding * 2);
-                        bgH = textBlockVisualHeight + (bgPadding * 2);
+                        if (el.align === 'left') bgX = el.x - el.bgPadding;
+                        else if (el.align === 'right') bgX = el.x - textBlockVisualWidth - el.bgPadding;
+                        else /* center */ bgX = el.x - (textBlockVisualWidth / 2) - el.bgPadding;
+
+                        bgY = el.y - el.bgPadding;
+                        bgW = textBlockVisualWidth + (el.bgPadding * 2);
+                        bgH = textBlockVisualHeight + (el.bgPadding * 2);
                     }
+                    ctx.fillStyle = el.bgColor;
                     ctx.fillRect(bgX, bgY, bgW, bgH);
                 }
 
-                if (shadowEnabled) {
-                    ctx.shadowColor = shadowColor;
-                    ctx.shadowBlur = shadowBlur;
-                    ctx.shadowOffsetX = shadowOffsetX;
-                    ctx.shadowOffsetY = shadowOffsetY;
-                }
-
-
-                if (el.wrap) {
-                    let wrapMaxWidth = canvas.width * 0.9;
-                    if (alignment === 'left') {
-                        wrapMaxWidth = canvas.width - xPos - (canvas.width * 0.02);
-                    } else if (alignment === 'right') {
-                        wrapMaxWidth = xPos - (canvas.width * 0.02);
-                    } else {
-                        wrapMaxWidth = canvas.width * 0.8;
-                    }
-                    wrapMaxWidth = Math.max(50, wrapMaxWidth);
-
-                    // Pass yPos directly as the starting Y for the first line.
-                    // wrapText itself doesn't need to know about baseline, it just returns lines of text.
-                    const wrappedLines = wrapText(ctx, text, xPos, yPos, wrapMaxWidth, lineHeight);
-                    
-                    // Since textBaseline is 'top', yPos is already the top of the first line.
-                    // We just iterate and increment Y for subsequent lines.
-                    wrappedLines.forEach((textLine, lineIndex) => {
-                        const currentY = yPos + (lineIndex * lineHeight);
-                        if (strokeThickness > 0) {
-                            ctx.strokeStyle = strokeColor;
-                            ctx.lineWidth = strokeThickness;
-                            ctx.strokeText(textLine.trim(), xPos, currentY);
-                        }
-                        ctx.fillStyle = color;
-                        ctx.fillText(textLine.trim(), xPos, currentY);
-                    });
-                } else {
-                    // Single line text, yPos is its top
-                    if (strokeThickness > 0) {
-                        ctx.strokeStyle = strokeColor;
-                        ctx.lineWidth = strokeThickness;
-                        ctx.strokeText(text, xPos, yPos);
-                    }
-                    ctx.fillStyle = color;
-                    ctx.fillText(text, xPos, yPos);
-                }
-                if (shadowEnabled) {
-                    ctx.shadowColor = 'transparent';
-                    ctx.shadowBlur = 0;
-                    ctx.shadowOffsetX = 0;
-                    ctx.shadowOffsetY = 0;
-                }
-
-
+                drawTextWithEffect(ctx, el, lines);
 
             });
             // PASTE THIS CODE BLOCK into drawThumbnail()
@@ -1434,26 +1567,20 @@
             // 3. Draw All Canvas Objects
             canvasObjects.forEach(obj => {
                 ctx.save();
-                // Apply shadow if enabled
-                if (obj.shadow && obj.shadow.enabled) {
-                    ctx.shadowColor = obj.shadow.color;
-                    ctx.shadowBlur = obj.shadow.blur;
-                    ctx.shadowOffsetX = obj.shadow.offsetX;
-                    ctx.shadowOffsetY = obj.shadow.offsetY;
-                }
-                
-                // Translate and rotate for all objects
                 ctx.translate(obj.x, obj.y);
                 ctx.rotate(obj.rotation * Math.PI / 180);
 
-                // Call the correct drawing function based on type
                 switch (obj.type) {
                     case 'shape': drawShape(obj); break;
                     case 'image': drawImageObject(obj); break;
-                    case 'text': drawTextSnippet(obj); break;
+                    case 'text':
+                        // For text snippets, we don't have pre-calculated lines, so we pass the object directly.
+                        drawTextWithEffect(ctx, obj);
+                        break;
                 }
                 ctx.restore();
             });
+
 
             // 5. Draw Selection Handles (if not for download)
             if (selectedObjectIndex > -1) {
@@ -1502,7 +1629,96 @@
         }
 
 
-        // PASTE THIS ENTIRE BLOCK of new functions into script.js
+        function drawTextWithEffect(ctx, el, precalculatedLines = null) {
+            // --- Setup ---
+            const text = el.text || '';
+            const size = el.size || 100;
+            const xPos = el.x;
+            const yPos = el.y;
+            const alignment = el.align || 'center';
+            const fontFamily = el.fontFamily || "'Berlin Sans FB Demi Bold', sans-serif";
+
+            ctx.font = `bold ${size}px ${fontFamily}`;
+            ctx.textAlign = alignment;
+            ctx.textBaseline = 'top'; // Use 'top' for consistency with background calculation
+
+            const lineHeight = size * 1.2;
+            // Use pre-calculated lines if provided, otherwise calculate them now (for snippets)
+            const lines = precalculatedLines || (el.wrap ? wrapText(ctx, text, xPos, yPos, canvas.width * 0.9, lineHeight) : [text]);
+
+            // Function to draw the text lines, used by all effects
+            const drawLines = (drawFunc) => {
+                lines.forEach((line, index) => {
+                    const currentY = yPos + (index * lineHeight);
+                    drawFunc(line.trim(), xPos, currentY);
+                });
+            };
+
+            // --- Layer 1: Advanced Effects ---
+            const effect = el.advancedEffect;
+            if (effect && effect.type !== 'none') {
+                ctx.save(); // Save context before applying complex effects
+
+                switch (effect.type) {
+                    case 'neon':
+                        ctx.shadowColor = effect.color2; // Outer glow
+                        ctx.shadowBlur = effect.glowSize * 1.5;
+                        drawLines((txt, x, y) => ctx.strokeText(txt, x, y));
+                        
+                        ctx.shadowColor = effect.color1; // Inner glow
+                        ctx.shadowBlur = effect.glowSize * 0.75;
+                        drawLines((txt, x, y) => ctx.strokeText(txt, x, y));
+                        break;
+
+                    case 'splice':
+                    case 'echo':
+                        const angleRad = effect.angle * (Math.PI / 180);
+                        const dx = Math.cos(angleRad) * effect.distance;
+                        const dy = Math.sin(angleRad) * effect.distance;
+                        
+                        if (effect.type === 'echo') {
+                            ctx.fillStyle = effect.color1;
+                            drawLines((txt, x, y) => ctx.fillText(txt, x + (dx / 2), y + (dy / 2)));
+                        }
+                        ctx.fillStyle = effect.color2;
+                        drawLines((txt, x, y) => ctx.fillText(txt, x + dx, y + dy));
+                        break;
+
+                    case 'glitch':
+                        ctx.fillStyle = effect.color2;
+                        drawLines((txt, x, y) => ctx.fillText(txt, x - effect.distance, y));
+                        
+                        ctx.fillStyle = effect.color3;
+                        drawLines((txt, x, y) => ctx.fillText(txt, x + effect.distance, y));
+                        break;
+                }
+                ctx.restore(); // Restore context after effects
+              
+            }
+
+            // --- Layer 2: Standard Shadow ---
+            if (el.shadowEnabled) {
+                ctx.shadowColor = el.shadowColor;
+                ctx.shadowBlur = el.shadowBlur;
+                ctx.shadowOffsetX = el.shadowOffsetX;
+                ctx.shadowOffsetY = el.shadowOffsetY;
+            }
+
+            // --- Layer 3: Main Text (Stroke and Fill) ---
+            if (el.strokeThickness > 0) {
+                ctx.strokeStyle = el.strokeColor;
+                ctx.lineWidth = el.strokeThickness;
+                drawLines((txt, x, y) => ctx.strokeText(txt, x, y));
+            }
+            ctx.fillStyle = el.color;
+            drawLines((txt, x, y) => ctx.fillText(txt, x, y));
+
+            // --- Cleanup ---
+            ctx.shadowColor = 'transparent';
+            ctx.shadowBlur = 0;
+            ctx.shadowOffsetX = 0;
+            ctx.shadowOffsetY = 0;
+        }    
 
 
 
@@ -1639,7 +1855,7 @@
             }
         }
 
-        function drawTextSnippet(obj) {
+        function drawTextSnippetold(obj) {
             ctx.font = `bold ${obj.size}px "${obj.font}"`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
@@ -1655,5 +1871,132 @@
             ctx.fillText(obj.text, 0, 0);
         }
 
+        function drawTextSnippet(obj) {
+            // Simply call the unified drawing function
+            drawTextWithEffect(ctx, obj);
+        }
+
         // PASTE THIS LINE at the very end of script.js
 document.getElementById('object-properties-panel').addEventListener('input', handleObjectPropertyChange);
+
+
+
+        // --- AI Image Generation Functions ---
+        let lastGeneratedImageUrl = null;
+        let lastGeneratedSeed = null;
+
+        function showAiModal() { document.getElementById('ai-modal').style.display = 'flex'; }
+        function closeAiModal() { document.getElementById('ai-modal').style.display = 'none'; }
+
+        document.getElementById('ai-preset-prompts').addEventListener('change', (e) => {
+            if (e.target.value) {
+                document.getElementById('ai-prompt').value = e.target.value;
+            }
+        });
+        document.getElementById('ai-guidance').addEventListener('input', (e) => {
+            document.getElementById('ai-guidance-value').textContent = e.target.value;
+        });
+
+        async function generateAiImage() {
+            // The API key is no longer needed here!
+            const prompt = document.getElementById('ai-prompt').value;
+            if (!prompt) {
+                alert('Please provide a prompt.');
+                return;
+            }
+
+            const loader = document.getElementById('ai-loader');
+            const previewImg = document.getElementById('ai-preview-img');
+            const generateBtn = document.getElementById('ai-generate-btn');
+            const downloadBtn = document.getElementById('ai-download-btn');
+            const setBgBtn = document.getElementById('ai-set-bg-btn');
+
+            loader.style.display = 'block';
+            previewImg.style.display = 'none';
+            generateBtn.disabled = true;
+            downloadBtn.disabled = true;
+            setBgBtn.disabled = true;
+
+            const seedValue = document.getElementById('ai-seed').value;
+            const payload = {
+                prompt: prompt,
+                guidance_scale: parseFloat(document.getElementById('ai-guidance').value)
+            };
+            // Only include the seed if the user provided one
+            if (seedValue) {
+                payload.seed = parseInt(seedValue, 10);
+            }
+
+            try {
+                // IMPORTANT: Change this URL to point to your FastAPI server's address
+                const response = await fetch('https://desc-maker.shark-ray.ts.net/api/generate-image', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(payload)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(`API Error: ${errorData.detail || response.statusText}`);
+                }
+
+                // The server has already done the polling, so we get the final result directly.
+                const prediction = await response.json();
+
+                if (!prediction.output) {
+                    throw new Error('API did not return an image URL in the output field.');
+                }
+
+                lastGeneratedImageUrl = prediction.output;
+                lastGeneratedSeed = prediction.seed; // The server sends back the seed it used
+                previewImg.src = lastGeneratedImageUrl;
+                previewImg.style.display = 'block';
+                downloadBtn.disabled = false;
+                setBgBtn.disabled = false;
+
+            } catch (error) {
+                alert(`An error occurred: ${error.message}`);
+                console.error(error);
+            } finally {
+                loader.style.display = 'none';
+                generateBtn.disabled = false;
+            }
+        }
+
+        async function downloadAiImage() {
+            if (!lastGeneratedImageUrl) return;
+            const response = await fetch(lastGeneratedImageUrl);
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = `ai_img_seed_${lastGeneratedSeed}.png`;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        }
+
+        function setAiImageAsBackground() {
+            if (!lastGeneratedImageUrl) return;
+            const img = new Image();
+            img.crossOrigin = "anonymous"; // Important for loading from another domain
+            img.onload = () => {
+                currentImage = img;
+                // Reset zoom/pan and calculate cover zoom
+                const imageAspectRatio = img.width / img.height;
+                const canvasAspectRatio = canvas.width / canvas.height;
+                currentImageBaseCoverZoom = (imageAspectRatio > canvasAspectRatio) ? (canvas.height / img.height) : (canvas.width / img.width);
+                imageOffsetX = 0;
+                imageOffsetY = 0;
+                document.getElementById('imageZoomSlider').value = 100;
+                document.getElementById('zoomValue').textContent = '100%';
+                drawThumbnail();
+                closeAiModal();
+            };
+            img.onerror = () => alert('Failed to load image onto canvas.');
+            // Add a cache-busting query param
+            img.src = lastGeneratedImageUrl + `?t=${new Date().getTime()}`;
+        }
