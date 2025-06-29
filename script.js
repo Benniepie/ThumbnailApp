@@ -132,11 +132,11 @@
                     const previewTextElement = {
                         ...preset, // Copy all style properties from the preset
                         text: 'Style',
-                        size: 60,
+                        size: 50, // MODIFIED from 60 to 50 to prevent clipping
                         x: canvasEl.width / 2,
                         y: canvasEl.height / 2,
                         align: 'center'
-                    };
+                    };;
                     pCtx.fillStyle = '#333';
                     pCtx.fillRect(0, 0, canvasEl.width, canvasEl.height);
                     drawTextWithEffect(pCtx, previewTextElement);
@@ -166,31 +166,53 @@
             document.getElementById('snippet-modal').style.display = 'none';
         }
 
+        // REPLACE the entire selectSnippetStyle function
         function selectSnippetStyle(presetId) {
             activeSnippetStyleId = presetId;
+            const preset = stylePresets.find(p => p.id === activeSnippetStyleId);
+            if (!preset) return;
+
             const wordContainer = document.getElementById('snippet-word-choices');
             wordContainer.innerHTML = ''; // Clear old words
+
             snippetWords.forEach(word => {
-                const btn = document.createElement('button');
-                btn.className = 'preset-btn';
-                btn.textContent = word;
-                btn.onclick = () => addStyledSnippet(word);
-                wordContainer.appendChild(btn);
+                const previewCanvas = document.createElement('canvas');
+                previewCanvas.className = 'snippet-word-preview';
+                previewCanvas.width = 300; // Set a decent resolution
+                previewCanvas.height = 120;
+                previewCanvas.onclick = () => addStyledSnippet(word);
+                wordContainer.appendChild(previewCanvas);
+
+                const pCtx = previewCanvas.getContext('2d');
+                const previewTextElement = {
+                    ...preset,
+                    text: word,
+                    size: 70, // A good size for the preview canvas
+                    x: previewCanvas.width / 2,
+                    y: previewCanvas.height / 2,
+                    align: 'center'
+                };
+                
+                // This allows for vertical centering in the preview
+                pCtx.textBaseline = 'middle';
+                drawTextWithEffect(pCtx, previewTextElement);
             });
 
             document.getElementById('snippet-step1').style.display = 'none';
             document.getElementById('snippet-step2').style.display = 'block';
         }
 
+
+
+        // In function addStyledSnippet(word)
         function addStyledSnippet(word) {
             const preset = stylePresets.find(p => p.id === activeSnippetStyleId);
             if (!preset) return;
 
             const styleOptions = { ...preset, text: word, size: 150 };
             addObject('text', styleOptions);
-            closeSnippetModal();
+            closeSnippetModal(); // This line is added
         }
-
         function updateFxControlsVisibility(elementIndex) {
             const fxType = document.getElementById(`advancedEffectType${elementIndex + 1}`).value;
             const paramsContainer = document.getElementById(`fx-params${elementIndex + 1}`);
@@ -1640,7 +1662,8 @@
 
             ctx.font = `bold ${size}px ${fontFamily}`;
             ctx.textAlign = alignment;
-            ctx.textBaseline = 'top'; // Use 'top' for consistency with background calculation
+
+            ctx.textBaseline = ctx.textBaseline === 'middle' ? 'middle' : 'top';
 
             const lineHeight = size * 1.2;
             // Use pre-calculated lines if provided, otherwise calculate them now (for snippets)
