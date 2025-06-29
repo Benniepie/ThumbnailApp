@@ -442,17 +442,15 @@
 
                 let actualRenderedLines = [text];
                 if (el.wrap) {
-                    let wrapMaxWidth = canvas.width * 0.96;
-                    if (align === 'left') wrapMaxWidth = canvas.width - x - (canvas.width * 0.02);
-                    else if (align === 'right') wrapMaxWidth = x - (canvas.width * 0.02);
-                    else wrapMaxWidth = canvas.width * 0.96;
-                    wrapMaxWidth = Math.max(50, wrapMaxWidth);
-                    actualRenderedLines = wrapText(ctx, text, x, y, wrapMaxWidth, lineHeight);
-                    // For wrapped text, the width might be the wrapMaxWidth or the longest line
+                    // Use the centralized wrapText function for consistency
+                    actualRenderedLines = wrapText(ctx, text, x, y, canvas.width * 0.96, lineHeight, align, x, canvas.width);
                     textWidth = 0;
                     actualRenderedLines.forEach(line => {
                         textWidth = Math.max(textWidth, ctx.measureText(line.trim()).width);
                     });
+                } else {
+                     // If not wrapped, textWidth is just the width of the single line.
+                    textWidth = ctx.measureText(text).width;
                 }
                 
                 const textHeight = actualRenderedLines.length * lineHeight;
@@ -1494,17 +1492,33 @@
         }
 
 
-        function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+        function wrapText(ctx, text, x, y, maxWidth, lineHeight, align = 'center', elementX = x, canvasWidth = 1920) {
             const words = text.split(' ');
             let line = '';
             const lines = [];
+            let effectiveMaxWidth = maxWidth;
+            const padding = canvasWidth * 0.02; // 2% padding from canvas edges
+
+            if (align === 'left') {
+                effectiveMaxWidth = canvasWidth - elementX - padding;
+            } else if (align === 'right') {
+                effectiveMaxWidth = elementX - padding;
+            } else { // center or unspecified
+                // For center, we might still want to constrain it if x is near an edge,
+                // but the primary constraint is often the passed maxWidth (e.g. canvas.width * 0.96)
+                // If elementX is very close to an edge, this could be min(elementX - padding, canvasWidth - elementX - padding) * 2
+                // However, simple maxWidth usually works well for centered text that's not meant to span full width.
+                // Let's use the provided maxWidth, but ensure it's not excessively large if x is near edge.
+                effectiveMaxWidth = Math.min(maxWidth, canvasWidth - 2 * padding);
+            }
+            effectiveMaxWidth = Math.max(50, effectiveMaxWidth); // Ensure a minimum wrapping width
 
             for(let n = 0; n < words.length; n++) {
                 const testLine = line + words[n] + ' ';
                 const metrics = ctx.measureText(testLine);
                 const testWidth = metrics.width;
 
-                if (testWidth > maxWidth && n > 0) {
+                if (testWidth > effectiveMaxWidth && n > 0) {
                     lines.push(line);
                     line = words[n] + ' ';
                 } else {
@@ -1550,6 +1564,34 @@
                 ctx.filter = 'none';
             }
 
+            // --- Draw Alignment Guides (if enabled) ---
+            ctx.save();
+            ctx.lineWidth = 1;
+            ctx.setLineDash([5, 5]); // Dashed lines for guides
+
+            // Rule of Thirds
+            if (document.getElementById('overlay-thirds') && document.getElementById('overlay-thirds').checked) {
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.7)'; // Semi-transparent white
+                const thirdW = canvas.width / 3;
+                const thirdH = canvas.height / 3;
+                ctx.beginPath();
+                ctx.moveTo(thirdW, 0); ctx.lineTo(thirdW, canvas.height);
+                ctx.moveTo(thirdW * 2, 0); ctx.lineTo(thirdW * 2, canvas.height);
+                ctx.moveTo(0, thirdH); ctx.lineTo(canvas.width, thirdH);
+                ctx.moveTo(0, thirdH * 2); ctx.lineTo(canvas.width, thirdH * 2);
+                ctx.stroke();
+            }
+
+            // Center Lines
+            if (document.getElementById('overlay-center') && document.getElementById('overlay-center').checked) {
+                ctx.strokeStyle = 'rgba(255, 0, 0, 0.7)'; // Semi-transparent red for center
+                ctx.beginPath();
+                ctx.moveTo(canvas.width / 2, 0); ctx.lineTo(canvas.width / 2, canvas.height);
+                ctx.moveTo(0, canvas.height / 2); ctx.lineTo(canvas.width, canvas.height / 2);
+                ctx.stroke();
+            }
+            ctx.restore(); // Restore line dash and stroke style
+
             textElements.forEach((el) => {
                 // Set font for measurement
                 ctx.font = `bold ${el.size}px ${el.fontFamily}`;
@@ -1557,7 +1599,8 @@
                 ctx.textAlign = el.align;
 
                 const lineHeight = el.size * 1.2;
-                const lines = el.wrap ? wrapText(ctx, el.text, el.x, el.y, canvas.width * 0.9, lineHeight) : [el.text];
+                // Pass align and x position to wrapText
+                const lines = el.wrap ? wrapText(ctx, el.text, el.x, el.y, canvas.width * 0.96, lineHeight, el.align, el.x, canvas.width) : [el.text];
 
                 // --- Draw Text Background (if enabled) ---
                 // This is the "more robust" logic from your original code, now correctly integrated.
@@ -1683,7 +1726,8 @@
 
             const lineHeight = size * 1.2;
             // Use pre-calculated lines if provided, otherwise calculate them now (for snippets)
-            const lines = precalculatedLines || (el.wrap ? wrapText(ctx, text, xPos, yPos, canvas.width * 0.9, lineHeight) : [text]);
+            // For snippets (where precalculatedLines is null), pass alignment and x position from 'el'
+            const lines = precalculatedLines || (el.wrap ? wrapText(ctx, text, xPos, yPos, canvas.width * 0.96, lineHeight, el.align, el.x, canvas.width) : [text]);
 
             // Function to draw the text lines, used by all effects
             const drawLines = (drawFunc) => {
