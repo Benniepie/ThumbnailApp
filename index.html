@@ -289,7 +289,7 @@
                     <div class="text-input">
                         <input type="text" id="text1" value="UKRAINE WAR" placeholder="Text Line 1">
                         <div class="color-input-container">
-                            <input type="color" id="color1" value="#0000ff">
+                            <input type="color" id="color1" value="#4B4BE2">
                             <div class="color-preview" id="preview1"></div>
                         </div>
                         <input type="number" id="size1" value="160" min="10" max="200">
@@ -572,11 +572,13 @@
                 <div class="text-input-group">
                     <div class="text-input">
                         <textarea id="text4" placeholder="Text Line 4">HITS, STRIKES, LOSSES, OTHER</textarea>
-                        <div class="color-input-container">
-                            <input type="color" id="color4" value="#ff0000">
-                            <div class="color-preview" id="preview4"></div>
+                        <div class="text-input-rhs-controls"> <!-- New wrapper for color and size -->
+                            <div class="color-input-container">
+                                <input type="color" id="color4" value="#ff0000">
+                                <div class="color-preview" id="preview4"></div>
+                            </div>
+                            <input type="number" id="size4" value="100" min="10" max="200">
                         </div>
-                        <input type="number" id="size4" value="100" min="10" max="200">
                     </div>
                     <div class="toggle-controls-container">
                         <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos4')">Position</button>

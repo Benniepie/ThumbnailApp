@@ -42,6 +42,33 @@ body.dark-mode { background-color: #1a1a1a; color: #e0e0e0; }
 .panel-section h2 { margin-top: 0; margin-bottom: 15px; font-size: 1.1em; color: #007bff; border-bottom: 1px solid #eee; padding-bottom: 8px; }
 .dark-mode .panel-section h2 { color: #4dabf7; border-bottom-color: #444; }
 
+/* Opacity Control Styling (for sliders in right panel) */
+.opacity-control {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Space between label, slider, and value */
+    margin-bottom: 10px; /* Space between each slider group */
+}
+
+.opacity-control label {
+    flex-basis: 100px; /* Give labels a consistent width */
+    flex-shrink: 0; /* Prevent labels from shrinking */
+    font-size: 14px;
+}
+
+.opacity-control input[type="range"] {
+    flex-grow: 1; /* Allow slider to take available space */
+    margin: 0; /* Remove default margins if any */
+}
+
+.opacity-control span {
+    flex-basis: 50px; /* Fixed width for the percentage display */
+    flex-shrink: 0; /* Prevent span from shrinking */
+    text-align: right;
+    font-size: 14px;
+}
+
+
 /* Center Panel & Canvas */
 .canvas-controls { display: flex; gap: 10px; margin-bottom: 15px; }
 .canvas-container { flex-grow: 1; display: flex; align-items: center; justify-content: center; background: #e0e0e0; border-radius: 8px; padding: 10px; }
@@ -94,8 +121,84 @@ input[type="text"], input[type="password"], input[type="number"], textarea, sele
             background: white;
             margin: 2px;
         }
-.text-input-group { border: 1px solid #e0e0e0; border-radius: 5px; padding: 10px; margin-bottom: 10px; }
+
+/* Text Input Styling in Left Panel */
+.text-input-group {
+    border: 1px solid #e0e0e0;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+}
 .dark-mode .text-input-group { border-color: #444; }
+
+.text-input {
+    display: flex;
+    align-items: center; /* Vertically align items in the middle */
+    gap: 8px; /* Space between text input, color picker, and size input */
+    margin-bottom: 8px; /* Space below the main input row */
+}
+
+.text-input input[type="text"],
+.text-input textarea {
+    flex-grow: 1; /* Text input/area takes up available space */
+    margin-right: auto; /* Pushes other elements to the right if needed, though gap helps */
+}
+
+.text-input .color-input-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 0; /* Remove padding if color picker itself has it */
+    height: 36px; /* Match typical input height */
+}
+.dark-mode .text-input .color-input-container { border-color: #555; }
+
+.text-input .color-input-container input[type="color"] {
+    width: 30px; /* Compact color picker */
+    height: 30px;
+    border: none;
+    padding: 0; /* Remove default padding */
+    margin: 3px; /* Center it within the container */
+    cursor: pointer;
+}
+
+.text-input .color-preview {
+    width: 20px;
+    height: 20px;
+    border-left: 1px solid #ccc; /* Separator */
+    margin-left: 5px;
+}
+.dark-mode .text-input .color-preview { border-left-color: #555; }
+
+
+.text-input input[type="number"] {
+    width: 70px; /* Fixed width for size input */
+    flex-shrink: 0; /* Prevent shrinking */
+}
+
+/* Specific for Line 4 (textarea) right-hand-side controls */
+.text-input textarea {
+    min-height: 60px; /* Give textarea some default height */
+    align-self: stretch; /* Make textarea fill height if other items in flex row are taller */
+}
+
+.text-input-rhs-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 5px; /* Space between color picker and size input when stacked */
+    align-items: flex-start; /* Align items to the start (left) */
+}
+
+.text-input-rhs-controls .color-input-container,
+.text-input-rhs-controls input[type="number"] {
+    width: auto; /* Allow them to take their natural width or defined width */
+}
+.text-input-rhs-controls input[type="number"] {
+     width: 100%; /* Make number input take full width of its small column */
+}
+
+
 .toggle-controls-container { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 10px; }
 .toggle-btn { flex-grow: 1; background-color: #6c757d; font-size: 12px; padding: 6px; }
 .toggle-btn.active { background-color: #007bff; }
