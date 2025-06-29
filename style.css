@@ -164,12 +164,13 @@ input[type="text"], input[type="password"], input[type="number"], textarea, sele
 }
 
 .text-input .color-preview {
-    width: 20px;
-    height: 20px;
-    border-left: 1px solid #ccc; /* Separator */
-    margin-left: 5px;
+    /* width: 20px; */
+    /* height: 20px; */
+    /* border-left: 1px solid #ccc; */ /* Separator */
+    /* margin-left: 5px; */
+    display: none; /* Hide the extra preview div */
 }
-.dark-mode .text-input .color-preview { border-left-color: #555; }
+.dark-mode .text-input .color-preview { /* border-left-color: #555; */ }
 
 
 .text-input input[type="number"] {
@@ -205,6 +206,32 @@ input[type="text"], input[type="password"], input[type="number"], textarea, sele
 .collapsible-controls { max-height: 0; overflow: hidden; transition: all 0.3s ease-out; background-color: #f8f9fa; border-radius: 4px; margin-top: 5px; }
 .dark-mode .collapsible-controls { background-color: #3a3a3a; }
 .collapsible-controls.show { max-height: 200px; padding: 10px; }
+
+/* Styling for X, Y, L, C, R buttons in position controls */
+.text-position-controls {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap; /* Allow wrapping if space is too tight, though unlikely for these few items */
+}
+
+.text-position-controls label {
+    display: flex; /* Align label text and input nicely */
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+}
+
+.text-position-controls .pos-input {
+    width: 60px; /* Smaller width for X, Y inputs */
+    padding: 6px;
+}
+
+.text-position-controls .align-btn {
+    padding: 6px 10px;
+    font-size: 12px;
+    min-width: 30px; /* Ensure buttons have a decent click area */
+}
       
         .logo-controls-container {
             border-top: 2px solid #eee;

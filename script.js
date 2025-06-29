@@ -89,12 +89,25 @@
             setLayout(1); // Sets initial layout, text, positions, and calls drawThumbnail
             populateStylePresets(); // Draw the preset previews
 
+            // Default to dark mode
+            if (!document.body.classList.contains('dark-mode')) {
+                toggleTheme(); // This function adds the class and calls drawThumbnail
+            } else {
+                drawThumbnail(); // Ensure canvas is drawn if already in dark mode initially
+            }
+
         }).catch(function(error) {
             console.error("A font could not be loaded: ", error);
             // Still try to run the app
             updateColorPreviews();
             setLayout(1);
             populateStylePresets();
+            // Default to dark mode even if fonts fail
+            if (!document.body.classList.contains('dark-mode')) {
+                toggleTheme();
+            } else {
+                drawThumbnail();
+            }
         });
 
         
@@ -1607,7 +1620,8 @@
                 if (el.bgColor && !el.bgColor.endsWith(', 0)')) {
                     let textBlockVisualWidth = 0;
                     lines.forEach(line => {
-                        textBlockVisualWidth = Math.max(textBlockVisualWidth, ctx.measureText(line.trim()).width);
+                        // Measure without trim for background width to include spaces
+                        textBlockVisualWidth = Math.max(textBlockVisualWidth, ctx.measureText(line).width);
                     });
 
                     // For height, it's number of lines * font size, plus (n-1)*leading
