@@ -1123,6 +1123,15 @@
                     document.getElementById('opacityValue').textContent = e.target.value + '%';
                 } else if (targetId === 'imageZoomSlider') {
                     document.getElementById('zoomValue').textContent = e.target.value + '%';
+                } else if (targetId === 'bg-brightness') {
+                    backgroundImageState.brightness = e.target.value;
+                    document.getElementById('bg-brightness-value').textContent = e.target.value + '%';
+                } else if (targetId === 'bg-contrast') {
+                    backgroundImageState.contrast = e.target.value;
+                    document.getElementById('bg-contrast-value').textContent = e.target.value + '%';
+                } else if (targetId === 'bg-saturate') {
+                    backgroundImageState.saturate = e.target.value;
+                    document.getElementById('bg-saturate-value').textContent = e.target.value + '%';
                 }
 
                 if (redrawNeeded) {
@@ -1516,6 +1525,10 @@
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if (currentImage) {
+                // Apply brightness, contrast, and saturation filters
+                const filters = `brightness(${backgroundImageState.brightness}%) contrast(${backgroundImageState.contrast}%) saturate(${backgroundImageState.saturate}%)`;
+                ctx.filter = filters;
+
                 // ... (image drawing logic - no changes here) ...
                 const sliderValue = parseFloat(document.getElementById('imageZoomSlider').value);
                 const sliderZoomFactor = sliderValue / 100;
@@ -1532,6 +1545,9 @@
                 const brightnessOpacity = (100 - document.getElementById('imageOpacity').value) / 100;
                 ctx.fillStyle = `rgba(255, 255, 255, ${brightnessOpacity})`;
                 ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Reset filters so they don't affect text and other elements
+                ctx.filter = 'none';
             }
 
             textElements.forEach((el) => {
