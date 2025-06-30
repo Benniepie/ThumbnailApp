@@ -1,14 +1,39 @@
 // ADD THIS
         let activeSnippetStyleId = null; // For the two-step snippet adder
-        // Updated list of fonts to load locally
-        const localFontFamilies = [
-            { name: 'Bangers', path: 'fonts/Bangers-Regular.ttf' },
-            { name: 'Suez One', path: 'fonts/SuezOne-Regular.ttf' },
-            { name: 'VT323', path: 'fonts/VT323-Regular.ttf' },
-            { name: 'Bruno Ace SC', path: 'fonts/BrunoAceSC-Regular.ttf' },
-            { name: 'Oswald', path: 'fonts/Oswald-Regular.ttf' },
-            { name: 'Montserrat', path: 'fonts/Montserrat-Regular.ttf' }
+        // Updated list of fonts to load locally, based on user-provided list
+        const fontFileNames = [
+            "Abril Fatface.ttf", "Aclonica Regular.ttf", "Acme Regular.ttf", "ADLaM Display Regular.ttf", "Afacad Regular.ttf",
+            "Agbalumo Regular.ttf", "Akronim Regular.ttf", "Alata Regular.ttf", "Alexandria Regular.ttf", "Alfa Slab One Regular.ttf",
+            "Alkatra Regular.ttf", "Almendra Display Regular.ttf", "Alumni Sans Regular.ttf", "Amethysta Regular.ttf",
+            "Amiko Regular.ttf", "Annapurna SIL.ttf", "Anta Regular.ttf", "AR One Sans Regular.ttf", "Audiowide Regular.ttf",
+            "Bagel Fat One Regular.ttf", "Bakbak One Regular.ttf", "Bangers Regular.ttf", "Barriecito Regular.ttf",
+            "Barrio Regular.ttf", "Berkshire Swash Regular.ttf", "Black And White Picture Regular.ttf", "Black Ops One Regular.ttf",
+            "Blaka Hollow Regular.ttf", "Bonbon Regular.ttf", "BRLNSDB.woff", "Butcherman Regular.ttf", "Caesar Dressing.ttf",
+            "Chokokutai Regular.ttf", "Eater.ttf", "Emblema One.ttf", "Fascinate.ttf",
+            "Faster One Regular.ttf", "Federo.ttf", "Frijole.ttf", "Fugaz One.ttf", "Gabarito Regular.ttf", "Geostar Fill.ttf",
+            "Geostar.ttf", "Goblin One.ttf", "Gochi Hand.ttf", "Hachi Maru Pop Regular.ttf", "Hahmlet Regular.ttf",
+            "Hedvig Letters Sans Regular.ttf", "Hedvig Letters Serif 24pt Regular.ttf", "Honk Regular.ttf",
+            "Ingrid Darling Regular.ttf", "Jacquarda Bastarda 9 Regular.ttf", "Kablammo Regular.ttf", "Kalnia Regular.ttf",
+            "Kay Pho Du.ttf", "Kdam Thmor Pro Regular.ttf", "Kode Mono Regular.ttf", "Radio Canada Bold.ttf",
+            "Radio Canada Regular.ttf", "Roboto (2).ttf", "Roboto.ttf", "Stint Ultra Condensed.ttf",
+            "Stint Ultra Expanded.ttf", "Stoke Regular.ttf", "Strait Regular.ttf", "Style Script Regular.ttf",
+            "Stylish Regular.ttf", "Sue Ellen Francisco .ttf", "SuezOne-Regular.ttf", "Sulphur Point Regular.ttf",
+            "Sunshiney Regular.ttf", "Syncopate Regular.ttf", "Syne Tactile Regular.ttf", "Tilt Prism Regular.ttf",
+            "Tilt Warp Regular.ttf", "Unbounded Regular.ttf", "Uncial Antiqua.ttf", "Underdog.ttf", "Unica One Regular.ttf",
+            "UnifrakturCook.ttf", "UnifrakturMaguntia.ttf", "Urbanist Regular.ttf", "Vampiro One.ttf",
+            "Vast Shadow Regular.ttf", "Viaoda Libre Regular.ttf", "Vidaloka .ttf", "Vina Sans Regular.ttf",
+            "Vollkorn Regular.ttf", "Voltaire Regular.ttf", "VT323 Regular.ttf", "Wallpoet.ttf", "Walter Turncoat Regular.ttf",
+            "Wire One Regular.ttf", "Workbench Regular.ttf", "Young Serif Regular.ttf", "Zen Kaku Gothic Antique Regular.ttf",
+            "Zen Tokyo Zoo Regular.ttf", "Zhi Mang Xing Regular.ttf", "Zilla Slab.ttf"
+            // Note: "CmAppIcons.ttf", "CupertinoIcons.ttf" are likely icon fonts not for text use, so excluded.
+            // Bruno Ace SC was in old list but not new, so excluded for now based on new list.
         ];
+
+        const localFontFamilies = fontFileNames.map(filename => {
+            const nameWithoutExtension = filename.substring(0, filename.lastIndexOf('.'));
+            return { name: nameWithoutExtension, path: `fonts/${filename}` };
+        });
+
         const canvas = document.getElementById('thumbnailCanvas');
         const ctx = canvas.getContext('2d');
         // ADD THIS CODE AT THE TOP OF script.js
@@ -1648,3 +1673,50 @@ document.getElementById('object-properties-panel').addEventListener('input', han
             img.onerror = () => alert('Failed to load image onto canvas.');
             img.src = lastGeneratedImageUrl + `?t=${new Date().getTime()}`;
         }
+
+// --- Image Enlarge Modal Functions ---
+const enlargeImageModal = document.getElementById('enlarge-image-modal');
+const enlargedImageElement = document.getElementById('enlarged-image-element');
+const aiInputImagePreview = document.getElementById('ai-input-image-preview');
+const aiPreviewImg = document.getElementById('ai-preview-img');
+
+function openEnlargeImageModal(imageUrl) {
+    if (imageUrl && enlargeImageModal && enlargedImageElement) {
+        enlargedImageElement.src = imageUrl;
+        enlargeImageModal.style.display = 'flex';
+    }
+}
+
+function closeEnlargeImageModal() {
+    if (enlargeImageModal) {
+        enlargeImageModal.style.display = 'none';
+        if (enlargedImageElement) {
+            enlargedImageElement.src = ''; // Clear src to free memory
+        }
+    }
+}
+
+if (aiInputImagePreview) {
+    aiInputImagePreview.addEventListener('click', () => {
+        if (aiInputImagePreview.src && aiInputImagePreview.src !== '#' && !aiInputImagePreview.src.startsWith('data:image/gif')) { // Don't enlarge placeholder or loader
+            openEnlargeImageModal(aiInputImagePreview.src);
+        }
+    });
+}
+
+if (aiPreviewImg) {
+    aiPreviewImg.addEventListener('click', () => {
+        if (aiPreviewImg.src && aiPreviewImg.src !== '' && !aiPreviewImg.src.startsWith('data:image/gif')) { // Don't enlarge placeholder or loader
+            openEnlargeImageModal(aiPreviewImg.src);
+        }
+    });
+}
+
+// Close modal if user clicks on the overlay
+if (enlargeImageModal) {
+    enlargeImageModal.addEventListener('click', (event) => {
+        if (event.target === enlargeImageModal) { // Clicked on the overlay itself
+            closeEnlargeImageModal();
+        }
+    });
+}
