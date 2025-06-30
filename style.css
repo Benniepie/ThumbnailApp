@@ -3,8 +3,39 @@
     src: url('fonts/BRLNSDB.woff') format('woff');
     font-weight: bold; font-style: normal; font-display: swap;
 }
+@font-face {
+    font-family: 'Bangers';
+    src: url('fonts/Bangers-Regular.woff2') format('woff2');
+    font-weight: normal; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: 'Suez One';
+    src: url('fonts/SuezOne-Regular.woff2') format('woff2');
+    font-weight: normal; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: 'VT323';
+    src: url('fonts/VT323-Regular.woff2') format('woff2');
+    font-weight: normal; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: 'Bruno Ace SC';
+    src: url('fonts/BrunoAceSC-Regular.woff2') format('woff2');
+    font-weight: normal; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: 'Oswald';
+    src: url('fonts/Oswald-Regular.woff2') format('woff2');
+    font-weight: normal; font-style: normal; font-display: swap;
+}
+@font-face {
+    font-family: 'Montserrat';
+    src: url('fonts/Montserrat-Regular.woff2') format('woff2');
+    font-weight: normal; font-style: normal; font-display: swap;
+}
+
 body {
-    font-family: 'Arial', sans-serif;
+    font-family: "Twemoji Country Flags", 'Arial', sans-serif;
     margin: 0;
     background-color: #f0f0f0;
     color: #333;
@@ -77,7 +108,7 @@ canvas { max-width: 100%; max-height: 100%; object-fit: contain; border: 1px sol
 .dark-mode canvas { border-color: #555; }
 
 /* General UI Elements (Buttons, Inputs, etc.) */
-button, input, select, textarea { font-family: inherit; font-size: 14px; }
+button, input, select, textarea { font-family: "Twemoji Country Flags", inherit; font-size: 14px; }
 button { background-color: #007bff; color: white; padding: 8px 12px; border: none; border-radius: 4px; cursor: pointer; transition: background-color 0.2s; }
 button:hover { background-color: #0056b3; }
 button:disabled { background-color: #ccc; cursor: not-allowed; }
@@ -308,21 +339,87 @@ input[type="text"], input[type="password"], input[type="number"], textarea, sele
             border-color: #4d4d4d;
         }
 
+/* Styling for single-line Style Toggle (Stroke Color, Thickness) */
+div[id^="style"] > .text-style-controls {
+    display: flex;
+    justify-content: space-around; /* Distributes space around items */
+    align-items: center;
+    gap: 10px; /* Adds space between items */
+}
+
+div[id^="style"] > .text-style-controls label {
+    flex-basis: 45%; /* Give each label-input group roughly equal space */
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between label text and input */
+}
+
+div[id^="style"] > .text-style-controls input[type="color"] {
+    height: 30px; /* Consistent height */
+    padding: 2px; /* Small padding for color picker */
+}
+div[id^="style"] > .text-style-controls input[type="number"] {
+    padding: 6px; /* Consistent padding with other number inputs */
+    width: 70px; /* Fixed width */
+}
+
+/* Styling for two-line grid rows within text style controls */
+.text-style-grid-row {
+    display: flex;
+    justify-content: space-between; /* Distribute items along the line */
+    align-items: center;
+    gap: 10px; /* Space between items in a row */
+    margin-bottom: 8px; /* Space between rows */
+}
+.text-style-grid-row:last-child {
+    margin-bottom: 0; /* No margin for the last row in a group */
+}
+
+.text-style-grid-row label {
+    flex-grow: 1; /* Allow labels to take space */
+    display: flex;
+    align-items: center;
+    gap: 5px; /* Space between label text and its input */
+}
+.text-style-grid-row input[type="color"],
+.text-style-grid-row input[type="number"],
+.text-style-grid-row input[type="checkbox"],
+.text-style-grid-row input[type="range"] {
+    flex-grow: 2; /* Allow inputs to take more space than labels */
+    min-width: 50px; /* Ensure small inputs are still usable */
+}
+.text-style-grid-row input[type="checkbox"] {
+    flex-grow: 0; /* Checkboxes shouldn't grow too much */
+    width: auto;
+}
+
+
         /* Styles for the preset gallery */
         .preset-gallery {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-            gap: 10px;
+            /* Adjust minmax for potentially larger previews, e.g., min 120px, allow growth */
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px; /* Slightly reduced gap */
             padding-top: 10px;
+            padding-bottom: 10px; /* Add some padding at the bottom */
         }
+        .dark-mode .preset-gallery {
+            /* No specific dark mode changes needed if canvases handle their own bg */
+        }
+
         .preset-preview-canvas {
             width: 100%;
-            aspect-ratio: 2 / 1;
-            border: 2px solid #ccc;
-            border-radius: 5px;
+            aspect-ratio: 16 / 9; /* A common aspect ratio, or adjust as needed, e.g., 2/1 */
+            border: 1px solid #ccc; /* Thinner border */
+            border-radius: 4px; /* Slightly less rounded */
             cursor: pointer;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            background-color: #333; /* Dark background for previews */
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            background-color: #555; /* Darker default bg for previews for better contrast */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .dark-mode .preset-preview-canvas {
+            border-color: #555;
+            background-color: #2a2a2a; /* Even darker for dark mode previews */
         }
         .preset-preview-canvas:hover {
             transform: scale(1.05);
@@ -358,9 +455,119 @@ input[type="text"], input[type="password"], input[type="number"], textarea, sele
         .ai-controls { display: flex; flex-direction: column; gap: 10px; }
         .ai-controls textarea { height: 80px; width: 100%; box-sizing: border-box; }
         .ai-row { display: flex; gap: 10px; align-items: center; }
-        .ai-row input[type="password"], .ai-row input[type="text"] { flex-grow: 1; }
+        .ai-row input[type="password"], .ai-row input[type="text"], .ai-row select { flex-grow: 1; }
         .ai-actions { margin: 15px 0; display: flex; gap: 10px; }
-        #ai-preview-container { position: relative; min-height: 200px; background-color: #222; border-radius: 5px; margin-top: 15px; display: flex; align-items: center; justify-content: center; }
-        #ai-preview-img { max-width: 100%; max-height: 40vh; display: none; }
+
+        .ai-previews-container {
+            display: flex;
+            justify-content: space-between;
+            gap: 15px;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+        .ai-preview-box {
+            flex: 1; /* Each box takes equal space */
+            min-height: 200px; /* Or adjust as needed */
+            max-height: 35vh;
+            background-color: #222;
+            border-radius: 5px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column; /* Stack h4 and img/placeholder */
+            align-items: center;
+            justify-content: center;
+            position: relative; /* For loader positioning */
+            overflow: hidden; /* Ensure images don't break layout */
+        }
+        .ai-preview-box h4 {
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #ccc;
+            font-size: 1em;
+            text-align: center;
+        }
+        .dark-mode .ai-preview-box { background-color: #111; }
+        .ai-preview-box img {
+            max-width: 100%;
+            max-height: calc(100% - 30px); /* Adjust based on h4 height and padding */
+            object-fit: contain;
+            border-radius: 3px;
+        }
+         .ai-preview-box .placeholder-text {
+            color: #666;
+            font-size: 0.9em;
+            text-align: center;
+        }
+        #ai-input-image-preview[src="#"] { /* Hide if src is placeholder '#' */
+            display: none;
+        }
+        #ai-input-image-preview:not([src="#"]) + .placeholder-text { /* Hide placeholder if image is shown */
+            display: none;
+        }
+        #ai-preview-img:not([src=""]) + .placeholder-text { /* Hide placeholder if AI image is shown */
+             display:none;
+        }
+
+
+        #ai-output-preview-box #ai-loader { /* Specific loader position for output */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        #ai-preview-img { max-width: 100%; max-height: 100%; display: block; } /* Changed display from none */
+
         .loader { border: 8px solid #f3f3f3; border-top: 8px solid #3498db; border-radius: 50%; width: 50px; height: 50px; animation: spin 1.5s linear infinite; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+/* Font Preview Modal Styles */
+.font-gallery {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 4 columns */
+    gap: 15px;
+    padding: 10px;
+    max-height: 60vh; /* Limit height and allow scroll on modal-content */
+    overflow-y: auto; /* Ensure gallery itself can scroll if content exceeds modal space */
+}
+
+.font-gallery-item {
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 10px;
+    background-color: #f9f9f9;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 80px; /* Ensure a minimum height for each item */
+}
+.dark-mode .font-gallery-item {
+    border-color: #444;
+    background-color: #282828;
+}
+
+.font-gallery-item .font-name-label {
+    font-size: 12px;
+    color: #555;
+    margin-bottom: 8px;
+    text-align: center;
+}
+.dark-mode .font-gallery-item .font-name-label {
+    color: #aaa;
+}
+
+.font-gallery-item svg {
+    width: 100%;
+    height: auto; /* Maintain aspect ratio */
+    max-height: 50px; /* Control max height of SVG text */
+}
+
+.font-gallery-item svg text {
+    font-size: 24px; /* Adjust as needed for preview */
+    text-anchor: middle;
+    dominant-baseline: middle;
+    fill: #333;
+}
+.dark-mode .font-gallery-item svg text {
+    fill: #ddd;
+}
