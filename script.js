@@ -38,6 +38,7 @@
         const ctx = canvas.getContext('2d');
         // ADD THIS CODE AT THE TOP OF script.js
 
+        let G_successfullyLoadedFonts = []; // Global list for successfully loaded fonts
         let objectIdCounter = 0;
 
         // This array will hold all new draggable objects (shapes, images, text snippets)
@@ -114,22 +115,23 @@
             setLayout(1);
             populateStylePresets();
 
+            // Ensure dark mode is the default
             if (!document.body.classList.contains('dark-mode')) {
-                toggleTheme();
-            } else {
-                drawThumbnail();
+                document.body.classList.add('dark-mode');
             }
+            // Call drawThumbnail directly AFTER theme is set and other initializations
+            drawThumbnail();
 
         }).catch(function(error) {
             console.error("A font could not be loaded: ", error);
             updateColorPreviews();
             setLayout(1);
             populateStylePresets();
+            // Ensure dark mode is the default even in case of error
             if (!document.body.classList.contains('dark-mode')) {
-                toggleTheme();
-            } else {
-                drawThumbnail();
+                document.body.classList.add('dark-mode');
             }
+            drawThumbnail();
         });
 
         canvas.width = 1920;
@@ -1514,8 +1516,20 @@ function showFontPreviewModal() {
 }
 
 function closeFontPreviewModal() {
-    document.getElementById('font-preview-modal').style.display = 'none';
+    const modal = document.getElementById('font-preview-modal');
+    if (modal) modal.style.display = 'none';
 }
+
+// Add overlay click to close for font preview modal
+const fontPreviewModal = document.getElementById('font-preview-modal');
+if (fontPreviewModal) {
+    fontPreviewModal.addEventListener('click', (event) => {
+        if (event.target === fontPreviewModal) { // Clicked on the overlay itself
+            closeFontPreviewModal();
+        }
+    });
+}
+
 document.getElementById('object-properties-panel').addEventListener('input', handleObjectPropertyChange);
         // --- AI Image Generation Functions ---
         let lastGeneratedImageUrl = null;
@@ -1536,15 +1550,24 @@ document.getElementById('object-properties-panel').addEventListener('input', han
 
         document.getElementById('ai-model').addEventListener('change', function(e) {
             const inputImageSection = document.getElementById('ai-input-image-section');
+            const downloadInputBtn = document.getElementById('ai-download-input-btn');
             if (e.target.value === 'image-to-image') {
                 inputImageSection.style.display = 'flex';
+                // Show download button only if an image is already previewed
+                if (document.getElementById('ai-input-image-preview').src && document.getElementById('ai-input-image-preview').src !== '#') {
+                    downloadInputBtn.style.display = 'block';
+                } else {
+                    downloadInputBtn.style.display = 'none';
+                }
             } else {
                 inputImageSection.style.display = 'none';
+                downloadInputBtn.style.display = 'none'; // Hide if model is not image-to-image
             }
         });
 
         document.getElementById('ai-input-image-upload').addEventListener('change', function(e) {
             const file = e.target.files[0];
+            const downloadInputBtn = document.getElementById('ai-download-input-btn');
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
@@ -1552,10 +1575,55 @@ document.getElementById('object-properties-panel').addEventListener('input', han
                     document.getElementById('ai-input-image-preview').style.display = 'block';
                     document.querySelector('#ai-input-preview-box .placeholder-text').style.display = 'none';
                     aiInputImageBase64 = event.target.result;
+                    if (downloadInputBtn) downloadInputBtn.style.display = 'block'; // Show download button
+                    if (downloadInputBtn) downloadInputBtn.disabled = false;
                 }
                 reader.readAsDataURL(file);
+            } else {
+                // No file selected or selection cancelled
+                // document.getElementById('ai-input-image-preview').src = '#'; // Reset preview
+                // document.getElementById('ai-input-image-preview').style.display = 'none';
+                // document.querySelector('#ai-input-preview-box .placeholder-text').style.display = 'block';
+                // aiInputImageBase64 = null;
+                // if (downloadInputBtn) downloadInputBtn.style.display = 'none'; // Hide download button
             }
         });
+
+        async function downloadAiInputImage() {
+            const inputImagePreview = document.getElementById('ai-input-image-preview');
+            if (!inputImagePreview || !inputImagePreview.src || inputImagePreview.src === '#' || inputImagePreview.src.startsWith('data:image/gif')) {
+                alert("No input image to download or image is not downloadable.");
+                return;
+            }
+
+            const imageName = `ai_input_image_${Date.now()}.png`; // Basic name
+
+            // If it's a data URL
+            if (inputImagePreview.src.startsWith('data:image')) {
+                const a = document.createElement('a');
+                a.href = inputImagePreview.src;
+                a.download = imageName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            } else { // If it's a direct URL (less likely for uploads but good for completeness)
+                try {
+                    const response = await fetch(inputImagePreview.src);
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.style.display = 'none'; a.href = url;
+                    a.download = imageName;
+                    document.body.appendChild(a); a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } catch (error) {
+                    console.error("Error downloading input image:", error);
+                    alert("Failed to download input image.");
+                }
+            }
+        }
+
 
         function copyAiOutputToInput() {
             const outputImg = document.getElementById('ai-preview-img');
