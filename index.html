@@ -12,8 +12,8 @@
     <script src="style-presets.js" defer></script>
     <script type="module" defer>
         import { polyfillCountryFlagEmojis } from "https://cdn.skypack.dev/country-flag-emoji-polyfill";
-        // Instruct the polyfill to use "Twemoji Mozilla" to align with emoji-picker-element's preferred font
-        polyfillCountryFlagEmojis('Twemoji Mozilla');
+        // Reverting to default polyfill configuration
+        polyfillCountryFlagEmojis();
     </script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 </head>
@@ -851,6 +851,8 @@
                     <label for="ai-input-image-upload">Input Image:</label>
                     <input type="file" id="ai-input-image-upload" accept="image/*" style="flex-grow: 1;">
                 </div>
+                <!-- Moved Generate button here -->
+                <button id="ai-generate-btn" class="ai-generate-btn-top" onclick="generateAiImage()">Generate Image</button>
                 <button class="toggle-btn" onclick="this.nextElementSibling.classList.toggle('show')">Advanced</button>
                 <div class="collapsible-controls">
                     <div class="ai-row">
@@ -877,7 +879,6 @@
                      <div class="placeholder-text" style="display:block;">Generated image will appear here.</div>
                 </div>
             </div>
-            {/* The ai-copy-output-to-input button was moved into the container above */}
             <div class="ai-actions">
                 <button id="ai-generate-btn" onclick="generateAiImage()">Generate</button>
                 <button id="ai-download-btn" onclick="downloadAiImage()" disabled>Download Output</button>
