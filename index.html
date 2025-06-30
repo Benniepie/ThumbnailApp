@@ -12,7 +12,8 @@
     <script src="style-presets.js" defer></script>
     <script type="module" defer>
         import { polyfillCountryFlagEmojis } from "https://cdn.skypack.dev/country-flag-emoji-polyfill";
-        polyfillCountryFlagEmojis();
+        // Instruct the polyfill to use "Twemoji Mozilla" to align with emoji-picker-element's preferred font
+        polyfillCountryFlagEmojis('Twemoji Mozilla');
     </script>
     <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 </head>
@@ -868,6 +869,7 @@
                     <img id="ai-input-image-preview" src="#" alt="Input Preview" style="display:none;"/>
                     <div class="placeholder-text" style="display:block;">Upload an image for Image-to-Image models.</div>
                 </div>
+                <button id="ai-copy-output-to-input" class="ai-transfer-btn" onclick="copyAiOutputToInput()" title="Copy Output to Input">🔄</button>
                 <div class="ai-preview-box" id="ai-output-preview-box">
                     <h4>Output Image</h4>
                     <div id="ai-loader" class="loader" style="display: none;"></div>
@@ -875,9 +877,7 @@
                      <div class="placeholder-text" style="display:block;">Generated image will appear here.</div>
                 </div>
             </div>
-             <button id="ai-copy-output-to-input" onclick="copyAiOutputToInput()" style="margin-top: 10px; width: calc(50% - 5px); display: inline-block;">Copy Output to Input</button>
-
-
+            {/* The ai-copy-output-to-input button was moved into the container above */}
             <div class="ai-actions">
                 <button id="ai-generate-btn" onclick="generateAiImage()">Generate</button>
                 <button id="ai-download-btn" onclick="downloadAiImage()" disabled>Download Output</button>
@@ -919,6 +919,14 @@
     <!-- Emoji Picker Popup -->
     <div id="emoji-picker-popup" style="display: none; position: absolute; z-index: 1001; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
         <emoji-picker class="light" locale="en" data-source="https://cdn.jsdelivr.net/npm/emoji-picker-element-data@^1/en/emojibase/data.json"></emoji-picker>
+    </div>
+
+    <!-- Image Enlarge Modal -->
+    <div id="enlarge-image-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content image-modal-content">
+            <span class="close-modal-btn" onclick="closeEnlargeImageModal()">&times;</span>
+            <img id="enlarged-image-element" src="" alt="Enlarged Image"/>
+        </div>
     </div>
 </body>
 
