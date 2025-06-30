@@ -10,6 +10,11 @@
     <script src="templates.js" defer></script>
     <script src="script.js" defer></script>
     <script src="style-presets.js" defer></script>
+    <script type="module" defer>
+        import { polyfillCountryFlagEmojis } from "https://cdn.skypack.dev/country-flag-emoji-polyfill";
+        polyfillCountryFlagEmojis();
+    </script>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
 </head>
 <body>
     <!-- The entire body of your index3.html file goes here, unchanged. -->
@@ -273,6 +278,9 @@
                 </div>
                 <!-- PASTE THIS CODE IN index.html -->
             </div>
+            <div class="panel-section">
+                <button onclick="showFontPreviewModal()" style="width: 100%; margin-bottom: 15px;">Preview All Fonts</button>
+            </div>
 
             <div class="panel-section">
                 <h2>Add Elements</h2>
@@ -320,21 +328,27 @@
                         </div>
                     </div>
                     <div id="bg1" class="collapsible-controls">
-                        <div class="text-style-controls">
-                            <label>BG: <input type="color" id="bgColor1" value="#ffffff"></label> <!-- Default to white, alpha will be set by JS -->
-                            <label><input type="checkbox" id="bgFullWidth1"> Full BG</label>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>BG: <input type="color" id="bgColor1" value="#ffffff"></label>
                             <label>BG Pad: <input type="number" id="bgPadding1" class="pos-input" value="10" min="0" max="50"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label><input type="checkbox" id="bgFullWidth1"> Full BG</label>
                             <label>BG Alpha: <input type="range" id="bgAlpha1" min="0" max="100" value="0" step="5"> <span id="bgAlphaValue1">0%</span></label>
                         </div>
                     </div>
                     <div id="shadow1" class="collapsible-controls">
-                        <div class="text-style-controls">                    
-                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled1"> Shdw</label>
-                            <label>ShdClr: <input type="color" id="shadowColor1" value="#000000"></label>
-                            <label>ShdAlpha: <input type="range" id="shadowAlpha1" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue1">50%</span></label>
-                            <label>Blur: <input type="number" id="shadowBlur1" class="pos-input" value="5" min="0" max="50"></label>
-                            <label>ShdX: <input type="number" id="shadowOffsetX1" class="pos-input" value="2" min="-50" max="50"></label>
-                            <label>ShdY: <input type="number" id="shadowOffsetY1" class="pos-input" value="2" min="-50" max="50"></label>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled1"> Enable Shadow</label>
+                            <label>Shadow Color: <input type="color" id="shadowColor1" value="#000000"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>Shadow Alpha: <input type="range" id="shadowAlpha1" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue1">50%</span></label>
+                            <label>Shadow Blur: <input type="number" id="shadowBlur1" class="pos-input" value="5" min="0" max="50"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>Offset X: <input type="number" id="shadowOffsetX1" class="pos-input" value="2" min="-50" max="50"></label>
+                            <label>Offset Y: <input type="number" id="shadowOffsetY1" class="pos-input" value="2" min="-50" max="50"></label>
                         </div>
                     </div>    
                     <div id="fx1" class="collapsible-controls">
@@ -412,21 +426,27 @@
                         </div>
                     </div>
                     <div id="bg2" class="collapsible-controls">
-                        <div class="text-style-controls">
-                            <label>BG: <input type="color" id="bgColor2" value="#ffffff"></label> <!-- Default to white, alpha will be set by JS -->
-                            <label><input type="checkbox" id="bgFullWidth2"> Full BG</label>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>BG: <input type="color" id="bgColor2" value="#ffffff"></label>
                             <label>BG Pad: <input type="number" id="bgPadding2" class="pos-input" value="10" min="0" max="50"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label><input type="checkbox" id="bgFullWidth2"> Full BG</label>
                             <label>BG Alpha: <input type="range" id="bgAlpha2" min="0" max="100" value="0" step="5"> <span id="bgAlphaValue2">0%</span></label>
                         </div>
                     </div>
                     <div id="shadow2" class="collapsible-controls">
-                        <div class="text-style-controls">                    
-                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled2"> Shdw</label>
-                            <label>ShdClr: <input type="color" id="shadowColor2" value="#000000"></label>
-                            <label>ShdAlpha: <input type="range" id="shadowAlpha2" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue2">50%</span></label>
-                            <label>Blur: <input type="number" id="shadowBlur2" class="pos-input" value="5" min="0" max="50"></label>
-                            <label>ShdX: <input type="number" id="shadowOffsetX2" class="pos-input" value="2" min="-50" max="50"></label>
-                            <label>ShdY: <input type="number" id="shadowOffsetY2" class="pos-input" value="2" min="-50" max="50"></label>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled2"> Enable Shadow</label>
+                            <label>Shadow Color: <input type="color" id="shadowColor2" value="#000000"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>Shadow Alpha: <input type="range" id="shadowAlpha2" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue2">50%</span></label>
+                            <label>Shadow Blur: <input type="number" id="shadowBlur2" class="pos-input" value="5" min="0" max="50"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>Offset X: <input type="number" id="shadowOffsetX2" class="pos-input" value="2" min="-50" max="50"></label>
+                            <label>Offset Y: <input type="number" id="shadowOffsetY2" class="pos-input" value="2" min="-50" max="50"></label>
                         </div>
                     </div>
                     <div id="fx2" class="collapsible-controls">
@@ -507,21 +527,27 @@
                         </div>
                     </div>
                     <div id="bg3" class="collapsible-controls">
-                        <div class="text-style-controls">
-                            <label>BG: <input type="color" id="bgColor3" value="#ffffff"></label> <!-- Default to white, alpha will be set by JS -->
-                            <label><input type="checkbox" id="bgFullWidth3"> Full BG</label>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>BG: <input type="color" id="bgColor3" value="#ffffff"></label>
                             <label>BG Pad: <input type="number" id="bgPadding3" class="pos-input" value="10" min="0" max="50"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label><input type="checkbox" id="bgFullWidth3"> Full BG</label>
                             <label>BG Alpha: <input type="range" id="bgAlpha3" min="0" max="100" value="0" step="5"> <span id="bgAlphaValue3">0%</span></label>
                         </div>
                     </div>
                     <div id="shadow3" class="collapsible-controls">
-                        <div class="text-style-controls">                    
-                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled3"> Shdw</label>
-                            <label>ShdClr: <input type="color" id="shadowColor3" value="#000000"></label>
-                            <label>ShdAlpha: <input type="range" id="shadowAlpha3" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue3">50%</span></label>
-                            <label>Blur: <input type="number" id="shadowBlur3" class="pos-input" value="5" min="0" max="50"></label>
-                            <label>ShdX: <input type="number" id="shadowOffsetX3" class="pos-input" value="2" min="-50" max="50"></label>
-                            <label>ShdY: <input type="number" id="shadowOffsetY3" class="pos-input" value="2" min="-50" max="50"></label>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled3"> Enable Shadow</label>
+                            <label>Shadow Color: <input type="color" id="shadowColor3" value="#000000"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>Shadow Alpha: <input type="range" id="shadowAlpha3" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue3">50%</span></label>
+                            <label>Shadow Blur: <input type="number" id="shadowBlur3" class="pos-input" value="5" min="0" max="50"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>Offset X: <input type="number" id="shadowOffsetX3" class="pos-input" value="2" min="-50" max="50"></label>
+                            <label>Offset Y: <input type="number" id="shadowOffsetY3" class="pos-input" value="2" min="-50" max="50"></label>
                         </div>
                     </div>
                     <div id="fx3" class="collapsible-controls">
@@ -612,13 +638,17 @@
                         </div>
                     </div>
                     <div id="shadow4" class="collapsible-controls">
-                        <div class="text-style-controls">                    
-                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled4"> Shdw</label>
-                            <label>ShdClr: <input type="color" id="shadowColor4" value="#000000"></label>
-                            <label>ShdAlpha: <input type="range" id="shadowAlpha4" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue4">50%</span></label>
-                            <label>Blur: <input type="number" id="shadowBlur4" class="pos-input" value="5" min="0" max="50"></label>
-                            <label>ShdX: <input type="number" id="shadowOffsetX4" class="pos-input" value="2" min="-50" max="50"></label>
-                            <label>ShdY: <input type="number" id="shadowOffsetY4" class="pos-input" value="2" min="-50" max="50"></label>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label title="Enable Shadow"><input type="checkbox" id="shadowEnabled4"> Enable Shadow</label>
+                            <label>Shadow Color: <input type="color" id="shadowColor4" value="#000000"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>Shadow Alpha: <input type="range" id="shadowAlpha4" min="0" max="100" value="50" step="5"> <span id="shadowAlphaValue4">50%</span></label>
+                            <label>Shadow Blur: <input type="number" id="shadowBlur4" class="pos-input" value="5" min="0" max="50"></label>
+                        </div>
+                        <div class="text-style-controls text-style-grid-row">
+                            <label>Offset X: <input type="number" id="shadowOffsetX4" class="pos-input" value="2" min="-50" max="50"></label>
+                            <label>Offset Y: <input type="number" id="shadowOffsetY4" class="pos-input" value="2" min="-50" max="50"></label>
                         </div>
                     </div>
                     <div id="fx4" class="collapsible-controls">
@@ -709,6 +739,34 @@
                     <input type="range" id="bg-saturate" min="0" max="200" value="100" step="5">
                     <span id="bg-saturate-value">100%</span>
                 </div>
+
+                <!-- New Filters -->
+                <div class="opacity-control">
+                    <label for="bg-warmth">Warmth:</label>
+                    <input type="range" id="bg-warmth" min="0" max="200" value="100" step="5">
+                    <span id="bg-warmth-value">100%</span>
+                </div>
+                <div class="opacity-control">
+                    <label for="bg-exposure">Exposure:</label>
+                    <input type="range" id="bg-exposure" min="0" max="200" value="100" step="5">
+                    <span id="bg-exposure-value">100%</span>
+                </div>
+                <div class="opacity-control">
+                    <label for="bg-tint-color">Tint Color:</label>
+                    <input type="color" id="bg-tint-color" value="#FFBF00"> <!-- Default orange/yellow tint -->
+                </div>
+                <div class="opacity-control">
+                    <label for="bg-tint-strength">Tint Strength:</label>
+                    <input type="range" id="bg-tint-strength" min="0" max="100" value="0" step="5">
+                    <span id="bg-tint-strength-value">0%</span>
+                </div>
+                <div class="opacity-control">
+                    <label for="bg-vignette">Vignette:</label>
+                    <input type="range" id="bg-vignette" min="0" max="100" value="0" step="5">
+                    <span id="bg-vignette-value">0%</span>
+                </div>
+                <!-- End New Filters -->
+
                 <div class="opacity-control">
                     <label for="imageOpacity">Image Opacity:</label>
                     <input type="range" id="imageOpacity" min="0" max="100" value="100" step="5">
@@ -781,8 +839,16 @@
                         <option value="A dramatic explosion in a modern city street, cinematic, fire and smoke, high action, 8k photo">City Explosion</option>
                         <option value="Abstract background, blue and yellow energy waves, digital art, futuristic, clean">Abstract Energy</option>
                     </select>
-                    <label>API Key:</label>
-                    <input type="password" id="ai-api-key" placeholder="Replicate API Key">
+                    <label>Model:</label>
+                    <select id="ai-model">
+                        <option value="text-to-image">Text to Image</option>
+                        <option value="image-to-image">Image & Text to Image</option>
+                    </select>
+                    <!-- API Key Removed -->
+                </div>
+                 <div class="ai-row" id="ai-input-image-section" style="display: none;"> <!-- Hidden by default -->
+                    <label for="ai-input-image-upload">Input Image:</label>
+                    <input type="file" id="ai-input-image-upload" accept="image/*" style="flex-grow: 1;">
                 </div>
                 <button class="toggle-btn" onclick="this.nextElementSibling.classList.toggle('show')">Advanced</button>
                 <div class="collapsible-controls">
@@ -795,15 +861,29 @@
                     </div>
                 </div>
             </div>
+
+            <div class="ai-previews-container">
+                <div class="ai-preview-box" id="ai-input-preview-box">
+                    <h4>Input Image</h4>
+                    <img id="ai-input-image-preview" src="#" alt="Input Preview" style="display:none;"/>
+                    <div class="placeholder-text" style="display:block;">Upload an image for Image-to-Image models.</div>
+                </div>
+                <div class="ai-preview-box" id="ai-output-preview-box">
+                    <h4>Output Image</h4>
+                    <div id="ai-loader" class="loader" style="display: none;"></div>
+                    <img id="ai-preview-img" src="" alt="AI Generated Image Preview"/>
+                     <div class="placeholder-text" style="display:block;">Generated image will appear here.</div>
+                </div>
+            </div>
+             <button id="ai-copy-output-to-input" onclick="copyAiOutputToInput()" style="margin-top: 10px; width: calc(50% - 5px); display: inline-block;">Copy Output to Input</button>
+
+
             <div class="ai-actions">
                 <button id="ai-generate-btn" onclick="generateAiImage()">Generate</button>
-                <button id="ai-download-btn" onclick="downloadAiImage()" disabled>Download</button>
-                <button id="ai-set-bg-btn" onclick="setAiImageAsBackground()" disabled>Download & Set Background</button>
+                <button id="ai-download-btn" onclick="downloadAiImage()" disabled>Download Output</button>
+                <button id="ai-set-bg-btn" onclick="setAiImageAsBackground()" disabled>Download Output & Set Background</button>
             </div>
-            <div id="ai-preview-container">
-                <div id="ai-loader" class="loader" style="display: none;"></div>
-                <img id="ai-preview-img" src="" alt="AI Generated Image Preview"/>
-            </div>
+
             <button onclick="closeAiModal()" style="margin-top: 20px; background-color: #f44336;">Close</button>
         </div>
     </div>
@@ -823,6 +903,22 @@
             </div>
             <button onclick="closeSnippetModal()" style="margin-top: 20px; background-color: #f44336;">Cancel</button>
         </div>
+    </div>
+
+    <!-- Font Preview Modal -->
+    <div id="font-preview-modal" class="modal-overlay" style="display: none;">
+        <div class="modal-content">
+            <h2>Font Previews</h2>
+            <div id="font-preview-gallery" class="font-gallery">
+                <!-- SVG font previews will be generated here by JS -->
+            </div>
+            <button onclick="closeFontPreviewModal()" style="margin-top: 20px; background-color: #aaa;">Close</button>
+        </div>
+    </div>
+
+    <!-- Emoji Picker Popup -->
+    <div id="emoji-picker-popup" style="display: none; position: absolute; z-index: 1001; border: 1px solid #ccc; box-shadow: 0 4px 12px rgba(0,0,0,0.15);">
+        <emoji-picker class="light" locale="en" data-source="https://cdn.jsdelivr.net/npm/emoji-picker-element-data@^1/en/emojibase/data.json"></emoji-picker>
     </div>
 </body>
 
