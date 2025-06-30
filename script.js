@@ -1747,7 +1747,8 @@
             const drawLines = (drawFunc) => {
                 lines.forEach((line, index) => {
                     const currentY = yPos + (index * lineHeight);
-                    drawFunc(line.trim(), xPos, currentY);
+                    // Remove .trim() to render leading/trailing spaces
+                    drawFunc(line, xPos, currentY);
                 });
             };
 
