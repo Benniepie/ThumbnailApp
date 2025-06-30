@@ -25,13 +25,13 @@
             "Vollkorn Regular.ttf", "Voltaire Regular.ttf", "VT323 Regular.ttf", "Wallpoet.ttf", "Walter Turncoat Regular.ttf",
             "Wire One Regular.ttf", "Workbench Regular.ttf", "Young Serif Regular.ttf", "Zen Kaku Gothic Antique Regular.ttf",
             "Zen Tokyo Zoo Regular.ttf", "Zhi Mang Xing Regular.ttf", "Zilla Slab.ttf"
-            // Note: "CmAppIcons.ttf", "CupertinoIcons.ttf" are likely icon fonts not for text use, so excluded.
-            // Bruno Ace SC was in old list but not new, so excluded for now based on new list.
+            // Note: "CmAppIcons.ttf", "CupertinoIcons.ttf" are excluded as they are likely icon fonts.
         ];
 
         const localFontFamilies = fontFileNames.map(filename => {
             const nameWithoutExtension = filename.substring(0, filename.lastIndexOf('.'));
-            return { name: nameWithoutExtension, path: `fonts/${filename}` };
+            // Use the nameWithoutExtension for the font-family name in CSS
+            return { name: nameWithoutExtension, path: `fonts/${filename}`, familyName: nameWithoutExtension };
         });
 
         const canvas = document.getElementById('thumbnailCanvas');
@@ -92,7 +92,7 @@
         ].map((el, i) => ({
             id: `text${i+1}`, inputId: `text${i+1}`, colorId: `color${i+1}`, sizeId: `size${i+1}`,
             x: canvas.width * 0.5, y: canvas.height * 0.3, align: 'center', text: '', wrap: false, size: 100,
-            fontFamily: "'Berlin Sans FB Demi Bold', sans-serif",
+            fontFamily: "\"Twemoji Country Flags\", 'Berlin Sans FB Demi Bold', sans-serif",
             color: '#FFFFFF',
             strokeColor: '#000000', strokeThickness: 2,
             bgColor: 'rgba(255,255,255,0)', bgFullWidth: false, bgPadding: 10,
@@ -105,11 +105,12 @@
         }));
 
         Promise.all([
+            // Ensure BRLNSDB.woff is loaded using its correct family name if it's 'Berlin Sans FB Demi Bold'
             new FontFace('Berlin Sans FB Demi Bold', 'url(fonts/BRLNSDB.woff)').load(),
-            ...localFontFamilies.map(font => new FontFace(font.name, `url(${font.path})`).load())
+            ...localFontFamilies.map(font => new FontFace(font.familyName, `url(${font.path})`).load())
         ]).then(loadedFonts => {
             loadedFonts.forEach(font => document.fonts.add(font));
-            console.log('All local fonts (Berlin Sans + 6 others using TTF paths) attempted to load.');
+            console.log('All local fonts attempted to load.');
             
             updateColorPreviews();
             setLayout(1);
@@ -500,7 +501,7 @@
             currentLayout = layout;
             const layoutPreset = getLayoutPositions(layout);
             const defaultTextElement = {
-                fontFamily: "'Berlin Sans FB Demi Bold', sans-serif", color: '#FFFFFF',
+                fontFamily: "\"Twemoji Country Flags\", 'Berlin Sans FB Demi Bold', sans-serif", color: '#FFFFFF',
                 strokeColor: '#000000', strokeThickness: 0,
                 bgColor: 'rgba(255,255,255,0)', bgFullWidth: false, bgPadding: 10,
                 shadowEnabled: false, shadowColor: 'rgba(0,0,0,0.7)', shadowBlur: 5, shadowOffsetX: 2, shadowOffsetY: 2,
@@ -511,6 +512,12 @@
                     const currentText = textElements[index].text;
                     const currentSize = textElements[index].size;
                     const newElementState = { ...defaultTextElement, ...preset };
+                    // Preserve existing fontFamily if preset doesn't specify one, otherwise use preset's (which might include Twemoji or not)
+                    if (preset.fontFamily) {
+                        newElementState.fontFamily = preset.fontFamily.startsWith('"Twemoji Country Flags"') ? preset.fontFamily : `"Twemoji Country Flags", ${preset.fontFamily}`;
+                    } else {
+                        newElementState.fontFamily = textElements[index].fontFamily.startsWith('"Twemoji Country Flags"') ? textElements[index].fontFamily : `"Twemoji Country Flags", ${textElements[index].fontFamily}`;
+                    }
                     Object.assign(textElements[index], newElementState);
                     if (!preset.text) textElements[index].text = currentText;
                     if (!preset.size) textElements[index].size = currentSize;
@@ -1040,12 +1047,29 @@
             objectIdCounter++;
             let newObject;
             if (type === 'text') {
-                newObject = { id: objectIdCounter, type: 'text', x: canvas.width / 2, y: canvas.height / 2, width: 500, height: 200, rotation: 0, text: 'New Text', size: 100, align: 'center', wrap: false, ...options };
+                const defaultFontFamily = "\"Twemoji Country Flags\", 'Berlin Sans FB Demi Bold', sans-serif";
+                let combinedFontFamily = defaultFontFamily;
+                if (options.fontFamily && !options.fontFamily.includes("Twemoji Country Flags")) {
+                    combinedFontFamily = `"Twemoji Country Flags", ${options.fontFamily}`;
+                } else if (options.fontFamily) {
+                    combinedFontFamily = options.fontFamily;
+                }
+                newObject = { id: objectIdCounter, type: 'text', x: canvas.width / 2, y: canvas.height / 2, width: 500, height: 200, rotation: 0, text: 'New Text', size: 100, align: 'center', wrap: false, fontFamily: combinedFontFamily, ...options };
             } else {
                 newObject = { id: objectIdCounter, type: type, x: canvas.width / 2, y: canvas.height / 2, width: 300, height: 300, rotation: 0, stroke: '#000000', strokeWidth: 5, shadow: { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 }, ...options };
             };
             if (type === 'shape') { newObject.fill = '#ff0000'; }
-            else if (type === 'text') { newObject.font = 'Berlin Sans FB Demi Bold'; newObject.size = 100; newObject.color = '#ffffff'; }
+            else if (type === 'text') {
+                // Ensure fontFamily is correctly set if not already handled by the text object creation logic
+                if (!newObject.fontFamily || !newObject.fontFamily.includes("Twemoji Country Flags")) {
+                    const baseFont = newObject.fontFamily || "'Berlin Sans FB Demi Bold', sans-serif";
+                    newObject.fontFamily = `"Twemoji Country Flags", ${baseFont}`;
+                }
+                // newObject.font is not a standard property, using newObject.fontFamily
+                // newObject.font = 'Berlin Sans FB Demi Bold'; // This line seems to be overridden or redundant
+                newObject.size = newObject.size || 100;
+                newObject.color = newObject.color || '#ffffff';
+            }
             else if (type === 'image' && newObject.src) {
                 const img = new Image();
                 img.onload = () => {
@@ -1247,8 +1271,10 @@
             const xPos = el.x;
             const yPos = el.y;
             const alignment = el.align || 'center';
-            const fontFamily = el.fontFamily || "'Berlin Sans FB Demi Bold', sans-serif";
-            ctx.font = `bold ${size}px ${fontFamily}`;
+            const fontFamily = el.fontFamily || "\"Twemoji Country Flags\", 'Berlin Sans FB Demi Bold', sans-serif";
+            // Ensure "Twemoji Country Flags" is prioritized if el.fontFamily is somehow set without it
+            const finalFontFamily = fontFamily.includes("Twemoji Country Flags") ? fontFamily : `"Twemoji Country Flags", ${fontFamily}`;
+            ctx.font = `bold ${size}px ${finalFontFamily}`;
             ctx.textAlign = alignment;
             ctx.textBaseline = ctx.textBaseline === 'middle' ? 'middle' : 'top';
             const lineHeight = size * 1.2;
@@ -1505,8 +1531,10 @@ function showFontPreviewModal() {
         const textElement = document.createElementNS(svgNS, "text");
         textElement.setAttribute("x", "100");
         textElement.setAttribute("y", "30");
-        textElement.style.fontFamily = `"${font.name}"`;
+        const fontFamilyToApply = `"${font.name}"`;
+        textElement.style.fontFamily = fontFamilyToApply;
         textElement.textContent = "Aa Bb Cc";
+        console.log(`Font Preview Modal: Applying font-family: ${fontFamilyToApply} for font object:`, font);
         svg.appendChild(textElement);
         item.appendChild(nameLabel);
         item.appendChild(svg);
