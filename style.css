@@ -173,6 +173,7 @@ input[type="text"], input[type="password"], input[type="number"], textarea, sele
 .text-input textarea {
     flex-grow: 1; /* Text input/area takes up available space */
     margin-right: auto; /* Pushes other elements to the right if needed, though gap helps */
+    font-family: "Twemoji Country Flags", Arial, Helvetica;
 }
 
 .text-input .color-input-container {
