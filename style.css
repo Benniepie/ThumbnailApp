@@ -455,6 +455,11 @@ div[id^="style"] > .text-style-controls input[type="number"] {
             background-color: #2d2d2d;
         }
 
+/* Emoji Picker Custom Font */
+emoji-picker {
+    --emoji-font-family: "Twemoji Country Flags", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "EmojiOne Color", "Android Emoji", sans-serif;
+}
+
 /* Font Preview Modal Specific Styles */
 #font-preview-gallery {
     display: grid;
@@ -504,35 +509,63 @@ div[id^="style"] > .text-style-controls input[type="number"] {
 
         /* AI Modal Styles */
         .ai-controls { display: flex; flex-direction: column; gap: 10px; }
-        .ai-controls textarea { height: 80px; width: 100%; box-sizing: border-box; }
+        .ai-prompt-row { display: flex; align-items: center; /* Vertically center items */ gap: 10px; margin-bottom: 10px; /* Add some space below this row */ }
+        .ai-prompt-row textarea#ai-prompt { flex-grow: 1; height: 80px; box-sizing: border-box; }
+        .ai-prompt-row button#ai-generate-btn {
+            flex-shrink: 0;
+            padding: 8px 12px; /* Standard button padding */
+            height: auto; /* Let padding define height */
+            align-self: center; /* Ensure it's centered if textarea is taller */
+        }
+        /* Remove general rule for .ai-controls textarea if .ai-prompt-row textarea is specific enough */
+        /* .ai-controls textarea { height: 80px; width: 100%; box-sizing: border-box; } */
         .ai-row { display: flex; gap: 10px; align-items: center; }
         .ai-row input[type="password"], .ai-row input[type="text"], .ai-row select { flex-grow: 1; }
 
-        .ai-generate-btn-top {
-            background-color: #007bff; /* Standard blue */
-            color: white;
-            padding: 10px 15px;
-            font-size: 1em;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            display: block;
-            width: 100%;
-            margin-top: 10px;
-            margin-bottom: 10px;
-        }
-        .ai-generate-btn-top:hover {
-            background-color: #0056b3;
-        }
+        /* Remove .ai-generate-btn-top as it's deleted */
 
         .ai-actions {
-            display: flex;
-            justify-content: center; /* Center remaining buttons */
+            /* This div is now empty or hidden, so styles might not be needed unless it's reused */
+            display: none; /* Ensure it's hidden if empty */
+            justify-content: center;
             gap: 15px;
             margin-top: 15px;
         }
-        .ai-actions button {
-            flex-grow: 0;
+
+        .ai-action-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: block;
+            width: calc(100% - 20px); /* Full width within padding of parent */
+            margin-left: auto; /* Center button if parent is flex and wider */
+            margin-right: auto; /* Center button */
+            box-sizing: border-box;
+            text-align: center;
+            margin-top: 10px;
+        }
+        .ai-action-btn:hover {
+            background-color: #0056b3;
+        }
+        .ai-preview-box button.ai-action-btn + button.ai-action-btn {
+            margin-top: 5px; /* Space between multiple buttons under a preview */
+        }
+        .dark-mode .ai-action-btn:disabled {
+            background-color: #555;
+        }
+
+        /* Ensure the generate button in prompt-row doesn't take full width like other ai-action-btns */
+        .ai-prompt-row button#ai-generate-btn.ai-action-btn {
+            width: auto;                     /* Override the full width */
+            margin-left: 10px;               /* Specific margin */
+            margin-right: 0;                 /* Reset auto margin */
+            margin-top: 0;                   /* Reset margin from general .ai-action-btn */
+            height: fit-content;             /* Control height */
+            align-self: center;              /* Vertical alignment in flex row */
         }
 
         .download-preview-btn {

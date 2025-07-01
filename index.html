@@ -1203,7 +1203,13 @@
         <div class="modal-content">
             <h2>AI Image Generation</h2>
             <div class="ai-controls">
-                <textarea id="ai-prompt" placeholder="Describe the image you want to create..."></textarea>
+                <!-- Row for Prompt Textarea and Generate Button -->
+                <div class="ai-prompt-row">
+                    <textarea id="ai-prompt" placeholder="Describe the image you want to create..."></textarea>
+                    <button id="ai-generate-btn" class="ai-action-btn" onclick="generateAiImage()">Generate</button>
+                </div>
+
+                <!-- Row for Preset Prompts and AI Model Selection -->
                 <div class="ai-row">
                     <label>Preset:</label>
                     <select id="ai-preset-prompts">
@@ -1217,14 +1223,12 @@
                         <option value="text-to-image">Text to Image</option>
                         <option value="image-to-image">Image & Text to Image</option>
                     </select>
-                    <!-- API Key Removed -->
                 </div>
-                 <div class="ai-row" id="ai-input-image-section" style="display: none;"> <!-- Hidden by default -->
-                    <label for="ai-input-image-upload">Input Image:</label>
-                    <input type="file" id="ai-input-image-upload" accept="image/*" style="flex-grow: 1;">
-                </div>
-                <!-- Moved Generate button here -->
-                <button id="ai-generate-btn" class="ai-generate-btn-top" onclick="generateAiImage()">Generate Image</button>
+
+                <!-- Hidden File Input for Image Upload -->
+                <input type="file" id="ai-input-image-upload" accept="image/*" style="display: none;">
+
+                <!-- Advanced Settings Toggle -->
                 <button class="toggle-btn" onclick="this.nextElementSibling.classList.toggle('show')">Advanced</button>
                 <div class="collapsible-controls">
                     <div class="ai-row">
@@ -1238,24 +1242,28 @@
             </div>
 
             <div class="ai-previews-container">
+                <!-- Input Image Preview Box -->
                 <div class="ai-preview-box" id="ai-input-preview-box">
                     <h4>Input Image</h4>
                     <img id="ai-input-image-preview" src="#" alt="Input Preview" style="display:none;"/>
-                    <div class="placeholder-text" style="display:block;">Upload an image for Image-to-Image models.</div>
+                    <div class="placeholder-text">Upload an image for Image-to-Image models.</div>
+                    <button class="ai-action-btn" id="ai-upload-btn-under-preview" onclick="document.getElementById('ai-input-image-upload').click();">Upload Image</button>
                 </div>
+
                 <button id="ai-copy-output-to-input" class="ai-transfer-btn" onclick="copyAiOutputToInput()" title="Copy Output to Input">🔄</button>
+
+                <!-- Output Image Preview Box -->
                 <div class="ai-preview-box" id="ai-output-preview-box">
                     <h4>Output Image</h4>
                     <div id="ai-loader" class="loader" style="display: none;"></div>
                     <img id="ai-preview-img" src="" alt="AI Generated Image Preview"/>
-                     <div class="placeholder-text" style="display:block;">Generated image will appear here.</div>
+                    <div class="placeholder-text">Generated image will appear here.</div>
+                    <button class="ai-action-btn" id="ai-download-btn" onclick="downloadAiImage()" disabled>Download Output</button>
+                    <button class="ai-action-btn" id="ai-set-bg-btn" onclick="setAiImageAsBackground()" disabled>Download & Set Background</button>
                 </div>
             </div>
-            <div class="ai-actions">
-                <button id="ai-generate-btn" onclick="generateAiImage()">Generate</button>
-                <button id="ai-download-btn" onclick="downloadAiImage()" disabled>Download Output</button>
-                <button id="ai-set-bg-btn" onclick="setAiImageAsBackground()" disabled>Download Output & Set Background</button>
-            </div>
+
+            <!-- Old .ai-actions div is removed as its buttons are relocated -->
 
             <button onclick="closeAiModal()" style="margin-top: 20px; background-color: #f44336;">Close</button>
         </div>
