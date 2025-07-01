@@ -1429,9 +1429,10 @@ function hideEmojiPicker() {
     activeTextInputForEmoji = null;
 }
 
-['text1', 'text2', 'text3', 'text4'].forEach(id => {
+['text1', 'text2', 'text3', 'text4', 'ai-prompt'].forEach(id => {
     const inputElement = document.getElementById(id);
     if (inputElement) {
+        console.log(`Emoji Picker: Attaching listeners to ${id}`); // Diagnostic log
         inputElement.addEventListener('input', (e) => {
             const text = e.target.value;
             const cursorPos = e.target.selectionStart;
