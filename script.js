@@ -220,10 +220,45 @@
                     size: 70, // Keep preview size consistent
                     x: previewCanvas.width / 2,
                     y: previewCanvas.height / 2,
+                    align: 'center',
+                    // Make sure shadow and other properties that affect text width are off for preview sizing
+                    shadowEnabled: false,
+                    strokeThickness: 0
+                };
+
+                // Dynamically adjust font size to fit the word
+                const maxFontSize = 70; // Starting font size
+                const minFontSize = 10; // Minimum font size
+                let fontSize = maxFontSize;
+                pCtx.font = `bold ${fontSize}px ${previewTextElement.fontFamily.includes("Twemoji Country Flags") ? previewTextElement.fontFamily : `"Twemoji Country Flags", ${previewTextElement.fontFamily}`}`;
+                let textWidth = pCtx.measureText(word).width;
+                const padding = 20; // Horizontal padding within the canvas
+
+                while (textWidth > previewCanvas.width - padding && fontSize > minFontSize) {
+                    fontSize -= 2;
+                    pCtx.font = `bold ${fontSize}px ${previewTextElement.fontFamily.includes("Twemoji Country Flags") ? previewTextElement.fontFamily : `"Twemoji Country Flags", ${previewTextElement.fontFamily}`}`;
+                    textWidth = pCtx.measureText(word).width;
+                }
+                previewTextElement.size = fontSize; // Set the adjusted font size
+
+                pCtx.textBaseline = 'middle';
+                // Clear the preview canvas before drawing, in case of redraws or if bg isn't opaque
+                pCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
+                // Fill with a background color consistent with the CSS for .snippet-word-preview
+                const isDarkMode = document.body.classList.contains('dark-mode');
+                pCtx.fillStyle = isDarkMode ? '#2a2a2a' : '#555';
+                pCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
+
+                // Use the original preset for drawing, but with the adjusted size and word
+                const finalPreviewElement = {
+                    ...preset, // Original preset for full styling
+                    text: word,
+                    size: fontSize,
+                    x: previewCanvas.width / 2,
+                    y: previewCanvas.height / 2,
                     align: 'center'
                 };
-                pCtx.textBaseline = 'middle';
-                drawTextWithEffect(pCtx, previewTextElement);
+                drawTextWithEffect(pCtx, finalPreviewElement);
             });
 
             document.getElementById('snippet-step1').style.display = 'none';
