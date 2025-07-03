@@ -160,13 +160,14 @@
                     gallery.appendChild(canvasEl);
 
                     const pCtx = canvasEl.getContext('2d');
-                    const previewTextElement = {
+                    const previewTextElement = { // This is the 'el' for drawTextWithEffect in previews
                         ...preset,
                         text: 'Style',
                         size: 50,
-                        x: canvasEl.width / 2,
-                        y: canvasEl.height / 2,
-                        align: 'center'
+                        x: canvasEl.width / 2, // center of preview canvas
+                        y: canvasEl.height / 2, // center of preview canvas
+                        align: 'center' // previews are centered
+                        // id will be preset.id (string or number), type will be undefined or from preset
                     };;
                     pCtx.fillStyle = '#333';
                     pCtx.fillRect(0, 0, canvasEl.width, canvasEl.height);
@@ -201,62 +202,53 @@
 
             const wordContainer = document.getElementById('snippet-word-choices');
             wordContainer.innerHTML = '';
-            // Store the selected preset directly, so addStyledSnippet can access it.
-            // We'll retrieve it in addStyledSnippet via activeSnippetStyleId as it's already global.
 
             snippetWords.forEach(word => {
-                const previewCanvas = document.createElement('canvas');
+                const previewCanvas = document.createElement('canvas'); // This is the 'previewCanvas'
                 previewCanvas.className = 'snippet-word-preview';
                 previewCanvas.width = 300;
                 previewCanvas.height = 120;
-                // Pass the preset object directly to addStyledSnippet
                 previewCanvas.onclick = () => addStyledSnippet(word, preset);
                 wordContainer.appendChild(previewCanvas);
 
                 const pCtx = previewCanvas.getContext('2d');
-                const previewTextElement = {
-                    ...preset, // Use the full preset for styling
+                let previewTextElement = { // This is one type of 'el' for drawTextWithEffect
+                    ...preset,
                     text: word,
-                    size: 70, // Keep preview size consistent
-                    x: previewCanvas.width / 2,
-                    y: previewCanvas.height / 2,
+                    size: 70,
+                    x: previewCanvas.width / 2, // center of this specific preview canvas
+                    y: previewCanvas.height / 2, // center of this specific preview canvas
                     align: 'center',
-                    // Make sure shadow and other properties that affect text width are off for preview sizing
                     shadowEnabled: false,
                     strokeThickness: 0
+                    // id will be preset.id, type will be from preset or undefined
                 };
 
-                // Dynamically adjust font size to fit the word
-                const maxFontSize = 70; // Starting font size
-                const minFontSize = 10; // Minimum font size
+                const maxFontSize = 70;
+                const minFontSize = 10;
                 let fontSize = maxFontSize;
                 pCtx.font = `bold ${fontSize}px ${previewTextElement.fontFamily.includes("Twemoji Country Flags") ? previewTextElement.fontFamily : `"Twemoji Country Flags", ${previewTextElement.fontFamily}`}`;
                 let textWidth = pCtx.measureText(word).width;
-                const padding = 20; // Horizontal padding within the canvas
+                const padding = 20;
 
                 while (textWidth > previewCanvas.width - padding && fontSize > minFontSize) {
                     fontSize -= 2;
                     pCtx.font = `bold ${fontSize}px ${previewTextElement.fontFamily.includes("Twemoji Country Flags") ? previewTextElement.fontFamily : `"Twemoji Country Flags", ${previewTextElement.fontFamily}`}`;
                     textWidth = pCtx.measureText(word).width;
                 }
-                previewTextElement.size = fontSize; // Set the adjusted font size
 
-                pCtx.textBaseline = 'middle';
-                // Clear the preview canvas before drawing, in case of redraws or if bg isn't opaque
-                pCtx.clearRect(0, 0, previewCanvas.width, previewCanvas.height);
-                // Fill with a background color consistent with the CSS for .snippet-word-preview
                 const isDarkMode = document.body.classList.contains('dark-mode');
                 pCtx.fillStyle = isDarkMode ? '#2a2a2a' : '#555';
                 pCtx.fillRect(0, 0, previewCanvas.width, previewCanvas.height);
 
-                // Use the original preset for drawing, but with the adjusted size and word
-                const finalPreviewElement = {
-                    ...preset, // Original preset for full styling
+                const finalPreviewElement = { // This is the 'el' that actually gets drawn
+                    ...preset,
                     text: word,
-                    size: fontSize,
+                    size: fontSize, // Use adjusted font size
                     x: previewCanvas.width / 2,
                     y: previewCanvas.height / 2,
                     align: 'center'
+                    // id will be preset.id, type will be from preset or undefined
                 };
                 drawTextWithEffect(pCtx, finalPreviewElement);
             });
@@ -265,15 +257,12 @@
             document.getElementById('snippet-step2').style.display = 'block';
         }
 
-        // Modified to accept the full style preset object
         function addStyledSnippet(word, stylePreset) {
             if (!stylePreset) {
                 console.error("No style preset provided to addStyledSnippet");
                 return;
             }
-            // Combine the chosen word with the provided style preset.
-            // Set a default size for snippets, or use one from the preset if available and appropriate.
-            const snippetSize = stylePreset.size || 150; // Default to 150 if not in preset
+            const snippetSize = stylePreset.size || 150;
             const styleOptions = { ...stylePreset, text: word, size: snippetSize };
 
             addObject('text', styleOptions);
@@ -1105,12 +1094,10 @@
                     id: objectIdCounter, type: 'text',
                     x: canvas.width / 2, y: canvas.height / 2,
                     width: 500, height: 200, rotation: 0,
-                    text: 'New Text', size: 100, align: 'center', wrap: false,
+                    text: 'New Text', size: 100, align: 'center', wrap: false, // align: 'center' is default for snippets
                     fontFamily: combinedFontFamily,
-                    // Spread options first, then ensure our default shadow is there if options didn't provide one,
-                    // or merge options.shadow with defaultShadow if options.shadow is partial.
-                    ...options, // Spread options first
-                    shadow: { ...defaultShadow, ...(options.shadow || {}) }, // Merge default shadow with options.shadow
+                    ...options,
+                    shadow: { ...defaultShadow, ...(options.shadow || {}) },
                 };
             } else { // For shapes and other potential future objects
                 newObject = { id: objectIdCounter, type: type, x: canvas.width / 2, y: canvas.height / 2, width: 300, height: 300, rotation: 0, stroke: '#000000', strokeWidth: 5, shadow: { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 }, ...options };
@@ -1118,14 +1105,12 @@
 
             if (type === 'shape') { newObject.fill = '#ff0000'; }
             else if (type === 'text') {
-                // Ensure fontFamily is correctly set
                 if (!newObject.fontFamily || !newObject.fontFamily.includes("Twemoji Country Flags")) {
                     const baseFont = newObject.fontFamily || "'Berlin Sans FB Demi Bold', sans-serif";
                     newObject.fontFamily = `"Twemoji Country Flags", ${baseFont}`;
                 }
-                newObject.size = newObject.size || 100; // Already part of text object literal
-                newObject.color = newObject.color || '#ffffff'; // Already part of text object literal
-                // newObject.strokeColor, newObject.strokeThickness etc. should come from options (stylePreset)
+                newObject.size = newObject.size || 100;
+                newObject.color = newObject.color || '#ffffff';
             } else if (type === 'image' && newObject.src) {
                 const img = new Image();
                 img.onload = () => {
@@ -1146,20 +1131,35 @@
             let line = '';
             const lines = [];
             let effectiveMaxWidth = maxWidth;
-            const padding = canvasWidth * 0.02;
-            if (align === 'left') { effectiveMaxWidth = canvasWidth - elementX - padding; }
-            else if (align === 'right') { effectiveMaxWidth = elementX - padding; }
-            else { effectiveMaxWidth = Math.min(maxWidth, canvasWidth - 2 * padding); }
-            effectiveMaxWidth = Math.max(50, effectiveMaxWidth);
+            const padding = canvasWidth * 0.02; // Represents 2% of canvas width as padding
+
+            // Adjust effectiveMaxWidth based on alignment and elementX (the logical anchor point of the text object)
+            if (align === 'left') {
+                // Text starts at elementX and goes towards right. Max width is from elementX to canvas edge minus padding.
+                effectiveMaxWidth = canvasWidth - elementX - padding;
+            } else if (align === 'right') {
+                // Text ends at elementX and goes towards left. Max width is from canvas start to elementX minus padding.
+                effectiveMaxWidth = elementX - padding;
+            } else { // center
+                // Text is centered at elementX. It can extend half maxWidth to left and half to right.
+                // It should not exceed canvas boundaries minus padding.
+                // Max width is the smaller of the passed maxWidth or space available considering padding.
+                effectiveMaxWidth = Math.min(maxWidth, canvasWidth - 2 * padding);
+            }
+            effectiveMaxWidth = Math.max(50, effectiveMaxWidth); // Ensure a minimum wrapping width
+
             for(let n = 0; n < words.length; n++) {
                 const testLine = line + words[n] + ' ';
                 const metrics = ctx.measureText(testLine);
                 const testWidth = metrics.width;
-                if (testWidth > effectiveMaxWidth && n > 0) { lines.push(line); line = words[n] + ' '; }
+                if (testWidth > effectiveMaxWidth && n > 0) {
+                    lines.push(line.trim());
+                    line = words[n] + ' ';
+                }
                 else { line = testLine; }
             }
-            lines.push(line);
-            return lines;
+            lines.push(line.trim());
+            return lines.filter(l => l); // Filter out any empty lines that might result from multiple spaces
         }
 
         function hexToRgba(hex, alpha = 1) {
@@ -1244,12 +1244,16 @@
             }
             ctx.restore();
 
-            textElements.forEach((el) => {
-                ctx.font = `bold ${el.size}px ${el.fontFamily}`;
-                ctx.textBaseline = 'top';
-                ctx.textAlign = el.align;
+            textElements.forEach((el) => { // el here is one of textElements[0-3]
+                // Font, baseline, align set for main text elements
+                ctx.font = `bold ${el.size}px ${el.fontFamily}`; // fontFamily should be correct from setLayout
+                ctx.textBaseline = 'top'; // Main elements are top-aligned
+                ctx.textAlign = el.align; // Use the element's specific alignment
+
                 const lineHeight = el.size * 1.2;
+                // For main elements, el.x, el.y, el.align, el.x are all canvas global coordinates
                 const lines = el.wrap ? wrapText(ctx, el.text, el.x, el.y, canvas.width * 0.96, lineHeight, el.align, el.x, canvas.width) : [el.text];
+
                 if (el.bgColor && !el.bgColor.endsWith(', 0)')) {
                     let textBlockVisualWidth = 0;
                     lines.forEach(line => {
@@ -1259,19 +1263,19 @@
                     if (lines.length > 1) {
                         textBlockVisualHeight += (lines.length - 1) * (lineHeight - el.size);
                     }
-                    if (el.text.trim() === "") {
+                    if (el.text.trim() === "") { // Minimal size for empty text with background
                         textBlockVisualWidth = el.size / 2;
                         textBlockVisualHeight = el.size;
                     }
                     let bgX, bgY, bgW, bgH;
                     if (el.bgFullWidth) {
                         bgX = 0; bgW = canvas.width;
-                        bgY = el.y - el.bgPadding;
+                        bgY = el.y - el.bgPadding; // el.y is the top of the text
                         bgH = textBlockVisualHeight + (el.bgPadding * 2);
                     } else {
                         if (el.align === 'left') bgX = el.x - el.bgPadding;
                         else if (el.align === 'right') bgX = el.x - textBlockVisualWidth - el.bgPadding;
-                        else bgX = el.x - (textBlockVisualWidth / 2) - el.bgPadding;
+                        else bgX = el.x - (textBlockVisualWidth / 2) - el.bgPadding; // Centered
                         bgY = el.y - el.bgPadding;
                         bgW = textBlockVisualWidth + (el.bgPadding * 2);
                         bgH = textBlockVisualHeight + (el.bgPadding * 2);
@@ -1279,17 +1283,17 @@
                     ctx.fillStyle = el.bgColor;
                     ctx.fillRect(bgX, bgY, bgW, bgH);
                 }
-                drawTextWithEffect(ctx, el, lines);
+                drawTextWithEffect(ctx, el, lines); // Pass main text element 'el' and its precalculated lines
             });
 
-            canvasObjects.forEach(obj => {
+            canvasObjects.forEach(obj => { // obj here is a snippet from canvasObjects
                 ctx.save();
-                ctx.translate(obj.x, obj.y);
+                ctx.translate(obj.x, obj.y); // Translate to snippet's center
                 ctx.rotate(obj.rotation * Math.PI / 180);
                 switch (obj.type) {
                     case 'shape': drawShape(obj); break;
                     case 'image': drawImageObject(obj); break;
-                    case 'text': drawTextWithEffect(ctx, obj); break;
+                    case 'text': drawTextWithEffect(ctx, obj); break; // Pass snippet 'obj'
                 }
                 ctx.restore();
             });
@@ -1321,26 +1325,62 @@
             }
         }
 
+        // MODIFIED FUNCTION:
         function drawTextWithEffect(ctx, el, precalculatedLines = null) {
             const text = el.text || '';
             const size = el.size || 100;
-            const xPos = el.x;
-            const yPos = el.y;
-            const alignment = el.align || 'center';
+            const alignmentSetting = el.align || 'center';
             const fontFamily = el.fontFamily || "\"Twemoji Country Flags\", 'Berlin Sans FB Demi Bold', sans-serif";
-            // Ensure "Twemoji Country Flags" is prioritized if el.fontFamily is somehow set without it
             const finalFontFamily = fontFamily.includes("Twemoji Country Flags") ? fontFamily : `"Twemoji Country Flags", ${fontFamily}`;
             ctx.font = `bold ${size}px ${finalFontFamily}`;
-            ctx.textAlign = alignment;
-            ctx.textBaseline = ctx.textBaseline === 'middle' ? 'middle' : 'top';
+
             const lineHeight = size * 1.2;
-            const lines = precalculatedLines || (el.wrap ? wrapText(ctx, text, xPos, yPos, canvas.width * 0.96, lineHeight, el.align, el.x, canvas.width) : [text]);
+            // Determine the type of element 'el' to apply appropriate drawing logic
+            const isCanvasObjectSnippet = typeof el.id === 'number' && el.type === 'text';
+            const isMainTextElement = typeof el.id === 'string' && (el.id.startsWith('text1') || el.id.startsWith('text2') || el.id.startsWith('text3') || el.id.startsWith('text4'));
+
+            let xToDraw;
+            let yInitialLinePos; // Y position for the baseline (top or middle) of the first line
+
+            // For wrapText, elementX (el.x for main, 0 for snippet) is key for alignment calcs
+            const wrapTextX = isCanvasObjectSnippet ? 0 : el.x;
+            const wrapTextY = isCanvasObjectSnippet ? 0 : el.y; // Y for wrapText is less critical but good for consistency
+            const wrapTextAlign = alignmentSetting;
+            const wrapTextElementX = isCanvasObjectSnippet ? 0 : el.x; // Crucial for wrapText's width calculation
+
+            const lines = precalculatedLines || (el.wrap ? wrapText(ctx, text, wrapTextX, wrapTextY, canvas.width * 0.96, lineHeight, wrapTextAlign, wrapTextElementX, canvas.width) : [text]);
+
+            if (isCanvasObjectSnippet) {
+                xToDraw = 0;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'top';
+                const totalTextHeight = lines.length * lineHeight;
+                const boundingBoxHeight = el.height || 200;
+                yInitialLinePos = -boundingBoxHeight / 2 + (boundingBoxHeight - totalTextHeight) / 2;
+            } else if (isMainTextElement) {
+                xToDraw = el.x;
+                yInitialLinePos = el.y;
+                ctx.textAlign = alignmentSetting;
+                ctx.textBaseline = 'top';
+            } else { // Assumed to be a preview context (e.g., in modals, style pickers)
+                xToDraw = el.x; // Use the x provided (usually center of the small preview canvas)
+                ctx.textAlign = 'center'; // Previews are generally centered
+                ctx.textBaseline = 'middle'; // Previews often look better vertically centered
+
+                const totalTextHeight = lines.length * lineHeight;
+                // For 'middle' baseline, yInitialLinePos is the Y for the middle of the first line
+                yInitialLinePos = el.y - (totalTextHeight / 2) + (lineHeight / 2);
+            }
+
             const drawLines = (drawFunc) => {
                 lines.forEach((line, index) => {
-                    const currentY = yPos + (index * lineHeight);
-                    drawFunc(line, xPos, currentY);
+                    // currentLineY is the y for the baseline (top or middle) of the current line
+                    const currentLineY = yInitialLinePos + (index * lineHeight);
+                    drawFunc(line, xToDraw, currentLineY);
                 });
             };
+
+            // Effects, shadow, stroke, fill logic (should be identical to original)
             const effect = el.advancedEffect;
             if (effect && effect.type !== 'none') {
                 ctx.save();
@@ -1380,15 +1420,18 @@
                 ctx.shadowOffsetX = el.shadowOffsetX;
                 ctx.shadowOffsetY = el.shadowOffsetY;
             }
-            if (el.strokeThickness > 0) {
+            // For snippets, strokeColor and strokeThickness come from the preset/options
+            // For main elements, they are direct properties.
+            // The 'el' object should have these directly if they apply.
+            if (el.strokeThickness > 0 && el.strokeColor) {
                 ctx.strokeStyle = el.strokeColor;
                 ctx.lineWidth = el.strokeThickness;
-                ctx.lineJoin = 'round'; // Add this to round the corners of strokes
+                ctx.lineJoin = 'round';
                 drawLines((txt, x, y) => ctx.strokeText(txt, x, y));
             }
             ctx.fillStyle = el.color;
             drawLines((txt, x, y) => ctx.fillText(txt, x, y));
-            ctx.shadowColor = 'transparent';
+            ctx.shadowColor = 'transparent'; // Reset shadow
             ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 0;
