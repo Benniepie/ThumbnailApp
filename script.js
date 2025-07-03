@@ -201,20 +201,23 @@
 
             const wordContainer = document.getElementById('snippet-word-choices');
             wordContainer.innerHTML = '';
+            // Store the selected preset directly, so addStyledSnippet can access it.
+            // We'll retrieve it in addStyledSnippet via activeSnippetStyleId as it's already global.
 
             snippetWords.forEach(word => {
                 const previewCanvas = document.createElement('canvas');
                 previewCanvas.className = 'snippet-word-preview';
                 previewCanvas.width = 300;
                 previewCanvas.height = 120;
-                previewCanvas.onclick = () => addStyledSnippet(word);
+                // Pass the preset object directly to addStyledSnippet
+                previewCanvas.onclick = () => addStyledSnippet(word, preset);
                 wordContainer.appendChild(previewCanvas);
 
                 const pCtx = previewCanvas.getContext('2d');
                 const previewTextElement = {
-                    ...preset,
+                    ...preset, // Use the full preset for styling
                     text: word,
-                    size: 70,
+                    size: 70, // Keep preview size consistent
                     x: previewCanvas.width / 2,
                     y: previewCanvas.height / 2,
                     align: 'center'
@@ -227,10 +230,17 @@
             document.getElementById('snippet-step2').style.display = 'block';
         }
 
-        function addStyledSnippet(word) {
-            const preset = stylePresets.find(p => p.id === activeSnippetStyleId);
-            if (!preset) return;
-            const styleOptions = { ...preset, text: word, size: 150 };
+        // Modified to accept the full style preset object
+        function addStyledSnippet(word, stylePreset) {
+            if (!stylePreset) {
+                console.error("No style preset provided to addStyledSnippet");
+                return;
+            }
+            // Combine the chosen word with the provided style preset.
+            // Set a default size for snippets, or use one from the preset if available and appropriate.
+            const snippetSize = stylePreset.size || 150; // Default to 150 if not in preset
+            const styleOptions = { ...stylePreset, text: word, size: snippetSize };
+
             addObject('text', styleOptions);
             closeSnippetModal();
         }
