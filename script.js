@@ -1327,6 +1327,7 @@
             if (el.strokeThickness > 0) {
                 ctx.strokeStyle = el.strokeColor;
                 ctx.lineWidth = el.strokeThickness;
+                ctx.lineJoin = 'round'; // Add this to round the corners of strokes
                 drawLines((txt, x, y) => ctx.strokeText(txt, x, y));
             }
             ctx.fillStyle = el.color;
