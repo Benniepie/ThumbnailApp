@@ -410,23 +410,37 @@ div[id^="style"] > .text-style-controls input[type="number"] {
             /* No specific dark mode changes needed if canvases handle their own bg */
         }
 
-        .preset-preview-canvas {
+        /* Combined styles for preset/snippet preview items */
+        .preset-preview-canvas,
+        .snippet-word-preview {
             width: 100%;
-            aspect-ratio: 16 / 9; /* A common aspect ratio, or adjust as needed, e.g., 2/1 */
-            border: 1px solid #ccc; /* Thinner border */
-            border-radius: 4px; /* Slightly less rounded */
-            cursor: pointer;
+            aspect-ratio: 16 / 9;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer !important; /* Added !important as a test for cursor */
             transition: transform 0.15s ease, box-shadow 0.15s ease;
-            background-color: #555; /* Darker default bg for previews for better contrast */
+            background-color: #555; /* Default background for the preview canvas */
             box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
-        .dark-mode .preset-preview-canvas {
+        .dark-mode .preset-preview-canvas,
+        .dark-mode .snippet-word-preview {
             border-color: #555;
-            background-color: #2a2a2a; /* Even darker for dark mode previews */
+            background-color: #2a2a2a;
         }
-        .preset-preview-canvas:hover {
+        .preset-preview-canvas:hover,
+        .snippet-word-preview:hover {
             transform: scale(1.05);
             box-shadow: 0 0 10px rgba(0, 123, 255, 0.7);
+        }
+
+        /* Combined styles for preset/snippet gallery containers */
+        .preset-gallery,
+        #snippet-word-choices {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            padding-top: 10px;
+            padding-bottom: 10px;
         }
 
         /* Styles for the snippet modal */
