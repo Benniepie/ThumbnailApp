@@ -1064,23 +1064,34 @@
                 } else if (options.fontFamily) {
                     combinedFontFamily = options.fontFamily;
                 }
-                newObject = { id: objectIdCounter, type: 'text', x: canvas.width / 2, y: canvas.height / 2, width: 500, height: 200, rotation: 0, text: 'New Text', size: 100, align: 'center', wrap: false, fontFamily: combinedFontFamily, ...options };
-            } else {
+                // Ensure a default shadow object is present if not supplied by options
+                const defaultShadow = { enabled: false, color: 'rgba(0,0,0,0.7)', blur: 5, offsetX: 2, offsetY: 2 };
+                newObject = {
+                    id: objectIdCounter, type: 'text',
+                    x: canvas.width / 2, y: canvas.height / 2,
+                    width: 500, height: 200, rotation: 0,
+                    text: 'New Text', size: 100, align: 'center', wrap: false,
+                    fontFamily: combinedFontFamily,
+                    // Spread options first, then ensure our default shadow is there if options didn't provide one,
+                    // or merge options.shadow with defaultShadow if options.shadow is partial.
+                    ...options, // Spread options first
+                    shadow: { ...defaultShadow, ...(options.shadow || {}) }, // Merge default shadow with options.shadow
+                };
+            } else { // For shapes and other potential future objects
                 newObject = { id: objectIdCounter, type: type, x: canvas.width / 2, y: canvas.height / 2, width: 300, height: 300, rotation: 0, stroke: '#000000', strokeWidth: 5, shadow: { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 }, ...options };
             };
+
             if (type === 'shape') { newObject.fill = '#ff0000'; }
             else if (type === 'text') {
-                // Ensure fontFamily is correctly set if not already handled by the text object creation logic
+                // Ensure fontFamily is correctly set
                 if (!newObject.fontFamily || !newObject.fontFamily.includes("Twemoji Country Flags")) {
                     const baseFont = newObject.fontFamily || "'Berlin Sans FB Demi Bold', sans-serif";
                     newObject.fontFamily = `"Twemoji Country Flags", ${baseFont}`;
                 }
-                // newObject.font is not a standard property, using newObject.fontFamily
-                // newObject.font = 'Berlin Sans FB Demi Bold'; // This line seems to be overridden or redundant
-                newObject.size = newObject.size || 100;
-                newObject.color = newObject.color || '#ffffff';
-            }
-            else if (type === 'image' && newObject.src) {
+                newObject.size = newObject.size || 100; // Already part of text object literal
+                newObject.color = newObject.color || '#ffffff'; // Already part of text object literal
+                // newObject.strokeColor, newObject.strokeThickness etc. should come from options (stylePreset)
+            } else if (type === 'image' && newObject.src) {
                 const img = new Image();
                 img.onload = () => {
                     newObject.img = img;
