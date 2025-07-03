@@ -455,6 +455,35 @@ div[id^="style"] > .text-style-controls input[type="number"] {
             background-color: #2d2d2d;
         }
 
+        /* Styling for snippet word choices to match preset previews */
+        #snippet-word-choices { /* This is the container for snippet-word-preview items */
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+            gap: 8px;
+            padding-top: 10px;
+            padding-bottom: 10px;
+        }
+
+        .snippet-word-preview { /* These are the individual word choice canvases */
+            width: 100%;
+            aspect-ratio: 16 / 9; /* Or adjust if a different aspect ratio is better for words */
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+            background-color: #555; /* Default background for the preview canvas */
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .dark-mode .snippet-word-preview {
+            border-color: #555;
+            background-color: #2a2a2a;
+        }
+        .snippet-word-preview:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 10px rgba(0, 123, 255, 0.7);
+        }
+
+
 /* Emoji Picker Custom Font */
 emoji-picker {
     --emoji-font-family: "Twemoji Country Flags", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji", "EmojiOne Color", "Android Emoji", sans-serif;
