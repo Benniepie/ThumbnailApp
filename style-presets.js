@@ -21,11 +21,13 @@ const stylePresets = [
         bgColor: 'rgba(0,0,0,0)',
         bgFullWidth: false,
         bgPadding: 10,
-        shadowEnabled: false,
-        shadowColor: 'rgba(0,0,0,0.7)',
-        shadowBlur: 5,
-        shadowOffsetX: 2,
-        shadowOffsetY: 2,
+        shadow: {
+            enabled: false,
+            color: 'rgba(0,0,0,0.7)',
+            blur: 5,
+            offsetX: 2,
+            offsetY: 2
+        },
         advancedEffect: {
             type: 'glitch',
             color1: argbToRgba(4279317333), // Greenish
@@ -45,11 +47,13 @@ const stylePresets = [
         bgColor: 'rgba(0,0,0,0)',
         bgFullWidth: false,
         bgPadding: 10,
-        shadowEnabled: false,
-        shadowColor: 'rgba(0,0,0,0.7)',
-        shadowBlur: 5,
-        shadowOffsetX: 2,
-        shadowOffsetY: 2,
+        shadow: {
+            enabled: false,
+            color: 'rgba(0,0,0,0.7)',
+            blur: 5,
+            offsetX: 2,
+            offsetY: 2
+        },
         advancedEffect: {
             type: 'splice',
             color1: '#FFD700', // Not used by splice, but good practice
@@ -69,11 +73,13 @@ const stylePresets = [
         bgColor: 'rgba(0,0,0,0)',
         bgFullWidth: false,
         bgPadding: 10,
-        shadowEnabled: false, // We use the advanced effect instead
-        shadowColor: 'rgba(0,0,0,0.7)',
-        shadowBlur: 5,
-        shadowOffsetX: 2,
-        shadowOffsetY: 2,
+        shadow: {
+            enabled: false, // We use the advanced effect instead for glow, but provide full shadow object
+            color: 'rgba(0,0,0,0.7)',
+            blur: 5,
+            offsetX: 2,
+            offsetY: 2
+        },
         advancedEffect: {
             type: 'neon',
             color1: argbToRgba(4281071359), // Bright Blue inner glow
@@ -94,11 +100,13 @@ const stylePresets = [
         bgColor: 'rgba(0,0,0,0)',
         bgFullWidth: false,
         bgPadding: 10,
-        shadowEnabled: true, // Can combine with standard shadow!
-        shadowColor: 'rgba(0,0,0,0.5)',
-        shadowBlur: 15,
-        shadowOffsetX: 0,
-        shadowOffsetY: 10,
+        shadow: {
+            enabled: true, // Can combine with standard shadow!
+            color: 'rgba(0,0,0,0.5)',
+            blur: 15,
+            offsetX: 0,
+            offsetY: 10
+        },
         advancedEffect: {
             type: 'echo',
             color1: 'rgba(255, 128, 0, 0.5)', // Semi-transparent orange
