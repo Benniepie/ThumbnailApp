@@ -996,6 +996,8 @@
             }
         });
 
+        document.getElementById('object-properties-panel').addEventListener('input', handleObjectPropertyChange);
+
         function getCanvasMousePos(e) {
             const rect = canvas.getBoundingClientRect();
             return {
@@ -1061,24 +1063,74 @@
             if (selectedObjectIndex < 0) return;
             const obj = canvasObjects[selectedObjectIndex];
             const { id, value, type, checked } = e.target;
+            let dimensionsNeedUpdate = false;
+
             switch (id) {
                 case 'obj-fill-color': obj.fill = value; break;
-                case 'obj-text-content': obj.text = value; break;
+                case 'obj-text-content':
+                    obj.text = value;
+                    dimensionsNeedUpdate = true;
+                    break;
                 case 'obj-text-color': obj.color = value; break;
-                case 'obj-font-size': obj.size = parseFloat(value); break;
+                case 'obj-font-size':
+                    obj.size = parseFloat(value);
+                    dimensionsNeedUpdate = true;
+                    break;
                 case 'obj-stroke-color': obj.stroke = value; break;
                 case 'obj-stroke-width': obj.strokeWidth = parseFloat(value); break;
                 case 'obj-shadow-enabled': obj.shadow.enabled = checked; break;
                 case 'obj-shadow-color': obj.shadow.color = value; break;
                 case 'obj-shadow-blur': obj.shadow.blur = parseFloat(value); break;
             }
+
+            if (dimensionsNeedUpdate && obj.type === 'text') {
+                const dims = calculateTextDimensions(obj);
+                obj.width = dims.width;
+                obj.height = dims.height;
+            }
+
             drawThumbnail();
         }
 
         function setupPositionInputListeners() { /* This function seems unused, consider removing or implementing */ }
         function addEventListeners() { /* This function seems unused, consider removing or implementing */ }
 
-        function addObject(type, options = {}) {
+        function calculateTextDimensions(textObject) {
+    ctx.save();
+    const size = textObject.size || 100;
+    const fontFamily = textObject.fontFamily || "'Berlin Sans FB Demi Bold', sans-serif";
+    const finalFontFamily = fontFamily.includes("Twemoji Country Flags") ? fontFamily : `"Twemoji Country Flags", ${fontFamily}`;
+    ctx.font = `bold ${size}px ${finalFontFamily}`;
+
+    const text = textObject.text || '';
+    const padding = 30;
+    const lineHeight = size * 1.2;
+    let lines;
+    let finalWidth;
+
+    // For wrapped text, the width is a constraint. For non-wrapped, it's calculated.
+    if (textObject.wrap && textObject.width) {
+        lines = wrapText(ctx, text, 0, 0, textObject.width, lineHeight, textObject.align, 0, textObject.width);
+        finalWidth = textObject.width;
+    } else {
+        lines = text.split('\n'); // Simple newline handling
+        let maxWidth = 0;
+        for (const line of lines) {
+            maxWidth = Math.max(maxWidth, ctx.measureText(line).width);
+        }
+        finalWidth = maxWidth;
+    }
+    
+    const totalTextHeight = lines.length * lineHeight;
+    ctx.restore();
+
+    return {
+        width: finalWidth + padding,
+        height: totalTextHeight + padding
+    };
+}
+
+function addObject(type, options = {}) {
             objectIdCounter++;
             let newObject;
             if (type === 'text') {
@@ -1091,17 +1143,33 @@
                 }
                 // Ensure a default shadow object is present if not supplied by options
                 const defaultShadow = { enabled: false, color: 'rgba(0,0,0,0.7)', blur: 5, offsetX: 2, offsetY: 2 };
+
+                // Destructure to remove the conflicting 'id' from the style preset options
+                const { id: presetId, ...restOptions } = options;
+
                 newObject = {
-                    id: objectIdCounter, type: 'text',
-                    x: canvas.width / 2, y: canvas.height / 2,
-                    width: 500, height: 200, rotation: 0,
-                    text: 'New Text', size: 100, align: 'center', wrap: false,
+                    // Start with defaults
+                    text: 'New Text',
+                    size: 100,
+                    align: 'center',
+                    wrap: false,
+                    rotation: 0,
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+
+                    // Apply all style options from the preset, without the conflicting id
+                    ...restOptions,
+
+                    // Enforce critical properties that must not be overridden
+                    id: objectIdCounter, // Guarantees a unique, numeric ID
+                    type: 'text',
                     fontFamily: combinedFontFamily,
-                    // Spread options first, then ensure our default shadow is there if options didn't provide one,
-                    // or merge options.shadow with defaultShadow if options.shadow is partial.
-                    ...options, // Spread options first
-                    shadow: { ...defaultShadow, ...(options.shadow || {}) }, // Merge default shadow with options.shadow
+                    shadow: { ...defaultShadow, ...(options.shadow || {}) },
                 };
+
+                const dims = calculateTextDimensions(newObject);
+                newObject.width = dims.width;
+                newObject.height = dims.height;
             } else { // For shapes and other potential future objects
                 newObject = { id: objectIdCounter, type: type, x: canvas.width / 2, y: canvas.height / 2, width: 300, height: 300, rotation: 0, stroke: '#000000', strokeWidth: 5, shadow: { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 }, ...options };
             };
@@ -1334,6 +1402,46 @@
 
                 const totalTextHeight = lines.length * lineHeight;
                 yInitialLinePos = el.y - (totalTextHeight / 2) + (lineHeight / 2);
+            }
+
+                        if (el.bgColor && el.bgColor !== 'rgba(0, 0, 0, 0)' && isMainTextElement) {
+                ctx.fillStyle = el.bgColor;
+                const padding = el.bgPadding || 0;
+
+                const savedShadowColor = ctx.shadowColor;
+                const savedShadowBlur = ctx.shadowBlur;
+                const savedShadowOffsetX = ctx.shadowOffsetX;
+                const savedShadowOffsetY = ctx.shadowOffsetY;
+                ctx.shadowColor = 'transparent';
+                ctx.shadowBlur = 0;
+                ctx.shadowOffsetX = 0;
+                ctx.shadowOffsetY = 0;
+
+                lines.forEach((line, index) => {
+                    const textMetrics = ctx.measureText(line);
+                    const textWidth = textMetrics.width;
+                    
+                    let lineX;
+                    if (ctx.textAlign === 'center') {
+                        lineX = xToDraw - (textWidth / 2);
+                    } else if (ctx.textAlign === 'right') {
+                        lineX = xToDraw - textWidth;
+                    } else { // left
+                        lineX = xToDraw;
+                    }
+
+                    const bgX = el.bgFullWidth ? 0 : lineX - padding;
+                    const bgY = yInitialLinePos + (index * lineHeight) - padding;
+                    const bgWidth = el.bgFullWidth ? canvas.width : textWidth + (padding * 2);
+                    const bgHeight = lineHeight + (padding * 2);
+
+                    ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
+                });
+
+                ctx.shadowColor = savedShadowColor;
+                ctx.shadowBlur = savedShadowBlur;
+                ctx.shadowOffsetX = savedShadowOffsetX;
+                ctx.shadowOffsetY = savedShadowOffsetY;
             }
 
             const drawLines = (drawFunc) => {
