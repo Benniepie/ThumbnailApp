@@ -1,38 +1,4 @@
-// ADD THIS
-        let activeSnippetStyleId = null; // For the two-step snippet adder
-        // Updated list of fonts to load locally, based on user-provided list
-        const fontFileNames = [
-            "Abril Fatface.ttf", "Aclonica Regular.ttf", "Acme Regular.ttf", "ADLaM Display Regular.ttf", "Afacad Regular.ttf",
-            "Agbalumo Regular.ttf", "Akronim Regular.ttf", "Alata Regular.ttf", "Alexandria Regular.ttf", "Alfa Slab One Regular.ttf",
-            "Alkatra Regular.ttf", "Almendra Display Regular.ttf", "Alumni Sans Regular.ttf", "Amethysta Regular.ttf",
-            "Amiko Regular.ttf", "Annapurna SIL.ttf", "Anta Regular.ttf", "AR One Sans Regular.ttf", "Audiowide Regular.ttf",
-            "Bagel Fat One Regular.ttf", "Bakbak One Regular.ttf", "Bangers Regular.ttf", "Barriecito Regular.ttf",
-            "Barrio Regular.ttf", "Berkshire Swash Regular.ttf", "Black And White Picture Regular.ttf", "Black Ops One Regular.ttf",
-            "Blaka Hollow Regular.ttf", "Bonbon Regular.ttf", "BRLNSDB.woff", "Butcherman Regular.ttf", "Caesar Dressing.ttf",
-            "Chokokutai Regular.ttf", "Eater.ttf", "Emblema One.ttf", "Fascinate.ttf",
-            "Faster One Regular.ttf", "Federo.ttf", "Frijole.ttf", "Fugaz One.ttf", "Gabarito Regular.ttf", "Geostar Fill.ttf",
-            "Geostar.ttf", "Goblin One.ttf", "Gochi Hand.ttf", "Hachi Maru Pop Regular.ttf", "Hahmlet Regular.ttf",
-            "Hedvig Letters Sans Regular.ttf", "Hedvig Letters Serif 24pt Regular.ttf", "Honk Regular.ttf",
-            "Ingrid Darling Regular.ttf", "Jacquarda Bastarda 9 Regular.ttf", "Kablammo Regular.ttf", "Kalnia Regular.ttf",
-            "Kay Pho Du.ttf", "Kdam Thmor Pro Regular.ttf", "Kode Mono Regular.ttf", "Radio Canada Bold.ttf",
-            "Radio Canada Regular.ttf", "Roboto (2).ttf", "Roboto.ttf", "Stint Ultra Condensed.ttf",
-            "Stint Ultra Expanded.ttf", "Stoke Regular.ttf", "Strait Regular.ttf", "Style Script Regular.ttf",
-            "Stylish Regular.ttf", "Sue Ellen Francisco .ttf", "SuezOne-Regular.ttf", "Sulphur Point Regular.ttf",
-            "Sunshiney Regular.ttf", "Syncopate Regular.ttf", "Syne Tactile Regular.ttf", "Tilt Prism Regular.ttf",
-            "Tilt Warp Regular.ttf", "Unbounded Regular.ttf", "Uncial Antiqua.ttf", "Underdog.ttf", "Unica One Regular.ttf",
-            "UnifrakturCook.ttf", "UnifrakturMaguntia.ttf", "Urbanist Regular.ttf", "Vampiro One.ttf",
-            "Vast Shadow Regular.ttf", "Viaoda Libre Regular.ttf", "Vidaloka .ttf", "Vina Sans Regular.ttf",
-            "Vollkorn Regular.ttf", "Voltaire Regular.ttf", "VT323 Regular.ttf", "Wallpoet.ttf", "Walter Turncoat Regular.ttf",
-            "Wire One Regular.ttf", "Workbench Regular.ttf", "Young Serif Regular.ttf", "Zen Kaku Gothic Antique Regular.ttf",
-            "Zen Tokyo Zoo Regular.ttf", "Zhi Mang Xing Regular.ttf", "Zilla Slab.ttf"
-            // Note: "CmAppIcons.ttf", "CupertinoIcons.ttf" are excluded as they are likely icon fonts.
-        ];
-
-        const localFontFamilies = fontFileNames.map(filename => {
-            const nameWithoutExtension = filename.substring(0, filename.lastIndexOf('.'));
-            // Use the nameWithoutExtension for the font-family name in CSS
-            return { name: nameWithoutExtension, path: `fonts/${filename}`, familyName: nameWithoutExtension };
-        });
+let activeSnippetStyleId = null; // For the two-step snippet adder
 
         const canvas = document.getElementById('thumbnailCanvas');
         const ctx = canvas.getContext('2d');
@@ -104,39 +70,50 @@
             }
         }));
 
-        Promise.all([
-            // Ensure BRLNSDB.woff is loaded using its correct family name if it's 'Berlin Sans FB Demi Bold'
-            new FontFace('Berlin Sans FB Demi Bold', 'url(fonts/BRLNSDB.woff)').load(),
-            ...localFontFamilies.map(font => new FontFace(font.familyName, `url(${font.path})`).load())
-        ]).then(loadedFonts => {
-            loadedFonts.forEach(font => document.fonts.add(font));
-            console.log('All local fonts attempted to load.');
-            
-            updateColorPreviews();
-            setLayout(1);
-            populateStylePresets();
+        document.addEventListener('DOMContentLoaded', () => {
+    // Ensure dark mode is the default
+    if (!document.body.classList.contains('dark-mode')) {
+        document.body.classList.add('dark-mode');
+    }
 
-            // Ensure dark mode is the default
-            if (!document.body.classList.contains('dark-mode')) {
-                document.body.classList.add('dark-mode');
-            }
-            // Call drawThumbnail directly AFTER theme is set and other initializations
-            drawThumbnail();
-
-        }).catch(function(error) {
-            console.error("A font could not be loaded: ", error);
-            updateColorPreviews();
-            setLayout(1);
-            populateStylePresets();
-            // Ensure dark mode is the default even in case of error
-            if (!document.body.classList.contains('dark-mode')) {
-                document.body.classList.add('dark-mode');
-            }
-            drawThumbnail();
-        });
+    // Initial setup calls
+    updateColorPreviews();
+    setLayout(1);
+    populateStylePresets();
+    populateFontSelectors(); // Make sure fonts are in the dropdowns
+    drawThumbnail();
+});
 
         canvas.width = 1920;
         canvas.height = 1080;
+
+        function populateFontSelectors() {
+    if (typeof localFontFamilies === 'undefined') {
+        console.error('localFontFamilies not defined. Make sure font-loader.js is loaded correctly.');
+        // Fallback to a basic list if the dynamic one fails
+        const basicFonts = ['Arial', 'Georgia', 'Verdana', 'Impact'];
+        const fontSelects = document.querySelectorAll('.font-family-select');
+        fontSelects.forEach(select => {
+            basicFonts.forEach(font => {
+                const option = document.createElement('option');
+                option.value = font; option.textContent = font; select.appendChild(option);
+            });
+        });
+        return;
+    }
+
+    const fontSelects = document.querySelectorAll('.font-family-select');
+    fontSelects.forEach(select => {
+        select.innerHTML = ''; // Clear existing options
+        localFontFamilies.forEach(font => {
+            const option = document.createElement('option');
+            option.value = font;
+            option.textContent = font;
+            option.style.fontFamily = `'${font}'`;
+            select.appendChild(option);
+        });
+    });
+}
 
         function populateStylePresets() {
             const galleries = document.querySelectorAll('.preset-gallery');
@@ -872,9 +849,9 @@
                             case 'bgAlpha': {
                                 const newAlpha = parseFloat(e.target.value) / 100;
                                 document.getElementById(`bgAlphaValue${elementIndex + 1}`).textContent = `${Math.round(newAlpha * 100)}%`;
-                                const rgbaMatchOld = textElements[elementIndex].bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
-                                if (rgbaMatchOld) {
-                                    textElements[elementIndex].bgColor = `rgba(${rgbaMatchOld[1]}, ${rgbaMatchOld[2]}, ${rgbaMatchOld[3]}, ${newAlpha})`;
+                                const rgbaMatch = textElements[elementIndex].bgColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
+                                if (rgbaMatch) {
+                                    textElements[elementIndex].bgColor = `rgba(${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]}, ${newAlpha})`;
                                 } else {
                                     const hexColor = document.getElementById(`bgColor${elementIndex + 1}`).value;
                                     const r = parseInt(hexColor.slice(1, 3), 16);
@@ -897,7 +874,7 @@
                             case 'shadowAlpha': {
                                 const newAlpha = parseFloat(e.target.value) / 100;
                                 document.getElementById(`shadowAlphaValue${elementIndex + 1}`).textContent = `${Math.round(newAlpha * 100)}%`;
-                                const shadowRgbaMatchOld = textElements[elementIndex].shadowColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+                                const shadowRgbaMatchOld = textElements[elementIndex].shadowColor.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/);
                                 if (shadowRgbaMatchOld) {
                                     textElements[elementIndex].shadowColor = `rgba(${shadowRgbaMatchOld[1]}, ${shadowRgbaMatchOld[2]}, ${shadowRgbaMatchOld[3]}, ${newAlpha})`;
                                 } else {
@@ -947,14 +924,14 @@
 
         function updateColorPreviews() {
             for(let i = 1; i <= 4; i++) {
-                const colorInput = document.getElementById(`color${i}`);
-                const previewDiv = document.getElementById(`preview${i}`);
-                if (colorInput && previewDiv) {
-                    previewDiv.style.backgroundColor = colorInput.value;
-                    if (textElements[i-1]) { textElements[i-1].color = colorInput.value; }
-                }
+                const color = document.getElementById(`color${i}`).value;
+                document.getElementById(`preview${i}`).style.backgroundColor = color;
             }
         }
+
+        document.querySelectorAll('input[type="color"]').forEach(input => {
+            input.addEventListener('input', updateColorPreviews);
+        });
 
         canvas.addEventListener('mousemove', (e) => {
             if (!dragState.isDragging) return;
@@ -1091,9 +1068,6 @@
 
             drawThumbnail();
         }
-
-        function setupPositionInputListeners() { /* This function seems unused, consider removing or implementing */ }
-        function addEventListeners() { /* This function seems unused, consider removing or implementing */ }
 
         function calculateTextDimensions(textObject) {
     ctx.save();
@@ -1682,53 +1656,85 @@ document.addEventListener('click', function(event) {
 
 // --- Font Preview Modal Functions ---
 function showFontPreviewModal() {
+    const modal = document.getElementById('fontPreviewModal');
     const gallery = document.getElementById('font-preview-gallery');
-    if (!gallery) return;
-    gallery.innerHTML = '';
+    gallery.innerHTML = ''; // Clear previous previews
 
-    const fontList = [
-        { name: 'Berlin Sans FB Demi Bold', path: 'fonts/BRLNSDB.woff' },
-        ...localFontFamilies.map(f => ({...f, path: f.path})) // Paths are already correct from localFontFamilies
-    ];
+    if (typeof localFontFamilies === 'undefined') {
+        gallery.innerHTML = '<p>Error: Font list not loaded.</p>';
+        modal.classList.add('show');
+        return;
+    }
 
-    fontList.forEach(font => {
-        const item = document.createElement('div');
-        item.className = 'font-gallery-item';
-        const nameLabel = document.createElement('div');
-        nameLabel.className = 'font-name-label';
-        nameLabel.textContent = font.name;
-        const svgNS = "http://www.w3.org/2000/svg";
-        const svg = document.createElementNS(svgNS, "svg");
-        svg.setAttribute("viewBox", "0 0 200 50");
-        const textElement = document.createElementNS(svgNS, "text");
-        textElement.setAttribute("x", "100");
-        textElement.setAttribute("y", "30");
-        const fontFamilyToApply = `"${font.name}"`;
-        textElement.style.fontFamily = fontFamilyToApply;
-        textElement.textContent = "Aa Bb Cc";
-        console.log(`Font Preview Modal: Applying font-family: ${fontFamilyToApply} for font object:`, font);
-        svg.appendChild(textElement);
-        item.appendChild(nameLabel);
-        item.appendChild(svg);
-        gallery.appendChild(item);
+    localFontFamilies.forEach(font => {
+        const previewItem = document.createElement('div');
+        previewItem.className = 'font-preview-item';
+        previewItem.style.fontFamily = `'${font}'`;
+        previewItem.style.fontSize = '24px'; // Larger preview size
+        previewItem.textContent = font; // Show the font name
+        
+        previewItem.onclick = () => {
+            const selectedObj = getSelectedObject();
+            if (selectedObj && selectedObj.type === 'text') {
+                selectedObj.fontFamily = font;
+                updateObjectPropertiesPanel(selectedObj);
+                drawThumbnail();
+            }
+            closeFontPreviewModal();
+        };
+        
+        gallery.appendChild(previewItem);
     });
-    document.getElementById('font-preview-modal').style.display = 'flex';
+
+    modal.classList.add('show');
 }
 
 function closeFontPreviewModal() {
-    const modal = document.getElementById('font-preview-modal');
-    if (modal) modal.style.display = 'none';
+    const modal = document.getElementById('fontPreviewModal');
+    if (modal) modal.classList.remove('show');
 }
 
-// Add overlay click to close for font preview modal
-const fontPreviewModal = document.getElementById('font-preview-modal');
-if (fontPreviewModal) {
-    fontPreviewModal.addEventListener('click', (event) => {
-        if (event.target === fontPreviewModal) { // Clicked on the overlay itself
-            closeFontPreviewModal();
+function populateFontDropdowns() {
+    if (typeof localFontFamilies === 'undefined' || localFontFamilies.length === 0) {
+        console.warn('Font list not available to populate dropdowns.');
+        return;
+    }
+
+    for (let i = 1; i <= 4; i++) {
+        const select = document.getElementById(`fontFamily${i}`);
+        if (select) {
+            const currentVal = select.value;
+            select.innerHTML = ''; // Clear existing options
+
+            localFontFamilies.forEach(font => {
+                const option = document.createElement('option');
+                option.value = font;
+                option.textContent = font;
+                select.appendChild(option);
+            });
+
+            // Restore the previously selected value if it still exists
+            if (localFontFamilies.includes(currentVal)) {
+                select.value = currentVal;
+            }
         }
-    });
+    }
 }
+
+document.addEventListener('DOMContentLoaded', () => {
+    // Populate font dropdowns with the correct, dynamically loaded fonts
+    populateFontDropdowns();
+
+    // Add listener to close the font preview modal when clicking on the overlay
+    const fontPreviewModal = document.getElementById('fontPreviewModal');
+    if (fontPreviewModal) {
+        fontPreviewModal.addEventListener('click', (event) => {
+            if (event.target === fontPreviewModal) { 
+                closeFontPreviewModal();
+            }
+        });
+    }
+});
 
 document.getElementById('object-properties-panel').addEventListener('input', handleObjectPropertyChange);
         // --- AI Image Generation Functions ---

@@ -1,39 +1,3 @@
-@font-face {
-    font-family: 'Berlin Sans FB Demi Bold';
-    src: url('fonts/BRLNSDB.woff') format('woff');
-    font-weight: bold; font-style: normal; font-display: swap;
-}
-@font-face {
-    font-family: 'Bangers';
-    src: url('fonts/Bangers-Regular.woff2') format('woff2');
-    font-weight: normal; font-style: normal; font-display: swap;
-}
-@font-face {
-    font-family: 'Suez One';
-    src: url('fonts/SuezOne-Regular.woff2') format('woff2');
-    font-weight: normal; font-style: normal; font-display: swap;
-}
-@font-face {
-    font-family: 'VT323';
-    src: url('fonts/VT323-Regular.woff2') format('woff2');
-    font-weight: normal; font-style: normal; font-display: swap;
-}
-@font-face {
-    font-family: 'Bruno Ace SC';
-    src: url('fonts/BrunoAceSC-Regular.woff2') format('woff2');
-    font-weight: normal; font-style: normal; font-display: swap;
-}
-@font-face {
-    font-family: 'Oswald';
-    src: url('fonts/Oswald-Regular.woff2') format('woff2');
-    font-weight: normal; font-style: normal; font-display: swap;
-}
-@font-face {
-    font-family: 'Montserrat';
-    src: url('fonts/Montserrat-Regular.woff2') format('woff2');
-    font-weight: normal; font-style: normal; font-display: swap;
-}
-
 body {
     font-family: "Twemoji Country Flags", 'Arial', sans-serif;
     margin: 0;
@@ -434,6 +398,107 @@ div[id^="style"] > .text-style-controls input[type="number"] {
         }
 
         /* Combined styles for preset/snippet gallery containers */
+
+/* Font Preview Modal */
+#fontPreviewModal {
+    position: fixed; /* Fixed position to cover the whole screen */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6); /* Semi-transparent black overlay */
+    display: flex; /* Use flexbox for centering */
+    justify-content: center; /* Center horizontally */
+    align-items: center; /* Center vertically */
+    z-index: 1000; /* Ensure it's on top of everything */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+#fontPreviewModal.show {
+    opacity: 1;
+    visibility: visible;
+}
+
+.font-preview-modal-content {
+    background-color: #fff;
+    padding: 25px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 1200px;
+    height: 80%;
+    max-height: 800px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    display: flex;
+    flex-direction: column;
+    position: relative; /* Added for close button positioning */
+}
+
+.dark-mode .font-preview-modal-content {
+    background-color: #2d2d2d;
+}
+
+.font-preview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-auto-rows: min-content; /* Respect item height */
+    gap: 15px;
+    overflow-y: auto; /* Make the grid scrollable */
+    flex-grow: 1; /* Allow grid to take up available space */
+    padding: 5px;
+    background: #f0f0f0;
+    border-radius: 5px;
+}
+
+.dark-mode .font-preview-grid {
+    background: #252525;
+}
+
+.font-preview-item {
+    background-color: #fff;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 5px;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+    font-size: 36px; /* Larger font size for preview */
+    display: flex; /* Use flexbox for centering */
+    align-items: center; /* Vertically center */
+    justify-content: center; /* Horizontally center */
+    height: 90px; /* Set fixed height */
+    word-break: break-word; /* Allow long font names to wrap */
+}
+
+.dark-mode .font-preview-item {
+    background-color: #3d3d3d;
+    border-color: #555;
+}
+
+.font-preview-item:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(0, 123, 255, 0.7);
+}
+
+.close-modal-btn {
+    position: absolute;
+    top: 10px;
+    right: 15px;
+    font-size: 28px;
+    font-weight: bold;
+    color: #aaa;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.font-preview-modal-close:hover {
+    color: #000;
+}
+
+.dark-mode .font-preview-modal-close:hover {
+    color: #fff;
+}
         .preset-gallery,
         #snippet-word-choices {
             display: grid;

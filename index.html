@@ -9,6 +9,7 @@
     <!-- Link to the external JavaScript files. 'defer' is important! -->
     <script src="templates.js" defer></script>
     <script src="style-presets.js" defer></script> <!-- Moved earlier -->
+    <script src="font-loader.js" defer></script>
     <script src="script.js" defer></script>
     <script type="module" defer>
         import { polyfillCountryFlagEmojis } from "https://cdn.skypack.dev/country-flag-emoji-polyfill";
@@ -356,106 +357,7 @@
                         <div class="text-style-controls">
                             <label>Font:
                                 <select id="fontFamily1">
-                                    <option value="'Berlin Sans FB Demi Bold', sans-serif">Berlin Sans FB Demi Bold</option>
-                                    <option value="'Bangers', cursive">Bangers</option>
-                                    <option value="'Suez One', serif">Suez One</option>
-                                    <option value="'VT323', monospace">VT323</option>
-                                    <option value="'Abril Fatface', serif">Abril Fatface</option>
-                                    <option value="'Aclonica Regular', sans-serif">Aclonica Regular</option>
-                                    <option value="'Acme Regular', sans-serif">Acme Regular</option>
-                                    <option value="'ADLaM Display Regular', cursive">ADLaM Display Regular</option>
-                                    <option value="'Afacad Regular', sans-serif">Afacad Regular</option>
-                                    <option value="'Agbalumo Regular', cursive">Agbalumo Regular</option>
-                                    <option value="'Akronim Regular', cursive">Akronim Regular</option>
-                                    <option value="'Alata Regular', sans-serif">Alata Regular</option>
-                                    <option value="'Alexandria Regular', sans-serif">Alexandria Regular</option>
-                                    <option value="'Alfa Slab One Regular', cursive">Alfa Slab One Regular</option>
-                                    <option value="'Alkatra Regular', cursive">Alkatra Regular</option>
-                                    <option value="'Almendra Display Regular', cursive">Almendra Display Regular</option>
-                                    <option value="'Alumni Sans Regular', sans-serif">Alumni Sans Regular</option>
-                                    <option value="'Amethysta Regular', serif">Amethysta Regular</option>
-                                    <option value="'Amiko Regular', sans-serif">Amiko Regular</option>
-                                    <option value="'Annapurna SIL', serif">Annapurna SIL</option>
-                                    <option value="'Anta Regular', sans-serif">Anta Regular</option>
-                                    <option value="'AR One Sans Regular', sans-serif">AR One Sans Regular</option>
-                                    <option value="'Audiowide Regular', sans-serif">Audiowide Regular</option>
-                                    <option value="'Bagel Fat One Regular', cursive">Bagel Fat One Regular</option>
-                                    <option value="'Bakbak One Regular', sans-serif">Bakbak One Regular</option>
-                                    <option value="'Barriecito Regular', cursive">Barriecito Regular</option>
-                                    <option value="'Barrio Regular', cursive">Barrio Regular</option>
-                                    <option value="'Berkshire Swash Regular', cursive">Berkshire Swash Regular</option>
-                                    <option value="'Black And White Picture Regular', sans-serif">Black And White Picture Regular</option>
-                                    <option value="'Black Ops One Regular', sans-serif">Black Ops One Regular</option>
-                                    <option value="'Blaka Hollow Regular', cursive">Blaka Hollow Regular</option>
-                                    <option value="'Bonbon Regular', cursive">Bonbon Regular</option>
-                                    <option value="'Butcherman Regular', cursive">Butcherman Regular</option>
-                                    <option value="'Caesar Dressing', cursive">Caesar Dressing</option>
-                                    <option value="'Chokokutai Regular', cursive">Chokokutai Regular</option>
-                                    <option value="'Eater', cursive">Eater</option>
-                                    <option value="'Emblema One', cursive">Emblema One</option>
-                                    <option value="'Fascinate', cursive">Fascinate</option>
-                                    <option value="'Faster One Regular', cursive">Faster One Regular</option>
-                                    <option value="'Federo', sans-serif">Federo</option>
-                                    <option value="'Frijole', cursive">Frijole</option>
-                                    <option value="'Fugaz One', sans-serif">Fugaz One</option>
-                                    <option value="'Gabarito Regular', sans-serif">Gabarito Regular</option>
-                                    <option value="'Geostar Fill', sans-serif">Geostar Fill</option>
-                                    <option value="'Geostar', sans-serif">Geostar</option>
-                                    <option value="'Goblin One', cursive">Goblin One</option>
-                                    <option value="'Gochi Hand', cursive">Gochi Hand</option>
-                                    <option value="'Hachi Maru Pop Regular', cursive">Hachi Maru Pop Regular</option>
-                                    <option value="'Hahmlet Regular', serif">Hahmlet Regular</option>
-                                    <option value="'Hedvig Letters Sans Regular', sans-serif">Hedvig Letters Sans Regular</option>
-                                    <option value="'Hedvig Letters Serif 24pt Regular', serif">Hedvig Letters Serif 24pt Regular</option>
-                                    <option value="'Honk Regular', cursive">Honk Regular</option>
-                                    <option value="'Ingrid Darling Regular', cursive">Ingrid Darling Regular</option>
-                                    <option value="'Jacquarda Bastarda 9 Regular', cursive">Jacquarda Bastarda 9 Regular</option>
-                                    <option value="'Kablammo Regular', cursive">Kablammo Regular</option>
-                                    <option value="'Kalnia Regular', sans-serif">Kalnia Regular</option>
-                                    <option value="'Kay Pho Du', serif">Kay Pho Du</option>
-                                    <option value="'Kdam Thmor Pro Regular', sans-serif">Kdam Thmor Pro Regular</option>
-                                    <option value="'Kode Mono Regular', monospace">Kode Mono Regular</option>
-                                    <option value="'Radio Canada Bold', sans-serif">Radio Canada Bold</option>
-                                    <option value="'Radio Canada Regular', sans-serif">Radio Canada Regular</option>
-                                    <option value="'Roboto (2)', sans-serif">Roboto (2)</option>
-                                    <option value="'Roboto', sans-serif">Roboto</option>
-                                    <option value="'Stint Ultra Condensed', sans-serif">Stint Ultra Condensed</option>
-                                    <option value="'Stint Ultra Expanded', sans-serif">Stint Ultra Expanded</option>
-                                    <option value="'Stoke Regular', serif">Stoke Regular</option>
-                                    <option value="'Strait Regular', sans-serif">Strait Regular</option>
-                                    <option value="'Style Script Regular', cursive">Style Script Regular</option>
-                                    <option value="'Stylish Regular', sans-serif">Stylish Regular</option>
-                                    <option value="'Sue Ellen Francisco ', cursive">Sue Ellen Francisco </option>
-                                    <option value="'SuezOne-Regular', serif">SuezOne-Regular</option>
-                                    <option value="'Sulphur Point Regular', sans-serif">Sulphur Point Regular</option>
-                                    <option value="'Sunshiney Regular', cursive">Sunshiney Regular</option>
-                                    <option value="'Syncopate Regular', sans-serif">Syncopate Regular</option>
-                                    <option value="'Syne Tactile Regular', sans-serif">Syne Tactile Regular</option>
-                                    <option value="'Tilt Prism Regular', cursive">Tilt Prism Regular</option>
-                                    <option value="'Tilt Warp Regular', cursive">Tilt Warp Regular</option>
-                                    <option value="'Unbounded Regular', sans-serif">Unbounded Regular</option>
-                                    <option value="'Uncial Antiqua', cursive">Uncial Antiqua</option>
-                                    <option value="'Underdog', cursive">Underdog</option>
-                                    <option value="'Unica One Regular', sans-serif">Unica One Regular</option>
-                                    <option value="'UnifrakturCook', cursive">UnifrakturCook</option>
-                                    <option value="'UnifrakturMaguntia', cursive">UnifrakturMaguntia</option>
-                                    <option value="'Urbanist Regular', sans-serif">Urbanist Regular</option>
-                                    <option value="'Vampiro One', cursive">Vampiro One</option>
-                                    <option value="'Vast Shadow Regular', cursive">Vast Shadow Regular</option>
-                                    <option value="'Viaoda Libre Regular', cursive">Viaoda Libre Regular</option>
-                                    <option value="'Vidaloka ', serif">Vidaloka </option>
-                                    <option value="'Vina Sans Regular', sans-serif">Vina Sans Regular</option>
-                                    <option value="'Vollkorn Regular', serif">Vollkorn Regular</option>
-                                    <option value="'Voltaire Regular', sans-serif">Voltaire Regular</option>
-                                    <option value="'Wallpoet', cursive">Wallpoet</option>
-                                    <option value="'Walter Turncoat Regular', cursive">Walter Turncoat Regular</option>
-                                    <option value="'Wire One Regular', sans-serif">Wire One Regular</option>
-                                    <option value="'Workbench Regular', sans-serif">Workbench Regular</option>
-                                    <option value="'Young Serif Regular', serif">Young Serif Regular</option>
-                                    <option value="'Zen Kaku Gothic Antique Regular', sans-serif">Zen Kaku Gothic Antique Regular</option>
-                                    <option value="'Zen Tokyo Zoo Regular', cursive">Zen Tokyo Zoo Regular</option>
-                                    <option value="'Zhi Mang Xing Regular', cursive">Zhi Mang Xing Regular</option>
-                                    <option value="'Zilla Slab', serif">Zilla Slab</option>
+                                    <!-- Options will be populated by script.js -->
                                 </select>
                             </label>
                             <label>Effect:
@@ -547,106 +449,7 @@
                         <div class="text-style-controls">
                             <label>Font:
                                 <select id="fontFamily2">
-                                    <option value="'Berlin Sans FB Demi Bold', sans-serif">Berlin Sans FB Demi Bold</option>
-                                    <option value="'Bangers', cursive">Bangers</option>
-                                    <option value="'Suez One', serif">Suez One</option>
-                                    <option value="'VT323', monospace">VT323</option>
-                                    <option value="'Abril Fatface', serif">Abril Fatface</option>
-                                    <option value="'Aclonica Regular', sans-serif">Aclonica Regular</option>
-                                    <option value="'Acme Regular', sans-serif">Acme Regular</option>
-                                    <option value="'ADLaM Display Regular', cursive">ADLaM Display Regular</option>
-                                    <option value="'Afacad Regular', sans-serif">Afacad Regular</option>
-                                    <option value="'Agbalumo Regular', cursive">Agbalumo Regular</option>
-                                    <option value="'Akronim Regular', cursive">Akronim Regular</option>
-                                    <option value="'Alata Regular', sans-serif">Alata Regular</option>
-                                    <option value="'Alexandria Regular', sans-serif">Alexandria Regular</option>
-                                    <option value="'Alfa Slab One Regular', cursive">Alfa Slab One Regular</option>
-                                    <option value="'Alkatra Regular', cursive">Alkatra Regular</option>
-                                    <option value="'Almendra Display Regular', cursive">Almendra Display Regular</option>
-                                    <option value="'Alumni Sans Regular', sans-serif">Alumni Sans Regular</option>
-                                    <option value="'Amethysta Regular', serif">Amethysta Regular</option>
-                                    <option value="'Amiko Regular', sans-serif">Amiko Regular</option>
-                                    <option value="'Annapurna SIL', serif">Annapurna SIL</option>
-                                    <option value="'Anta Regular', sans-serif">Anta Regular</option>
-                                    <option value="'AR One Sans Regular', sans-serif">AR One Sans Regular</option>
-                                    <option value="'Audiowide Regular', sans-serif">Audiowide Regular</option>
-                                    <option value="'Bagel Fat One Regular', cursive">Bagel Fat One Regular</option>
-                                    <option value="'Bakbak One Regular', sans-serif">Bakbak One Regular</option>
-                                    <option value="'Barriecito Regular', cursive">Barriecito Regular</option>
-                                    <option value="'Barrio Regular', cursive">Barrio Regular</option>
-                                    <option value="'Berkshire Swash Regular', cursive">Berkshire Swash Regular</option>
-                                    <option value="'Black And White Picture Regular', sans-serif">Black And White Picture Regular</option>
-                                    <option value="'Black Ops One Regular', sans-serif">Black Ops One Regular</option>
-                                    <option value="'Blaka Hollow Regular', cursive">Blaka Hollow Regular</option>
-                                    <option value="'Bonbon Regular', cursive">Bonbon Regular</option>
-                                    <option value="'Butcherman Regular', cursive">Butcherman Regular</option>
-                                    <option value="'Caesar Dressing', cursive">Caesar Dressing</option>
-                                    <option value="'Chokokutai Regular', cursive">Chokokutai Regular</option>
-                                    <option value="'Eater', cursive">Eater</option>
-                                    <option value="'Emblema One', cursive">Emblema One</option>
-                                    <option value="'Fascinate', cursive">Fascinate</option>
-                                    <option value="'Faster One Regular', cursive">Faster One Regular</option>
-                                    <option value="'Federo', sans-serif">Federo</option>
-                                    <option value="'Frijole', cursive">Frijole</option>
-                                    <option value="'Fugaz One', sans-serif">Fugaz One</option>
-                                    <option value="'Gabarito Regular', sans-serif">Gabarito Regular</option>
-                                    <option value="'Geostar Fill', sans-serif">Geostar Fill</option>
-                                    <option value="'Geostar', sans-serif">Geostar</option>
-                                    <option value="'Goblin One', cursive">Goblin One</option>
-                                    <option value="'Gochi Hand', cursive">Gochi Hand</option>
-                                    <option value="'Hachi Maru Pop Regular', cursive">Hachi Maru Pop Regular</option>
-                                    <option value="'Hahmlet Regular', serif">Hahmlet Regular</option>
-                                    <option value="'Hedvig Letters Sans Regular', sans-serif">Hedvig Letters Sans Regular</option>
-                                    <option value="'Hedvig Letters Serif 24pt Regular', serif">Hedvig Letters Serif 24pt Regular</option>
-                                    <option value="'Honk Regular', cursive">Honk Regular</option>
-                                    <option value="'Ingrid Darling Regular', cursive">Ingrid Darling Regular</option>
-                                    <option value="'Jacquarda Bastarda 9 Regular', cursive">Jacquarda Bastarda 9 Regular</option>
-                                    <option value="'Kablammo Regular', cursive">Kablammo Regular</option>
-                                    <option value="'Kalnia Regular', sans-serif">Kalnia Regular</option>
-                                    <option value="'Kay Pho Du', serif">Kay Pho Du</option>
-                                    <option value="'Kdam Thmor Pro Regular', sans-serif">Kdam Thmor Pro Regular</option>
-                                    <option value="'Kode Mono Regular', monospace">Kode Mono Regular</option>
-                                    <option value="'Radio Canada Bold', sans-serif">Radio Canada Bold</option>
-                                    <option value="'Radio Canada Regular', sans-serif">Radio Canada Regular</option>
-                                    <option value="'Roboto (2)', sans-serif">Roboto (2)</option>
-                                    <option value="'Roboto', sans-serif">Roboto</option>
-                                    <option value="'Stint Ultra Condensed', sans-serif">Stint Ultra Condensed</option>
-                                    <option value="'Stint Ultra Expanded', sans-serif">Stint Ultra Expanded</option>
-                                    <option value="'Stoke Regular', serif">Stoke Regular</option>
-                                    <option value="'Strait Regular', sans-serif">Strait Regular</option>
-                                    <option value="'Style Script Regular', cursive">Style Script Regular</option>
-                                    <option value="'Stylish Regular', sans-serif">Stylish Regular</option>
-                                    <option value="'Sue Ellen Francisco ', cursive">Sue Ellen Francisco </option>
-                                    <option value="'SuezOne-Regular', serif">SuezOne-Regular</option>
-                                    <option value="'Sulphur Point Regular', sans-serif">Sulphur Point Regular</option>
-                                    <option value="'Sunshiney Regular', cursive">Sunshiney Regular</option>
-                                    <option value="'Syncopate Regular', sans-serif">Syncopate Regular</option>
-                                    <option value="'Syne Tactile Regular', sans-serif">Syne Tactile Regular</option>
-                                    <option value="'Tilt Prism Regular', cursive">Tilt Prism Regular</option>
-                                    <option value="'Tilt Warp Regular', cursive">Tilt Warp Regular</option>
-                                    <option value="'Unbounded Regular', sans-serif">Unbounded Regular</option>
-                                    <option value="'Uncial Antiqua', cursive">Uncial Antiqua</option>
-                                    <option value="'Underdog', cursive">Underdog</option>
-                                    <option value="'Unica One Regular', sans-serif">Unica One Regular</option>
-                                    <option value="'UnifrakturCook', cursive">UnifrakturCook</option>
-                                    <option value="'UnifrakturMaguntia', cursive">UnifrakturMaguntia</option>
-                                    <option value="'Urbanist Regular', sans-serif">Urbanist Regular</option>
-                                    <option value="'Vampiro One', cursive">Vampiro One</option>
-                                    <option value="'Vast Shadow Regular', cursive">Vast Shadow Regular</option>
-                                    <option value="'Viaoda Libre Regular', cursive">Viaoda Libre Regular</option>
-                                    <option value="'Vidaloka ', serif">Vidaloka </option>
-                                    <option value="'Vina Sans Regular', sans-serif">Vina Sans Regular</option>
-                                    <option value="'Vollkorn Regular', serif">Vollkorn Regular</option>
-                                    <option value="'Voltaire Regular', sans-serif">Voltaire Regular</option>
-                                    <option value="'Wallpoet', cursive">Wallpoet</option>
-                                    <option value="'Walter Turncoat Regular', cursive">Walter Turncoat Regular</option>
-                                    <option value="'Wire One Regular', sans-serif">Wire One Regular</option>
-                                    <option value="'Workbench Regular', sans-serif">Workbench Regular</option>
-                                    <option value="'Young Serif Regular', serif">Young Serif Regular</option>
-                                    <option value="'Zen Kaku Gothic Antique Regular', sans-serif">Zen Kaku Gothic Antique Regular</option>
-                                    <option value="'Zen Tokyo Zoo Regular', cursive">Zen Tokyo Zoo Regular</option>
-                                    <option value="'Zhi Mang Xing Regular', cursive">Zhi Mang Xing Regular</option>
-                                    <option value="'Zilla Slab', serif">Zilla Slab</option>
+                                    <!-- Options will be populated by script.js -->
                                 </select>
                             </label>
                             <label>Effect:
@@ -741,106 +544,7 @@
                         <div class="text-style-controls">
                             <label>Font:
                                 <select id="fontFamily3">
-                                    <option value="'Berlin Sans FB Demi Bold', sans-serif">Berlin Sans FB Demi Bold</option>
-                                    <option value="'Bangers', cursive">Bangers</option>
-                                    <option value="'Suez One', serif">Suez One</option>
-                                    <option value="'VT323', monospace">VT323</option>
-                                    <option value="'Abril Fatface', serif">Abril Fatface</option>
-                                    <option value="'Aclonica Regular', sans-serif">Aclonica Regular</option>
-                                    <option value="'Acme Regular', sans-serif">Acme Regular</option>
-                                    <option value="'ADLaM Display Regular', cursive">ADLaM Display Regular</option>
-                                    <option value="'Afacad Regular', sans-serif">Afacad Regular</option>
-                                    <option value="'Agbalumo Regular', cursive">Agbalumo Regular</option>
-                                    <option value="'Akronim Regular', cursive">Akronim Regular</option>
-                                    <option value="'Alata Regular', sans-serif">Alata Regular</option>
-                                    <option value="'Alexandria Regular', sans-serif">Alexandria Regular</option>
-                                    <option value="'Alfa Slab One Regular', cursive">Alfa Slab One Regular</option>
-                                    <option value="'Alkatra Regular', cursive">Alkatra Regular</option>
-                                    <option value="'Almendra Display Regular', cursive">Almendra Display Regular</option>
-                                    <option value="'Alumni Sans Regular', sans-serif">Alumni Sans Regular</option>
-                                    <option value="'Amethysta Regular', serif">Amethysta Regular</option>
-                                    <option value="'Amiko Regular', sans-serif">Amiko Regular</option>
-                                    <option value="'Annapurna SIL', serif">Annapurna SIL</option>
-                                    <option value="'Anta Regular', sans-serif">Anta Regular</option>
-                                    <option value="'AR One Sans Regular', sans-serif">AR One Sans Regular</option>
-                                    <option value="'Audiowide Regular', sans-serif">Audiowide Regular</option>
-                                    <option value="'Bagel Fat One Regular', cursive">Bagel Fat One Regular</option>
-                                    <option value="'Bakbak One Regular', sans-serif">Bakbak One Regular</option>
-                                    <option value="'Barriecito Regular', cursive">Barriecito Regular</option>
-                                    <option value="'Barrio Regular', cursive">Barrio Regular</option>
-                                    <option value="'Berkshire Swash Regular', cursive">Berkshire Swash Regular</option>
-                                    <option value="'Black And White Picture Regular', sans-serif">Black And White Picture Regular</option>
-                                    <option value="'Black Ops One Regular', sans-serif">Black Ops One Regular</option>
-                                    <option value="'Blaka Hollow Regular', cursive">Blaka Hollow Regular</option>
-                                    <option value="'Bonbon Regular', cursive">Bonbon Regular</option>
-                                    <option value="'Butcherman Regular', cursive">Butcherman Regular</option>
-                                    <option value="'Caesar Dressing', cursive">Caesar Dressing</option>
-                                    <option value="'Chokokutai Regular', cursive">Chokokutai Regular</option>
-                                    <option value="'Eater', cursive">Eater</option>
-                                    <option value="'Emblema One', cursive">Emblema One</option>
-                                    <option value="'Fascinate', cursive">Fascinate</option>
-                                    <option value="'Faster One Regular', cursive">Faster One Regular</option>
-                                    <option value="'Federo', sans-serif">Federo</option>
-                                    <option value="'Frijole', cursive">Frijole</option>
-                                    <option value="'Fugaz One', sans-serif">Fugaz One</option>
-                                    <option value="'Gabarito Regular', sans-serif">Gabarito Regular</option>
-                                    <option value="'Geostar Fill', sans-serif">Geostar Fill</option>
-                                    <option value="'Geostar', sans-serif">Geostar</option>
-                                    <option value="'Goblin One', cursive">Goblin One</option>
-                                    <option value="'Gochi Hand', cursive">Gochi Hand</option>
-                                    <option value="'Hachi Maru Pop Regular', cursive">Hachi Maru Pop Regular</option>
-                                    <option value="'Hahmlet Regular', serif">Hahmlet Regular</option>
-                                    <option value="'Hedvig Letters Sans Regular', sans-serif">Hedvig Letters Sans Regular</option>
-                                    <option value="'Hedvig Letters Serif 24pt Regular', serif">Hedvig Letters Serif 24pt Regular</option>
-                                    <option value="'Honk Regular', cursive">Honk Regular</option>
-                                    <option value="'Ingrid Darling Regular', cursive">Ingrid Darling Regular</option>
-                                    <option value="'Jacquarda Bastarda 9 Regular', cursive">Jacquarda Bastarda 9 Regular</option>
-                                    <option value="'Kablammo Regular', cursive">Kablammo Regular</option>
-                                    <option value="'Kalnia Regular', sans-serif">Kalnia Regular</option>
-                                    <option value="'Kay Pho Du', serif">Kay Pho Du</option>
-                                    <option value="'Kdam Thmor Pro Regular', sans-serif">Kdam Thmor Pro Regular</option>
-                                    <option value="'Kode Mono Regular', monospace">Kode Mono Regular</option>
-                                    <option value="'Radio Canada Bold', sans-serif">Radio Canada Bold</option>
-                                    <option value="'Radio Canada Regular', sans-serif">Radio Canada Regular</option>
-                                    <option value="'Roboto (2)', sans-serif">Roboto (2)</option>
-                                    <option value="'Roboto', sans-serif">Roboto</option>
-                                    <option value="'Stint Ultra Condensed', sans-serif">Stint Ultra Condensed</option>
-                                    <option value="'Stint Ultra Expanded', sans-serif">Stint Ultra Expanded</option>
-                                    <option value="'Stoke Regular', serif">Stoke Regular</option>
-                                    <option value="'Strait Regular', sans-serif">Strait Regular</option>
-                                    <option value="'Style Script Regular', cursive">Style Script Regular</option>
-                                    <option value="'Stylish Regular', sans-serif">Stylish Regular</option>
-                                    <option value="'Sue Ellen Francisco ', cursive">Sue Ellen Francisco </option>
-                                    <option value="'SuezOne-Regular', serif">SuezOne-Regular</option>
-                                    <option value="'Sulphur Point Regular', sans-serif">Sulphur Point Regular</option>
-                                    <option value="'Sunshiney Regular', cursive">Sunshiney Regular</option>
-                                    <option value="'Syncopate Regular', sans-serif">Syncopate Regular</option>
-                                    <option value="'Syne Tactile Regular', sans-serif">Syne Tactile Regular</option>
-                                    <option value="'Tilt Prism Regular', cursive">Tilt Prism Regular</option>
-                                    <option value="'Tilt Warp Regular', cursive">Tilt Warp Regular</option>
-                                    <option value="'Unbounded Regular', sans-serif">Unbounded Regular</option>
-                                    <option value="'Uncial Antiqua', cursive">Uncial Antiqua</option>
-                                    <option value="'Underdog', cursive">Underdog</option>
-                                    <option value="'Unica One Regular', sans-serif">Unica One Regular</option>
-                                    <option value="'UnifrakturCook', cursive">UnifrakturCook</option>
-                                    <option value="'UnifrakturMaguntia', cursive">UnifrakturMaguntia</option>
-                                    <option value="'Urbanist Regular', sans-serif">Urbanist Regular</option>
-                                    <option value="'Vampiro One', cursive">Vampiro One</option>
-                                    <option value="'Vast Shadow Regular', cursive">Vast Shadow Regular</option>
-                                    <option value="'Viaoda Libre Regular', cursive">Viaoda Libre Regular</option>
-                                    <option value="'Vidaloka ', serif">Vidaloka </option>
-                                    <option value="'Vina Sans Regular', sans-serif">Vina Sans Regular</option>
-                                    <option value="'Vollkorn Regular', serif">Vollkorn Regular</option>
-                                    <option value="'Voltaire Regular', sans-serif">Voltaire Regular</option>
-                                    <option value="'Wallpoet', cursive">Wallpoet</option>
-                                    <option value="'Walter Turncoat Regular', cursive">Walter Turncoat Regular</option>
-                                    <option value="'Wire One Regular', sans-serif">Wire One Regular</option>
-                                    <option value="'Workbench Regular', sans-serif">Workbench Regular</option>
-                                    <option value="'Young Serif Regular', serif">Young Serif Regular</option>
-                                    <option value="'Zen Kaku Gothic Antique Regular', sans-serif">Zen Kaku Gothic Antique Regular</option>
-                                    <option value="'Zen Tokyo Zoo Regular', cursive">Zen Tokyo Zoo Regular</option>
-                                    <option value="'Zhi Mang Xing Regular', cursive">Zhi Mang Xing Regular</option>
-                                    <option value="'Zilla Slab', serif">Zilla Slab</option>
+                                    <!-- Options will be populated by script.js -->
                                 </select>
                             </label>
                             <label>Effect:
@@ -935,106 +639,7 @@
                         <div class="text-style-controls">
                             <label>Font:
                                 <select id="fontFamily4">
-                                    <option value="'Berlin Sans FB Demi Bold', sans-serif">Berlin Sans FB Demi Bold</option>
-                                    <option value="'Bangers', cursive">Bangers</option>
-                                    <option value="'Suez One', serif">Suez One</option>
-                                    <option value="'VT323', monospace">VT323</option>
-                                    <option value="'Abril Fatface', serif">Abril Fatface</option>
-                                    <option value="'Aclonica Regular', sans-serif">Aclonica Regular</option>
-                                    <option value="'Acme Regular', sans-serif">Acme Regular</option>
-                                    <option value="'ADLaM Display Regular', cursive">ADLaM Display Regular</option>
-                                    <option value="'Afacad Regular', sans-serif">Afacad Regular</option>
-                                    <option value="'Agbalumo Regular', cursive">Agbalumo Regular</option>
-                                    <option value="'Akronim Regular', cursive">Akronim Regular</option>
-                                    <option value="'Alata Regular', sans-serif">Alata Regular</option>
-                                    <option value="'Alexandria Regular', sans-serif">Alexandria Regular</option>
-                                    <option value="'Alfa Slab One Regular', cursive">Alfa Slab One Regular</option>
-                                    <option value="'Alkatra Regular', cursive">Alkatra Regular</option>
-                                    <option value="'Almendra Display Regular', cursive">Almendra Display Regular</option>
-                                    <option value="'Alumni Sans Regular', sans-serif">Alumni Sans Regular</option>
-                                    <option value="'Amethysta Regular', serif">Amethysta Regular</option>
-                                    <option value="'Amiko Regular', sans-serif">Amiko Regular</option>
-                                    <option value="'Annapurna SIL', serif">Annapurna SIL</option>
-                                    <option value="'Anta Regular', sans-serif">Anta Regular</option>
-                                    <option value="'AR One Sans Regular', sans-serif">AR One Sans Regular</option>
-                                    <option value="'Audiowide Regular', sans-serif">Audiowide Regular</option>
-                                    <option value="'Bagel Fat One Regular', cursive">Bagel Fat One Regular</option>
-                                    <option value="'Bakbak One Regular', sans-serif">Bakbak One Regular</option>
-                                    <option value="'Barriecito Regular', cursive">Barriecito Regular</option>
-                                    <option value="'Barrio Regular', cursive">Barrio Regular</option>
-                                    <option value="'Berkshire Swash Regular', cursive">Berkshire Swash Regular</option>
-                                    <option value="'Black And White Picture Regular', sans-serif">Black And White Picture Regular</option>
-                                    <option value="'Black Ops One Regular', sans-serif">Black Ops One Regular</option>
-                                    <option value="'Blaka Hollow Regular', cursive">Blaka Hollow Regular</option>
-                                    <option value="'Bonbon Regular', cursive">Bonbon Regular</option>
-                                    <option value="'Butcherman Regular', cursive">Butcherman Regular</option>
-                                    <option value="'Caesar Dressing', cursive">Caesar Dressing</option>
-                                    <option value="'Chokokutai Regular', cursive">Chokokutai Regular</option>
-                                    <option value="'Eater', cursive">Eater</option>
-                                    <option value="'Emblema One', cursive">Emblema One</option>
-                                    <option value="'Fascinate', cursive">Fascinate</option>
-                                    <option value="'Faster One Regular', cursive">Faster One Regular</option>
-                                    <option value="'Federo', sans-serif">Federo</option>
-                                    <option value="'Frijole', cursive">Frijole</option>
-                                    <option value="'Fugaz One', sans-serif">Fugaz One</option>
-                                    <option value="'Gabarito Regular', sans-serif">Gabarito Regular</option>
-                                    <option value="'Geostar Fill', sans-serif">Geostar Fill</option>
-                                    <option value="'Geostar', sans-serif">Geostar</option>
-                                    <option value="'Goblin One', cursive">Goblin One</option>
-                                    <option value="'Gochi Hand', cursive">Gochi Hand</option>
-                                    <option value="'Hachi Maru Pop Regular', cursive">Hachi Maru Pop Regular</option>
-                                    <option value="'Hahmlet Regular', serif">Hahmlet Regular</option>
-                                    <option value="'Hedvig Letters Sans Regular', sans-serif">Hedvig Letters Sans Regular</option>
-                                    <option value="'Hedvig Letters Serif 24pt Regular', serif">Hedvig Letters Serif 24pt Regular</option>
-                                    <option value="'Honk Regular', cursive">Honk Regular</option>
-                                    <option value="'Ingrid Darling Regular', cursive">Ingrid Darling Regular</option>
-                                    <option value="'Jacquarda Bastarda 9 Regular', cursive">Jacquarda Bastarda 9 Regular</option>
-                                    <option value="'Kablammo Regular', cursive">Kablammo Regular</option>
-                                    <option value="'Kalnia Regular', sans-serif">Kalnia Regular</option>
-                                    <option value="'Kay Pho Du', serif">Kay Pho Du</option>
-                                    <option value="'Kdam Thmor Pro Regular', sans-serif">Kdam Thmor Pro Regular</option>
-                                    <option value="'Kode Mono Regular', monospace">Kode Mono Regular</option>
-                                    <option value="'Radio Canada Bold', sans-serif">Radio Canada Bold</option>
-                                    <option value="'Radio Canada Regular', sans-serif">Radio Canada Regular</option>
-                                    <option value="'Roboto (2)', sans-serif">Roboto (2)</option>
-                                    <option value="'Roboto', sans-serif">Roboto</option>
-                                    <option value="'Stint Ultra Condensed', sans-serif">Stint Ultra Condensed</option>
-                                    <option value="'Stint Ultra Expanded', sans-serif">Stint Ultra Expanded</option>
-                                    <option value="'Stoke Regular', serif">Stoke Regular</option>
-                                    <option value="'Strait Regular', sans-serif">Strait Regular</option>
-                                    <option value="'Style Script Regular', cursive">Style Script Regular</option>
-                                    <option value="'Stylish Regular', sans-serif">Stylish Regular</option>
-                                    <option value="'Sue Ellen Francisco ', cursive">Sue Ellen Francisco </option>
-                                    <option value="'SuezOne-Regular', serif">SuezOne-Regular</option>
-                                    <option value="'Sulphur Point Regular', sans-serif">Sulphur Point Regular</option>
-                                    <option value="'Sunshiney Regular', cursive">Sunshiney Regular</option>
-                                    <option value="'Syncopate Regular', sans-serif">Syncopate Regular</option>
-                                    <option value="'Syne Tactile Regular', sans-serif">Syne Tactile Regular</option>
-                                    <option value="'Tilt Prism Regular', cursive">Tilt Prism Regular</option>
-                                    <option value="'Tilt Warp Regular', cursive">Tilt Warp Regular</option>
-                                    <option value="'Unbounded Regular', sans-serif">Unbounded Regular</option>
-                                    <option value="'Uncial Antiqua', cursive">Uncial Antiqua</option>
-                                    <option value="'Underdog', cursive">Underdog</option>
-                                    <option value="'Unica One Regular', sans-serif">Unica One Regular</option>
-                                    <option value="'UnifrakturCook', cursive">UnifrakturCook</option>
-                                    <option value="'UnifrakturMaguntia', cursive">UnifrakturMaguntia</option>
-                                    <option value="'Urbanist Regular', sans-serif">Urbanist Regular</option>
-                                    <option value="'Vampiro One', cursive">Vampiro One</option>
-                                    <option value="'Vast Shadow Regular', cursive">Vast Shadow Regular</option>
-                                    <option value="'Viaoda Libre Regular', cursive">Viaoda Libre Regular</option>
-                                    <option value="'Vidaloka ', serif">Vidaloka </option>
-                                    <option value="'Vina Sans Regular', sans-serif">Vina Sans Regular</option>
-                                    <option value="'Vollkorn Regular', serif">Vollkorn Regular</option>
-                                    <option value="'Voltaire Regular', sans-serif">Voltaire Regular</option>
-                                    <option value="'Wallpoet', cursive">Wallpoet</option>
-                                    <option value="'Walter Turncoat Regular', cursive">Walter Turncoat Regular</option>
-                                    <option value="'Wire One Regular', sans-serif">Wire One Regular</option>
-                                    <option value="'Workbench Regular', sans-serif">Workbench Regular</option>
-                                    <option value="'Young Serif Regular', serif">Young Serif Regular</option>
-                                    <option value="'Zen Kaku Gothic Antique Regular', sans-serif">Zen Kaku Gothic Antique Regular</option>
-                                    <option value="'Zen Tokyo Zoo Regular', cursive">Zen Tokyo Zoo Regular</option>
-                                    <option value="'Zhi Mang Xing Regular', cursive">Zhi Mang Xing Regular</option>
-                                    <option value="'Zilla Slab', serif">Zilla Slab</option>
+                                    <!-- Options will be populated by script.js -->
                                 </select>
                             </label>
                             <label>Effect:
@@ -1287,13 +892,16 @@
     </div>
 
     <!-- Font Preview Modal -->
-    <div id="font-preview-modal" class="modal-overlay" style="display: none;">
-        <div class="modal-content">
-            <h2>Font Previews</h2>
-            <div id="font-preview-gallery" class="font-gallery">
-                <!-- SVG font previews will be generated here by JS -->
+    <div id="fontPreviewModal" class="modal-overlay"> <!-- ID changed to camelCase, inline style removed -->
+        <div class="font-preview-modal-content"> <!-- Class changed to be more specific -->
+            <span class="close-modal-btn" onclick="closeFontPreviewModal()">&times;</span>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2 style="margin: 0;">Font Previews</h2>
             </div>
-            <button onclick="closeFontPreviewModal()" style="margin-top: 20px; background-color: #aaa;">Close</button>
+            <div id="font-preview-gallery" class="font-preview-grid"> <!-- Class changed to match CSS grid styles -->
+                <!-- Font previews will be generated here by JS -->
+            </div>
+            <!-- The close button was moved to the header -->
         </div>
     </div>
 
