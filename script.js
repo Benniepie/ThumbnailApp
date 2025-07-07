@@ -247,17 +247,329 @@ let activeSnippetStyleId = null; // For the two-step snippet adder
             closeSnippetModal();
         }
 
-        function updateFxControlsVisibility(elementIndex) {
-            const fxType = document.getElementById(`advancedEffectType${elementIndex + 1}`).value;
-            const paramsContainer = document.getElementById(`fx-params${elementIndex + 1}`);
-            paramsContainer.querySelectorAll('.fx-param-control').forEach(control => {
-                const fxFor = control.dataset.fxFor.split(' ');
-                if (fxFor.includes(fxType)) {
-                    control.style.display = 'flex';
-                } else {
-                    control.style.display = 'none';
+        const peopleData = {
+            'Donald Trump': {
+                'Default': 'images/people/donald-trump/1.png',
+                'Happy': 'images/people/donald-trump/2.png',
+                'Sad': 'images/people/donald-trump/3.png',
+                'Angry': 'images/people/donald-trump/4.png',
+                'Surprised': 'images/people/donald-trump/5.png',
+            },
+            'Placeholder Person': {
+                'Default': 'images/placeholder.png',
+            }
+        };
+
+        function showPersonPicker() {
+            document.getElementById('person-picker-modal').style.display = 'block';
+            showPersonPickerStep1();
+        }
+
+        function closePersonPicker() {
+            document.getElementById('person-picker-modal').style.display = 'none';
+        }
+
+        function showPersonPickerStep1() {
+            const step1 = document.getElementById('person-picker-step1');
+            const step2 = document.getElementById('person-picker-step2');
+            step1.style.display = 'block';
+            step2.style.display = 'none';
+
+            const personGrid = document.getElementById('person-selection-grid');
+            console.log('Debugging person-selection-grid:', personGrid);
+            personGrid.innerHTML = '';
+            for (const personName in peopleData) {
+                const personContainer = document.createElement('div');
+                personContainer.className = 'grid-item';
+                personContainer.onclick = () => selectPerson(personName);
+
+                const img = document.createElement('img');
+                img.src = peopleData[personName]['Default'];
+                img.alt = personName;
+                
+                const label = document.createElement('p');
+                label.textContent = personName;
+
+                personContainer.appendChild(img);
+                personContainer.appendChild(label);
+                personGrid.appendChild(personContainer);
+            }
+        }
+
+        function selectPerson(personName) {
+            const step1 = document.getElementById('person-picker-step1');
+            const step2 = document.getElementById('person-picker-step2');
+            step1.style.display = 'none';
+            step2.style.display = 'block';
+
+            document.getElementById('selected-person-name').textContent = personName;
+
+            const emotionGrid = document.getElementById('emotion-selection-grid');
+            emotionGrid.innerHTML = '';
+            const emotions = peopleData[personName];
+            for (const emotionName in emotions) {
+                const imgPath = emotions[emotionName];
+                const emotionContainer = document.createElement('div');
+                emotionContainer.className = 'grid-item';
+                emotionContainer.onclick = () => addPersonImageToCanvas(imgPath);
+
+                const img = document.createElement('img');
+                img.src = imgPath;
+                img.alt = emotionName;
+
+                const label = document.createElement('p');
+                label.textContent = emotionName;
+
+                emotionContainer.appendChild(img);
+                emotionContainer.appendChild(label);
+                emotionGrid.appendChild(emotionContainer);
+            }
+        }
+
+        function addPersonImageToCanvas(src) {
+            const flipped = document.getElementById('flip-person-image').checked;
+            addObject('person', { src, flipped });
+            closePersonPicker();
+        }
+
+        function calculateTextDimensions(obj) {
+            ctx.font = `bold ${obj.size}px ${obj.fontFamily}`;
+            const metrics = ctx.measureText(obj.text);
+            return { width: metrics.width, height: obj.size };
+        }
+
+        function addObject(type, options = {}) {
+            let newObject;
+            objectIdCounter++;
+
+            if (type === 'person') {
+                const img = new Image();
+                img.src = options.src;
+                img.onload = () => {
+                    newObject = {
+                        type: 'image',
+                        id: objectIdCounter,
+                        img: img,
+                        x: canvas.width / 2,
+                        y: canvas.height / 2,
+                        width: img.width / 2, // Default size, can be adjusted
+                        height: img.height / 2,
+                        rotation: 0,
+                        flipped: options.flipped || false,
+                        strokeEnabled: false,
+                        strokeColor: '#000000',
+                        strokeWidth: 5,
+                        shadowEnabled: false,
+                        shadowColor: 'rgba(0,0,0,0.5)',
+                        shadowBlur: 10,
+                        shadowOffsetX: 5,
+                        shadowOffsetY: 5,
+                    };
+                    canvasObjects.push(newObject);
+                    selectObject(canvasObjects.length - 1);
+                    drawThumbnail();
+                };
+                return; // Return early as image loading is async
+            } else if (type === 'text') {
+                const defaultShadow = { enabled: false, color: 'rgba(0,0,0,0.7)', blur: 5, offsetX: 2, offsetY: 2 };
+                const { id: presetId, ...restOptions } = options;
+
+                newObject = {
+                    text: 'New Text',
+                    size: 100,
+                    align: 'center',
+                    wrap: false,
+                    rotation: 0,
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    ...restOptions,
+                    id: objectIdCounter,
+                    type: 'text',
+                    shadow: { ...defaultShadow, ...(options.shadow || {}) },
+                };
+                const dims = calculateTextDimensions(newObject);
+                newObject.width = dims.width;
+                newObject.height = dims.height;
+            } else if (type === 'shape') {
+                newObject = {
+                    id: objectIdCounter,
+                    type: 'shape',
+                    shapeType: options.shapeType || 'square',
+                    x: canvas.width / 2,
+                    y: canvas.height / 2,
+                    width: options.width || 150,
+                    height: options.height || 150,
+                    rotation: 0,
+                    fill: options.fill || '#FF0000',
+                    stroke: options.stroke || '#000000',
+                    strokeWidth: options.strokeWidth || 0,
+                };
+            }
+
+            if (newObject) {
+                canvasObjects.push(newObject);
+        }
+    }
+        function deselectAll() {
+            selectedObjectIndex = -1;
+            const panel = document.getElementById('image-properties-panel');
+            if (panel) {
+                panel.style.display = 'none';
+            }
+        }
+
+        function selectObject(index) {
+            deselectAll(); // Start by clearing any previous selection state
+
+            if (index >= 0 && index < canvasObjects.length) {
+                const obj = canvasObjects[index];
+                
+                if (obj.type === 'image') {
+                    selectedObjectIndex = index; // Only set if it's an image we can edit
+                    const panel = document.getElementById('image-properties-panel');
+                    panel.style.display = 'block';
+
+                    const sizeSlider = document.getElementById('image-size');
+                    sizeSlider.value = obj.width;
+
+                    // Use oninput for real-time updates. Re-create element to remove old listeners.
+                    const newSlider = sizeSlider.cloneNode(true);
+                    sizeSlider.parentNode.replaceChild(newSlider, sizeSlider);
+
+                    newSlider.addEventListener('input', (e) => {
+                        if (selectedObjectIndex !== -1 && canvasObjects[selectedObjectIndex] === obj) {
+                            const newWidth = parseInt(e.target.value, 10);
+                            const originalAspectRatio = obj.img.naturalWidth / obj.img.naturalHeight;
+                            obj.width = newWidth;
+                            obj.height = newWidth / originalAspectRatio;
+                            drawThumbnail();
+                        }
+                    });
                 }
+            }
+            drawThumbnail(); // Redraw to show selection handles
+        }
+
+        function deleteSelectedObject() {
+            if (selectedObjectIndex > -1) {
+                canvasObjects.splice(selectedObjectIndex, 1);
+                deselectAll();
+                drawThumbnail();
+            }
+        }
+
+function updateFxControlsVisibility(index) {
+const i = index + 1;
+const effectType = document.getElementById(`advancedEffectType${i}`).value;
+const color1Group = document.getElementById(`effectColor1-group-${i}`);
+const color2Group = document.getElementById(`effectColor2-group-${i}`);
+const color3Group = document.getElementById(`effectColor3-group-${i}`);
+const distanceGroup = document.getElementById(`effectDistance-group-${i}`);
+const angleGroup = document.getElementById(`effectAngle-group-${i}`);
+const glowSizeGroup = document.getElementById(`effectGlowSize-group-${i}`);
+            if (obj.shadowEnabled) {
+                ctx.shadowColor = obj.shadowColor;
+                ctx.shadowBlur = obj.shadowBlur;
+                ctx.shadowOffsetX = obj.shadowOffsetX;
+                ctx.shadowOffsetY = obj.shadowOffsetY;
+            }
+
+            // Handle flipping
+            if (obj.flipped) {
+                ctx.scale(-1, 1);
+            }
+
+            const w = obj.width;
+            const h = obj.height;
+
+            // Draw the image
+            ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
+
+            // Apply stroke if enabled
+            if (obj.strokeEnabled && obj.strokeWidth > 0) {
+                // To stroke only the opaque parts, we use a temporary canvas
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCanvas.width = canvas.width;
+                tempCanvas.height = canvas.height;
+
+                // Draw the image on the temp canvas to get its pixel data
+                tempCtx.drawImage(obj.img, 0, 0, w, h);
+                const imageData = tempCtx.getImageData(0, 0, w, h);
+                const data = imageData.data;
+
+                // Create a new canvas for the stroke outline
+                const strokeCanvas = document.createElement('canvas');
+                const strokeCtx = strokeCanvas.getContext('2d');
+                strokeCanvas.width = canvas.width;
+                strokeCanvas.height = canvas.height;
+
+                // Find opaque pixels and draw a larger version on the stroke canvas
+                for (let i = 0; i < data.length; i += 4) {
+                    if (data[i + 3] > 0) { // If pixel is not transparent
+                        const x = (i / 4) % w;
+                        const y = Math.floor((i / 4) / w);
+                        strokeCtx.fillStyle = obj.strokeColor;
+                        strokeCtx.fillRect(x - obj.strokeWidth, y - obj.strokeWidth, obj.strokeWidth * 2, obj.strokeWidth * 2);
+                    }
+                }
+                
+                // Use composite operations to cut out the original image shape, leaving just the stroke
+                strokeCtx.globalCompositeOperation = 'destination-in';
+                strokeCtx.drawImage(obj.img, 0, 0, w, h);
+                strokeCtx.globalCompositeOperation = 'source-over'; // reset
+
+                // Draw the stroke outline behind the main image
+                ctx.drawImage(strokeCanvas, -w/2, -h/2);
+                // Redraw image on top
+                ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
+            }
+
+            ctx.restore();
+        }
+
+        function updateFxControlsVisibility(index) {
+            const i = index + 1;
+            const effectType = document.getElementById(`advancedEffectType${i}`).value;
+            const color1Group = document.getElementById(`effectColor1-group-${i}`);
+            const color2Group = document.getElementById(`effectColor2-group-${i}`);
+            const color3Group = document.getElementById(`effectColor3-group-${i}`);
+            const distanceGroup = document.getElementById(`effectDistance-group-${i}`);
+            const angleGroup = document.getElementById(`effectAngle-group-${i}`);
+            const glowSizeGroup = document.getElementById(`effectGlowSize-group-${i}`);
+
+            // Hide all first
+            [color1Group, color2Group, color3Group, distanceGroup, angleGroup, glowSizeGroup].forEach(group => {
+                if (group) group.style.display = 'none';
             });
+
+            // Show based on type
+            switch (effectType) {
+                case 'none':
+                    break;
+                case 'neon':
+                    if (color1Group) color1Group.style.display = 'block';
+                    if (color2Group) color2Group.style.display = 'block';
+                    if (glowSizeGroup) glowSizeGroup.style.display = 'block';
+                    break;
+                case '3d':
+                case 'outline':
+                    if (color1Group) color1Group.style.display = 'block';
+                    if (distanceGroup) distanceGroup.style.display = 'block';
+                    if (angleGroup) angleGroup.style.display = 'block';
+                    break;
+                case 'double-outline':
+                    if (color1Group) color1Group.style.display = 'block';
+                    if (color2Group) color2Group.style.display = 'block';
+                    if (distanceGroup) distanceGroup.style.display = 'block';
+                    break;
+                case 'triple-outline':
+                    if (color1Group) color1Group.style.display = 'block';
+                    if (color2Group) color2Group.style.display = 'block';
+                    if (color3Group) color3Group.style.display = 'block';
+                    if (distanceGroup) distanceGroup.style.display = 'block';
+                    break;
+            }
         }
 
         function updateTextControlsFromState() {
@@ -699,16 +1011,7 @@ let activeSnippetStyleId = null; // For the two-step snippet adder
             drawThumbnail();
         }
 
-        function updateDateIfNeeded(layout) {
-            if ([1, 2, 3].includes(layout)) {
-                const currentText3 = document.getElementById('text3').value;
-                if (currentText3.includes('{Date}')) {
-                     setDate(currentText3);
-                }
-            } else if (document.getElementById('text3').value.includes('{Date}')) {
-                setDate(document.getElementById('text3').value);
-            }
-        }
+
             
         function setTitle(title) {
             textElements[0].text = title;
@@ -963,17 +1266,51 @@ let activeSnippetStyleId = null; // For the two-step snippet adder
             dragState.target = null;
             canvas.style.cursor = 'default';
         });
+
         canvas.addEventListener('mouseleave', () => {
             if (dragState.isDragging) {
-                // Consider onCanvasMouseUp() if it exists and is needed, or just reset:
                 dragState.isDragging = false;
                 dragState.target = null;
                 canvas.style.cursor = 'default';
-                // drawThumbnail(); // Optionally redraw if state might have changed on mouseleave + drag
             }
         });
 
-        document.getElementById('object-properties-panel').addEventListener('input', handleObjectPropertyChange);
+        canvas.addEventListener('mousedown', (e) => {
+            const { x, y } = getCanvasMousePos(e);
+            const clickedObjectIndex = getObjectAt(x, y);
+        
+            // If we clicked on an object
+            if (clickedObjectIndex !== -1) {
+                selectedObjectIndex = clickedObjectIndex;
+                const obj = canvasObjects[clickedObjectIndex];
+                dragState.isDragging = true;
+                dragState.target = 'object';
+                dragState.index = clickedObjectIndex;
+                dragState.startX = x;
+                dragState.startY = y;
+                dragState.elementStartX = obj.x;
+                dragState.elementStartY = obj.y;
+                canvas.style.cursor = 'move';
+            } else {
+                // If we clicked on the background (not on any object)
+                selectedObjectIndex = -1;
+                const clickedTextIndex = getTextElementAt(x, y);
+                if (clickedTextIndex !== -1) {
+                    dragState.isDragging = true;
+                    dragState.target = 'text';
+                    dragState.index = clickedTextIndex;
+                    dragState.startX = x;
+                    dragState.startY = y;
+                    const textEl = textElements[clickedTextIndex];
+                    dragState.elementStartX = textEl.x;
+                    dragState.elementStartY = textEl.y;
+                    canvas.style.cursor = 'move';
+                }
+            }
+        
+            updateObjectPropertiesPanel(); // Update panel based on what was (or wasn't) selected
+            drawThumbnail(); // Redraw to show selection
+        });
 
         function getCanvasMousePos(e) {
             const rect = canvas.getBoundingClientRect();
@@ -1067,110 +1404,6 @@ let activeSnippetStyleId = null; // For the two-step snippet adder
             }
 
             drawThumbnail();
-        }
-
-        function calculateTextDimensions(textObject) {
-    ctx.save();
-    const size = textObject.size || 100;
-    const fontFamily = textObject.fontFamily || "'Berlin Sans FB Demi Bold', sans-serif";
-    const finalFontFamily = fontFamily.includes("Twemoji Country Flags") ? fontFamily : `"Twemoji Country Flags", ${fontFamily}`;
-    ctx.font = `bold ${size}px ${finalFontFamily}`;
-
-    const text = textObject.text || '';
-    const padding = 30;
-    const lineHeight = size * 1.2;
-    let lines;
-    let finalWidth;
-
-    // For wrapped text, the width is a constraint. For non-wrapped, it's calculated.
-    if (textObject.wrap && textObject.width) {
-        lines = wrapText(ctx, text, 0, 0, textObject.width, lineHeight, textObject.align, 0, textObject.width);
-        finalWidth = textObject.width;
-    } else {
-        lines = text.split('\n'); // Simple newline handling
-        let maxWidth = 0;
-        for (const line of lines) {
-            maxWidth = Math.max(maxWidth, ctx.measureText(line).width);
-        }
-        finalWidth = maxWidth;
-    }
-    
-    const totalTextHeight = lines.length * lineHeight;
-    ctx.restore();
-
-    return {
-        width: finalWidth + padding,
-        height: totalTextHeight + padding
-    };
-}
-
-function addObject(type, options = {}) {
-            objectIdCounter++;
-            let newObject;
-            if (type === 'text') {
-                const defaultFontFamily = "\"Twemoji Country Flags\", 'Berlin Sans FB Demi Bold', sans-serif";
-                let combinedFontFamily = defaultFontFamily;
-                if (options.fontFamily && !options.fontFamily.includes("Twemoji Country Flags")) {
-                    combinedFontFamily = `"Twemoji Country Flags", ${options.fontFamily}`;
-                } else if (options.fontFamily) {
-                    combinedFontFamily = options.fontFamily;
-                }
-                // Ensure a default shadow object is present if not supplied by options
-                const defaultShadow = { enabled: false, color: 'rgba(0,0,0,0.7)', blur: 5, offsetX: 2, offsetY: 2 };
-
-                // Destructure to remove the conflicting 'id' from the style preset options
-                const { id: presetId, ...restOptions } = options;
-
-                newObject = {
-                    // Start with defaults
-                    text: 'New Text',
-                    size: 100,
-                    align: 'center',
-                    wrap: false,
-                    rotation: 0,
-                    x: canvas.width / 2,
-                    y: canvas.height / 2,
-
-                    // Apply all style options from the preset, without the conflicting id
-                    ...restOptions,
-
-                    // Enforce critical properties that must not be overridden
-                    id: objectIdCounter, // Guarantees a unique, numeric ID
-                    type: 'text',
-                    fontFamily: combinedFontFamily,
-                    shadow: { ...defaultShadow, ...(options.shadow || {}) },
-                };
-
-                const dims = calculateTextDimensions(newObject);
-                newObject.width = dims.width;
-                newObject.height = dims.height;
-            } else { // For shapes and other potential future objects
-                newObject = { id: objectIdCounter, type: type, x: canvas.width / 2, y: canvas.height / 2, width: 300, height: 300, rotation: 0, stroke: '#000000', strokeWidth: 5, shadow: { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 }, ...options };
-            };
-
-            if (type === 'shape') { newObject.fill = '#ff0000'; }
-            else if (type === 'text') {
-                // Ensure fontFamily is correctly set
-                if (!newObject.fontFamily || !newObject.fontFamily.includes("Twemoji Country Flags")) {
-                    const baseFont = newObject.fontFamily || "'Berlin Sans FB Demi Bold', sans-serif";
-                    newObject.fontFamily = `"Twemoji Country Flags", ${baseFont}`;
-                }
-                newObject.size = newObject.size || 100; // Already part of text object literal
-                newObject.color = newObject.color || '#ffffff'; // Already part of text object literal
-                // newObject.strokeColor, newObject.strokeThickness etc. should come from options (stylePreset)
-            } else if (type === 'image' && newObject.src) {
-                const img = new Image();
-                img.onload = () => {
-                    newObject.img = img;
-                    const maxDim = 400;
-                    if (img.width > img.height) { newObject.width = maxDim; newObject.height = img.height * (maxDim / img.width); }
-                    else { newObject.height = maxDim; newObject.width = img.width * (maxDim / img.height); }
-                    drawThumbnail();
-                };
-                img.src = newObject.src;
-            }
-            canvasObjects.push(newObject);
-            selectObject(canvasObjects.length - 1);
         }
 
         function wrapText(ctx, text, x, y, maxWidth, lineHeight, align = 'center', elementX = x, canvasWidth = 1920) {
@@ -1288,16 +1521,29 @@ function addObject(type, options = {}) {
                 drawTextWithEffect(ctx, el, null);
             });
 
-            canvasObjects.forEach(obj => {
+            canvasObjects.forEach((obj, index) => {
                 ctx.save();
                 ctx.translate(obj.x, obj.y);
                 ctx.rotate(obj.rotation * Math.PI / 180);
                 switch (obj.type) {
                     case 'shape': drawShape(obj); break;
-                    case 'image': drawImageObject(obj); break;
-                    case 'text': drawTextWithEffect(ctx, obj, null); break; // Pass snippet 'obj'
+                    case 'image':
+                    case 'person': // Add this line
+                        drawImageObject(obj); 
+                        break;
+                    case 'text': drawTextWithEffect(ctx, obj, null); break;
                 }
                 ctx.restore();
+
+                if (index === selectedObjectIndex) {
+                    ctx.save();
+                    ctx.translate(obj.x, obj.y);
+                    ctx.rotate(obj.rotation * Math.PI / 180);
+                    ctx.strokeStyle = '#007bff';
+                    ctx.lineWidth = 4;
+                    ctx.strokeRect(-obj.width / 2, -obj.height / 2, obj.width, obj.height);
+                    ctx.restore();
+                }
             });
 
             if (selectedObjectIndex > -1) {
@@ -1326,6 +1572,141 @@ function addObject(type, options = {}) {
                 ctx.drawImage(logo, x, y, logoWidth, logoHeight);
             }
         }
+/**
+ * Shows or hides the properties panel based on the selected object.
+ * Populates the panel with the object's properties.
+ */
+        function updateObjectPropertiesPanel() {
+            const panel = document.getElementById('object-properties-panel');
+            const imageControls = document.getElementById('image-properties-content');
+            const textControlGroups = document.querySelectorAll('.left-panel .text-input-group');
+            const selectedObject = getSelectedObject();
+
+            if (selectedObject && selectedObject.type === 'person') {
+                panel.style.display = 'block';
+                imageControls.style.display = 'block';
+                textControlGroups.forEach(p => p.style.display = 'none'); // Hide main text panels
+
+                // Populate controls with the object's current values
+                document.getElementById('image-size').value = selectedObject.width;
+                document.getElementById('image-stroke-color').value = selectedObject.stroke || '#000000';
+                document.getElementById('image-stroke-width').value = selectedObject.strokeWidth || 0;
+                document.getElementById('image-shadow-color').value = selectedObject.shadowColor || '#000000';
+                document.getElementById('image-shadow-blur').value = selectedObject.shadowBlur || 0;
+                document.getElementById('image-shadow-offset-x').value = selectedObject.shadowOffsetX || 0;
+                document.getElementById('image-shadow-offset-y').value = selectedObject.shadowOffsetY || 0;
+
+            } else {
+                // If no person is selected, hide the object panel and show the main text panels
+                panel.style.display = 'none';
+                textControlGroups.forEach(p => p.style.display = 'block');
+            }
+        }
+
+        /**
+         * Sets up the event listeners for the image properties panel.
+         */
+        function setupObjectPropertyHandlers() {
+            const imageProperties = document.getElementById('image-properties-content');
+            if (imageProperties) {
+                imageProperties.addEventListener('input', (event) => {
+                    const selectedObject = getSelectedObject();
+                    if (!selectedObject || selectedObject.type !== 'person') return;
+
+                    const target = event.target;
+                    
+                    switch(target.id) {
+                        case 'image-size':
+                            const aspectRatio = selectedObject.height / selectedObject.width;
+                            selectedObject.width = parseInt(target.value, 10);
+                            selectedObject.height = selectedObject.width * aspectRatio;
+                            break;
+                        case 'image-stroke-color':
+                            selectedObject.stroke = target.value;
+                            break;
+                        case 'image-stroke-width':
+                            selectedObject.strokeWidth = parseInt(target.value, 10);
+                            break;
+                        case 'image-shadow-color':
+                            selectedObject.shadowColor = target.value;
+                            break;
+                        case 'image-shadow-blur':
+                            selectedObject.shadowBlur = parseInt(target.value, 10);
+                            break;
+                        case 'image-shadow-offset-x':
+                            selectedObject.shadowOffsetX = parseInt(target.value, 10);
+                            break;
+                        case 'image-shadow-offset-y':
+                            selectedObject.shadowOffsetY = parseInt(target.value, 10);
+                            break;
+                    }
+
+                    if (target.id.includes('shadow')) {
+                        selectedObject.shadowEnabled = true;
+                    }
+
+                    drawThumbnail();
+                });
+            }
+        }
+
+        /**
+         * Returns the currently selected object from the canvasObjects array.
+         */
+        function getSelectedObject() {
+            if (selectedObjectIndex > -1 && canvasObjects[selectedObjectIndex]) {
+                return canvasObjects[selectedObjectIndex];
+            }
+            return null;
+        }   
+
+        function deselectAll() {
+            selectedObjectIndex = -1;
+            const panel = document.getElementById('image-properties-panel');
+            if (panel) {
+                panel.style.display = 'none';
+            }
+        }
+
+        function selectObject(index) {
+            deselectAll(); // Start by clearing any previous selection state
+
+            if (index >= 0 && index < canvasObjects.length) {
+                const obj = canvasObjects[index];
+                
+                if (obj.type === 'image') {
+                    selectedObjectIndex = index; // Only set if it's an image we can edit
+                    const panel = document.getElementById('image-properties-panel');
+                    panel.style.display = 'block';
+
+                    const sizeSlider = document.getElementById('image-size');
+                    sizeSlider.value = obj.width;
+
+                    // Use oninput for real-time updates. Re-create element to remove old listeners.
+                    const newSlider = sizeSlider.cloneNode(true);
+                    sizeSlider.parentNode.replaceChild(newSlider, sizeSlider);
+
+                    newSlider.addEventListener('input', (e) => {
+                        if (canvasObjects[selectedObjectIndex] === obj) {
+                            const newWidth = parseInt(e.target.value, 10);
+                            const originalAspectRatio = obj.img.naturalWidth / obj.img.naturalHeight;
+                            obj.width = newWidth;
+                            obj.height = newWidth / originalAspectRatio;
+                            drawThumbnail();
+                        }
+                    });
+                }
+            }
+            drawThumbnail(); // Redraw to show selection handles
+        }
+
+        function deleteSelectedObject() {
+            if (selectedObjectIndex > -1) {
+                canvasObjects.splice(selectedObjectIndex, 1);
+                deselectAll();
+                drawThumbnail();
+            }
+        }   
 
         // REVISED drawTextWithEffect FUNCTION
         function drawTextWithEffect(ctx, el, precalculatedLines = null) {
@@ -1544,14 +1925,37 @@ function addObject(type, options = {}) {
         }
 
         function drawImageObject(obj) {
-            if (obj.img) {
-                ctx.drawImage(obj.img, -obj.width / 2, -obj.height / 2, obj.width, obj.height);
-                if (obj.strokeWidth > 0) {
-                    ctx.strokeStyle = obj.stroke;
-                    ctx.lineWidth = obj.strokeWidth;
-                    ctx.strokeRect(-obj.width / 2, -obj.height / 2, obj.width, obj.height);
-                }
+            if (!obj.img) return;
+        
+            ctx.save();
+        
+            // Apply shadow
+            if (obj.shadowEnabled && obj.shadowBlur > 0) {
+                ctx.shadowColor = obj.shadowColor;
+                ctx.shadowBlur = obj.shadowBlur;
+                ctx.shadowOffsetX = obj.shadowOffsetX;
+                ctx.shadowOffsetY = obj.shadowOffsetY;
             }
+        
+            // Apply flip
+            if (obj.flipped) {
+                ctx.scale(1, -1);
+            }
+        
+            // Draw the image
+            ctx.drawImage(obj.img, -obj.width / 2, -obj.height / 2, obj.width, obj.height);
+            
+            // Reset shadow for the stroke so it doesn't get shadowed
+            ctx.shadowColor = 'transparent';
+        
+            // Draw the stroke
+            if (obj.strokeWidth > 0 && obj.stroke) {
+                ctx.strokeStyle = obj.stroke;
+                ctx.lineWidth = obj.strokeWidth;
+                ctx.strokeRect(-obj.width / 2, -obj.height / 2, obj.width, obj.height);
+            }
+        
+            ctx.restore();
         }
 
         function drawTextSnippet(obj) { drawTextWithEffect(ctx, obj); }
@@ -1724,6 +2128,7 @@ function populateFontDropdowns() {
 document.addEventListener('DOMContentLoaded', () => {
     // Populate font dropdowns with the correct, dynamically loaded fonts
     populateFontDropdowns();
+    setupObjectPropertyHandlers(); // <-- ADD THIS LINE
 
     // Add listener to close the font preview modal when clicking on the overlay
     const fontPreviewModal = document.getElementById('fontPreviewModal');
@@ -1994,3 +2399,7 @@ if (enlargeImageModal) {
         }
     });
 }
+
+
+
+

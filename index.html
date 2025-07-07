@@ -291,6 +291,7 @@
                     <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'circle' })">Circle</button>
                     <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'square' })">Square</button>
                     <button class="add-object-btn" onclick="showPresetPickerForSnippet()">Add Styled Text</button>
+                    <button class="add-object-btn" onclick="showPersonPicker()">Add Person</button>
                 </div>
             </div>
             <div class="panel-section">
@@ -675,12 +676,31 @@
                 </div>
             </div>
 
+            <div class="panel-section" id="image-properties-panel" style="display: none;">
+                <h2>Image Properties</h2>
+                <div class="property-group">
+                    <label>Size: <input type="range" id="image-size" min="50" max="1000" value="200"></label>
+                </div>
+                <div class="property-group">
+                    <label>Stroke Color: <input type="color" id="image-stroke-color" value="#000000"></label>
+                    <label>Stroke Width: <input type="range" id="image-stroke-width" min="0" max="50" value="2"></label>
+                </div>
+                <div class="property-group">
+                    <label>Shadow Color: <input type="color" id="image-shadow-color" value="#000000"></label>
+                    <label>Shadow Blur: <input type="range" id="image-shadow-blur" min="0" max="50" value="5"></label>
+                    <label>Shadow Offset X: <input type="range" id="image-shadow-offset-x" min="-50" max="50" value="5"></label>
+                    <label>Shadow Offset Y: <input type="range" id="image-shadow-offset-y" min="-50" max="50" value="5"></label>
+                </div>
+            </div>
+
             <div class="panel-section">
                 <h2>Export</h2>
                 <button onclick="exportLayoutToClipboard()" class="upload-btn" style="width: 100%;">Copy Layout Code</button>
                 <div id="copy-feedback"></div>
             </div>
         </aside>
+
+
 
 
         <main class="center-panel">
@@ -793,12 +813,30 @@
                     </div>
                 </div>
             </div>
-            <div class="panel-section" id="object-properties-panel">
-                <!-- This is the new home for selected object properties -->
+            <div class="panel-section" id="object-properties-panel" style="display: none;">
                 <h2 class="section-header">Selected Object Properties</h2>
-                <div id="properties-content"></div>  
-                      <button onclick="deleteSelectedObject()" style="background-color: #f44336; margin-top: 15px; display: none;" id="delete-object-btn">Delete Selected Object</button>
+            
+                <div id="text-properties-content">
+                    <!-- All existing text property controls will be moved here by JS -->
                 </div>
+            
+                <div id="image-properties-content">
+                    <div class="property-group">
+                        <label>Size: <input type="range" id="image-size" min="50" max="1000" value="200"></label>
+                    </div>
+                    <div class="property-group">
+                        <label>Stroke Color: <input type="color" id="image-stroke-color" value="#000000"></label>
+                        <label>Stroke Width: <input type="range" id="image-stroke-width" min="0" max="50" value="2"></label>
+                    </div>
+                    <div class="property-group">
+                        <label>Shadow Color: <input type="color" id="image-shadow-color" value="#000000"></label>
+                        <label>Shadow Blur: <input type="range" id="image-shadow-blur" min="0" max="50" value="5"></label>
+                        <label>Shadow Offset X: <input type="range" id="image-shadow-offset-x" min="-50" max="50" value="5"></label>
+                        <label>Shadow Offset Y: <input type="range" id="image-shadow-offset-y" min="-50" max="50" value="5"></label>
+                    </div>
+                </div>
+            
+                <button onclick="deleteSelectedObject()" style="background-color: #f44336; margin-top: 15px;" id="delete-object-btn">Delete Selected Object</button>
             </div>
         </aside>
     </div>
@@ -915,6 +953,24 @@
         <div class="modal-content image-modal-content">
             <span class="close-modal-btn" onclick="closeEnlargeImageModal()">&times;</span>
             <img id="enlarged-image-element" src="" alt="Enlarged Image"/>
+        </div>
+    </div>
+    <div id="person-picker-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-button" onclick="closePersonPicker()">&times;</span>
+            <div id="person-picker-step1">
+                <h2>Select a Person</h2>
+                <div id="person-selection-grid" class="selection-grid"></div>
+            </div>
+            <div id="person-picker-step2" style="display:none;">
+                <h2>Select Emotion/Pose for <span id="selected-person-name"></span></h2>
+                <div id="emotion-selection-grid" class="selection-grid"></div>
+                <div class="flip-option">
+                    <input type="checkbox" id="flip-person-image">
+                    <label for="flip-person-image">Flip Image Vertically</label>
+                </div>
+                <button onclick="showPersonPickerStep1()">Back to People</button>
+            </div>
         </div>
     </div>
 </body>
