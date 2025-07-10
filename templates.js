@@ -260,8 +260,7 @@ function getLayoutPositions(layout) {
                                 fontFamily: "'Berlin Sans FB Demi Bold', sans-serif", x: 38, y: 160, align: 'left', wrap: false,
                                 color: '#ffffff',
                                 strokeColor: '#000000', strokeThickness: 10,
-                                bgColor: 'rgba(255, 0, 0, 1)', bgFullWidth: false, bgPadding: 5,
-                                shadowEnabled: true, shadowColor: 'rgba(0, 0, 0, 0.8)', shadowBlur: 0, shadowOffsetX: 10, shadowOffsetY: 10, advancedEffect: { ...noEffect }
+                                bgColor: 'rgba(255, 0, 0, 1)', bgFullWidth: false, bgPadding: 5,                                shadowEnabled: true, shadowColor: 'rgba(0, 0, 0, 0.8)', shadowBlur: 0, shadowOffsetX: 10, shadowOffsetY: 10, advancedEffect: { ...noEffect }
                             },
                             {
                                 fontFamily: "'Berlin Sans FB Demi Bold', sans-serif", x: 371, y: 883, align: 'left', wrap: true,

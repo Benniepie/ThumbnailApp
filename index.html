@@ -7,10 +7,29 @@
     <!-- Link to the external stylesheet -->
     <link rel="stylesheet" href="style.css">
     <!-- Link to the external JavaScript files. 'defer' is important! -->
+    <!-- Core Setup: Defines global variables and state -->
+    <script src="setup.js" defer></script>
+
+    <!-- Foundational Scripts: Define data, classes, and core functions -->
+    <script src="drawing.js" defer></script>
     <script src="templates.js" defer></script>
-    <script src="style-presets.js" defer></script> <!-- Moved earlier -->
+    <script src="style-presets.js" defer></script>
     <script src="font-loader.js" defer></script>
-    <script src="script.js" defer></script>
+    <script src="people-images.js" defer></script>
+    <script src="styled-text-snippets.js" defer></script>
+
+    <!-- Dependent Scripts: Use foundational functions and data -->
+    <script src="preset-layouts.js" defer></script>
+    <script src="controls.js" defer></script>
+    <script src="canvas-objects.js" defer></script>
+    <script src="line-toggles-styles.js" defer></script>
+    <script src="canvas-interactions.js" defer></script>
+    <script src="ai-image.js" defer></script>
+    <script src="emoji-picker.js" defer></script>
+    <script src="font-preview.js" defer></script>
+
+    <!-- Main Orchestrator: Initializes the app and attaches event listeners -->
+    <script src="main.js" defer></script>
     <script type="module" defer>
         import { polyfillCountryFlagEmojis } from "https://cdn.skypack.dev/country-flag-emoji-polyfill";
         polyfillCountryFlagEmojis();
@@ -25,7 +44,7 @@
     <div class="app-grid">
         <header class="app-header">
             <h1>Thumbnail Maker</h1>
-            <button class="theme-toggle" onclick="toggleTheme()">Toggle Dark Mode</button>
+            <button id="theme-toggle-btn" class="theme-toggle">Toggle Dark Mode</button>
         </header>
 
         <aside class="left-panel">
@@ -34,7 +53,7 @@
                 <h2>Layouts</h2>
                 <div class="layout-presets">
                     <!-- Existing 6 layouts -->
-                    <button class="layout-btn" onclick="setLayout(1)">
+                    <button class="layout-btn" data-layout-id="1">
                         <div class="layout-icon">
                             <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
                             <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
@@ -43,7 +62,7 @@
                         </div>
                         Part 1 (Old)
                     </button>
-                    <button class="layout-btn" onclick="setLayout(2)">
+                    <button class="layout-btn" data-layout-id="2">
                         <div class="layout-icon">
                             <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
                             <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
@@ -52,7 +71,7 @@
                         </div>
                         Part 2 (Old)
                     </button>
-                    <button class="layout-btn" onclick="setLayout(3)">
+                    <button class="layout-btn" data-layout-id="3">
                         <div class="layout-icon">
                             <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
                             <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
@@ -61,7 +80,7 @@
                         </div>
                         Part 3 (Old)
                     </button>
-                    <button class="layout-btn" onclick="setLayout(4)">
+                    <button class="layout-btn" data-layout-id="4">
                         <div class="layout-icon">
                             <div style="display: flex; justify-content: center">
                                 <div class="layout-line" style="width: 45%"></div>
@@ -73,7 +92,7 @@
                         </div>
                         Extra (Old)
                     </button>
-                    <button class="layout-btn" onclick="setLayout(5)">
+                    <button class="layout-btn" data-layout-id="5">
                         <div class="layout-icon">
                             <div style="display: flex; justify-content: center">
                                 <div class="layout-line" style="width: 65%"></div>
@@ -85,7 +104,7 @@
                         </div>
                         Mapping Update
                     </button>
-                    <button class="layout-btn" onclick="setLayout(6)">
+                    <button class="layout-btn" data-layout-id="6">
                         <div class="layout-icon">
                             <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
                             <div class="layout-line" style="width: 95%; margin-left: auto; margin-right: auto"></div>
@@ -97,7 +116,7 @@
                     </button>
 
                     <!-- NEW ROW OF 5 LAYOUTS (Generic) -->
-                    <button class="layout-btn" onclick="setLayout(7)">
+                    <button class="layout-btn" data-layout-id="7">
                         <div class="layout-icon"> <!-- Generic Icon -->
                             <div style="display: flex; justify-content: center">
                                 <div class="layout-line" style="width: 45%"></div>
@@ -109,7 +128,7 @@
                         </div>
                         Breaking Gap (Old)
                     </button>
-                    <button class="layout-btn" onclick="setLayout(8)">
+                    <button class="layout-btn" data-layout-id="8">
                         <div class="layout-icon"> <!-- Generic Icon -->
                             <div class="layout-line" style="width: 40%; margin-left: 0; margin-right: auto"></div>
                             <div class="layout-line" style="width: 50%; margin-left: 0; margin-right: auto"></div>
@@ -118,7 +137,7 @@
                         </div>
                         3 L + 1 R
                     </button>
-                    <button class="layout-btn" onclick="setLayout(9)">
+                    <button class="layout-btn" data-layout-id="9">
                         <div class="layout-icon"> <!-- Generic Icon -->
                             <div class="layout-line" style="width: 40%; margin-left: auto; margin-right: 0"></div>
                             <div class="layout-line" style="width: 50%; margin-left: auto; margin-right: 0"></div>
@@ -127,13 +146,13 @@
                         </div>
                         3 R + 1 L
                     </button>
-                    <button class="layout-btn" onclick="setLayout(10)">
+                    <button class="layout-btn" data-layout-id="10">
                         <div class="layout-icon"> <!-- Generic Icon -->
                             <div class="layout-line" style="width: 30%; margin-bottom: 10px; margin-left: auto; margin-right: 0"></div>
                         </div>
                         BOOM!
                     </button>
-                    <button class="layout-btn" onclick="setLayout(11)">
+                    <button class="layout-btn" data-layout-id="11">
                         <div class="layout-icon" style="background-color: #db8f0a">
                             <div style="display: flex; justify-content: center">
                                 <div class="layout-line" style="width: 50%"></div>
@@ -149,7 +168,7 @@
                     <!-- END NEW ROW OF 5 LAYOUTS -->
 
                     <!-- NEW ROW OF 4 LAYOUTS (to make it 15 total) -->
-                     <button class="layout-btn" onclick="setLayout(12)">
+                     <button class="layout-btn" data-layout-id="12">
                         <div class="layout-icon" style="background-color: #0edb0a"> <!-- Generic Icon -->
                             <div style="display: flex; justify-content: center">
                                 <div class="layout-line" style="width: 50%"></div>
@@ -163,7 +182,7 @@
                         </div>
                         Military Aid
                     </button>
-                    <button class="layout-btn" onclick="setLayout(13)">
+                    <button class="layout-btn" data-layout-id="13">
                         <div class="layout-icon" style="background-color: #db0ad8"> <!-- Generic Icon -->
                             <div style="display: flex; justify-content: center">
                                 <div class="layout-line" style="width: 50%"></div>
@@ -176,7 +195,7 @@
                         </div>
                         Geopol News
                     </button>
-                    <button class="layout-btn" onclick="setLayout(14)">
+                    <button class="layout-btn" data-layout-id="14">
                         <div class="layout-icon" style="background-color: #ffff00"> <!-- Generic Icon -->
                             <div style="display: flex; justify-content: center">
                                 <div class="layout-line" style="width: 50%"></div>
@@ -189,7 +208,7 @@
                         </div>
                         Extra / Specials
                     </button>
-                    <button class="layout-btn" onclick="setLayout(15)">
+                    <button class="layout-btn" data-layout-id="15">
                         <div class="layout-icon" style="background-color: #000000"> <!-- Generic Icon -->
                             <div style="display: flex; justify-content: center">
                                 <div class="layout-line" style="width: 50%"></div>
@@ -202,7 +221,7 @@
                         </div>
                         Breaking news
                     </button>
-                    <button class="layout-btn" onclick="setLayout(16)" style="height: 100%">
+                    <button class="layout-btn" data-layout-id="16" style="height: 100%">
                         <div class="layout-icon" style="background-color: #db8f0a; height: 5px">
     
 
@@ -210,7 +229,7 @@
                         ALT
                     </button>
                                     <!-- NEW ROW OF 4 LAYOUTS (to make it 15 total) -->
-                     <button class="layout-btn" onclick="setLayout(17)">
+                     <button class="layout-btn" data-layout-id="17">
                         <div class="layout-icon" style="background-color: #0edb0a; height: 5px"> <!-- Generic Icon -->
 
 
@@ -218,28 +237,28 @@
                         </div>
                        Alt
                     </button>
-                    <button class="layout-btn" onclick="setLayout(18)">
+                    <button class="layout-btn" data-layout-id="18">
                         <div class="layout-icon" style="background-color: #db0ad8; height: 5px"> <!-- Generic Icon -->
 
 
                         </div>
                         Alt
                     </button>
-                    <button class="layout-btn" onclick="setLayout(19)">
+                    <button class="layout-btn" data-layout-id="19">
                         <div class="layout-icon" style="background-color: #ffff00; height: 5px"> <!-- Generic Icon -->
 
 
                         </div>
                         Alt
                     </button>
-                    <button class="layout-btn" onclick="setLayout(20)">
+                    <button class="layout-btn" data-layout-id="20">
                         <div class="layout-icon" style="background-color: #000000; height: 5px"> <!-- Generic Icon -->
 
 
                         </div>
                         Alt
                     </button>
-                        <button class="layout-btn" onclick="setLayout(21)" style="height: 100%">
+                        <button class="layout-btn" data-layout-id="21" style="height: 100%">
                         <div class="layout-icon" style="background-color: #db8f0a; height: 5px">
     
 
@@ -247,7 +266,7 @@
                         Rule-6s (R)
                     </button>
                                     <!-- NEW ROW OF 4 LAYOUTS (to make it 15 total) -->
-                     <button class="layout-btn" onclick="setLayout(22)">
+                     <button class="layout-btn" data-layout-id="22">
                         <div class="layout-icon" style="background-color: #0edb0a; height: 5px"> <!-- Generic Icon -->
 
 
@@ -255,21 +274,21 @@
                         </div>
                         Rule-6s (R)
                     </button>
-                    <button class="layout-btn" onclick="setLayout(23)">
+                    <button class="layout-btn" data-layout-id="23">
                         <div class="layout-icon" style="background-color: #db0ad8; height: 5px"> <!-- Generic Icon -->
 
 
                         </div>
                         Rule-6s (R)
                     </button>
-                    <button class="layout-btn" onclick="setLayout(24)">
+                    <button class="layout-btn" data-layout-id="24">
                         <div class="layout-icon" style="background-color: #ffff00; height: 5px"> <!-- Generic Icon -->
 
 
                         </div>
                         Rule-6s (R)
                     </button>
-                    <button class="layout-btn" onclick="setLayout(25)">
+                    <button class="layout-btn" data-layout-id="25">
                         <div class="layout-icon" style="background-color: #000000; height: 5px"> <!-- Generic Icon -->
 
 
@@ -281,17 +300,17 @@
                 <!-- PASTE THIS CODE IN index.html -->
             </div>
             <div class="panel-section">
-                <button onclick="showFontPreviewModal()" style="width: 100%; margin-bottom: 15px;">Preview All Fonts</button>
+                <button id="show-font-preview-modal-btn" style="width: 100%; margin-bottom: 15px;">Preview All Fonts</button>
             </div>
 
             <div class="panel-section">
                 <h2>Add Elements</h2>
                 <div class="add-object-grid">
-                    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'arrow' })">Arrow</button>
-                    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'circle' })">Circle</button>
-                    <button class="add-object-btn" onclick="addObject('shape', { shapeType: 'square' })">Square</button>
-                    <button class="add-object-btn" onclick="showPresetPickerForSnippet()">Add Styled Text</button>
-                    <button class="add-object-btn" onclick="showPersonPicker()">Add Person</button>
+                    <button id="add-arrow-btn" class="add-object-btn">Arrow</button>
+                    <button id="add-circle-btn" class="add-object-btn">Circle</button>
+                    <button id="add-square-btn" class="add-object-btn">Square</button>
+                    <button id="add-styled-text-btn" class="add-object-btn">Add Styled Text</button>
+                    <button id="add-person-btn" class="add-object-btn">Add Person</button>
                 </div>
             </div>
             <div class="panel-section">
@@ -306,12 +325,12 @@
                         <input type="number" id="size1" value="160" min="10" max="500">
                     </div>
                     <div class="toggle-controls-container">
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos1')">Position</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'style1')">Style</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg1')">Background</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow1')">Shadow</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'fx1')">FX</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'presets1')">Presets</button>
+                        <button class="toggle-btn" data-controls="pos1">Position</button>
+                        <button class="toggle-btn" data-controls="style1">Style</button>
+                        <button class="toggle-btn" data-controls="bg1">Background</button>
+                        <button class="toggle-btn" data-controls="shadow1">Shadow</button>
+                        <button class="toggle-btn" data-controls="fx1">FX</button>
+                        <button class="toggle-btn" data-controls="presets1">Presets</button>
 
 
                     </div>
@@ -319,9 +338,9 @@
                         <div class="text-position-controls">
                             <label>X: <input type="number" id="x1" class="pos-input" value="960"></label>
                             <label>Y: <input type="number" id="y1" class="pos-input" value="756"></label>
-                            <button class="align-btn" onclick="setTextAlignment(0, 'left')">L</button>
-                            <button class="align-btn" onclick="setTextAlignment(0, 'center')">C</button>
-                            <button class="align-btn" onclick="setTextAlignment(0, 'right')">R</button>
+                            <button class="align-btn" data-align="left">L</button>
+                            <button class="align-btn" data-align="center">C</button>
+                            <button class="align-btn" data-align="right">R</button>
                         </div>
                     </div>
                     <div id="style1" class="collapsible-controls">
@@ -386,9 +405,9 @@
                     </div>  
                 </div>
                 <div class="presets" id="titlePresets">
-                    <button class="preset-btn" onclick="setTitle('UKRAINE WAR')">Ukraine War</button>
-                    <button class="preset-btn" onclick="setTitle('US POLITICS')">US Politics</button>
-                    <button class="preset-btn" onclick="setTitle('UPDATE')">Update</button>
+                    <button class="preset-btn" data-preset-group="title" data-preset-value="UKRAINE WAR">Ukraine War</button>
+                    <button class="preset-btn" data-preset-group="title" data-preset-value="US POLITICS">US Politics</button>
+                    <button class="preset-btn" data-preset-group="title" data-preset-value="UPDATE">Update</button>
                 </div>
                 <div class="text-input-group">
                     <div class="text-input">
@@ -400,20 +419,20 @@
                         <input type="number" id="size2" value="160" min="10" max="500">
                     </div>
                     <div class="toggle-controls-container">
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos2')">Position</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'style2')">Style</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg2')">Background</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow2')">Shadow</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'fx2')">FX</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'presets2')">Presets</button>
+                        <button class="toggle-btn" data-controls="pos2">Position</button>
+                        <button class="toggle-btn" data-controls="style2">Style</button>
+                        <button class="toggle-btn" data-controls="bg2">Background</button>
+                        <button class="toggle-btn" data-controls="shadow2">Shadow</button>
+                        <button class="toggle-btn" data-controls="fx2">FX</button>
+                        <button class="toggle-btn" data-controls="presets2">Presets</button>
                     </div>
                     <div id="pos2" class="collapsible-controls">
                         <div class="text-position-controls">
                             <label>X: <input type="number" id="x2" class="pos-input" value="960"></label>
                             <label>Y: <input type="number" id="y2" class="pos-input" value="756"></label>
-                            <button class="align-btn" onclick="setTextAlignment(1, 'left')">L</button>
-                            <button class="align-btn" onclick="setTextAlignment(1, 'center')">C</button>
-                            <button class="align-btn" onclick="setTextAlignment(1, 'right')">R</button>
+                            <button class="align-btn" data-align="left" data-line-index="1">L</button>
+                            <button class="align-btn" data-align="center" data-line-index="1">C</button>
+                            <button class="align-btn" data-align="right" data-line-index="1">R</button>
                         </div>
                     </div>
                     <div id="style2" class="collapsible-controls">
@@ -478,12 +497,12 @@
                     </div>    
                 </div>
                 <div class="presets" id="subtitlePresets">
-                    <button class="preset-btn" onclick="setSubtitle('NEWS UPDATE')">News Update</button>
-                    <button class="preset-btn" onclick="setSubtitle('UPDATE EXTRA')">Update Extra</button>
-                    <button class="preset-btn" onclick="setSubtitle('SPECIAL')">Special</button>
-                    <button class="preset-btn" onclick="setSubtitle('BREAKING NEWS UPDATE')">Breaking News Update</button>
-                    <button class="preset-btn" onclick="setSubtitle('BUMPER NEWS UPDATE')">Bumper News Update</button>
-                    <button class="preset-btn" onclick="setSubtitle('UPDATE')">Update</button>
+                    <button class="preset-btn" data-preset-group="subtitle" data-preset-value="NEWS UPDATE">News Update</button>
+                    <button class="preset-btn" data-preset-group="subtitle" data-preset-value="UPDATE EXTRA">Update Extra</button>
+                    <button class="preset-btn" data-preset-group="subtitle" data-preset-value="SPECIAL">Special</button>
+                    <button class="preset-btn" data-preset-group="subtitle" data-preset-value="BREAKING NEWS UPDATE">Breaking News Update</button>
+                    <button class="preset-btn" data-preset-group="subtitle" data-preset-value="BUMPER NEWS UPDATE">Bumper News Update</button>
+                    <button class="preset-btn" data-preset-group="subtitle" data-preset-value="UPDATE">Update</button>
                 </div>
                 <div class="text-input-group">
                     <div class="text-input">
@@ -495,20 +514,20 @@
                         <input type="number" id="size3" value="160" min="10" max="500">
                     </div>
                     <div class="toggle-controls-container">
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos3')">Position</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'style3')">Style</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg3')">Background</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow3')">Shadow</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'fx3')">FX</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'presets3')">Presets</button>
+                        <button class="toggle-btn" data-controls="pos3">Position</button>
+                        <button class="toggle-btn" data-controls="style3">Style</button>
+                        <button class="toggle-btn" data-controls="bg3">Background</button>
+                        <button class="toggle-btn" data-controls="shadow3">Shadow</button>
+                        <button class="toggle-btn" data-controls="fx3">FX</button>
+                        <button class="toggle-btn" data-controls="presets3">Presets</button>
                     </div>
                     <div id="pos3" class="collapsible-controls">
                         <div class="text-position-controls">
                             <label>X: <input type="number" id="x3" class="pos-input" value="960"></label>
                             <label>Y: <input type="number" id="y3" class="pos-input" value="756"></label>
-                            <button class="align-btn" onclick="setTextAlignment(2, 'left')">L</button>
-                            <button class="align-btn" onclick="setTextAlignment(2, 'center')">C</button>
-                            <button class="align-btn" onclick="setTextAlignment(2, 'right')">R</button>
+                            <button class="align-btn" data-align="left" data-line-index="2">L</button>
+                            <button class="align-btn" data-align="center" data-line-index="2">C</button>
+                            <button class="align-btn" data-align="right" data-line-index="2">R</button>
                         </div>
                     </div>
                     <div id="style3" class="collapsible-controls">
@@ -573,12 +592,12 @@
                     </div>                        
                 </div>
                 <div class="presets" id="datePresets">
-                    <button class="preset-btn" onclick="setDate('{Date} - Pt 1')">{Date} - Pt 1</button>
-                    <button class="preset-btn" onclick="setDate('{Date} - Pt 2')">{Date} - Pt 2</button>
-                    <button class="preset-btn" onclick="setDate('{Date} - Pt 3')">{Date} - Pt 3</button>
-                    <button class="preset-btn" onclick="updateDate()">Update Date</button>
-                    <button class="preset-btn" onclick="setDate('LIVE CHAT & UPDATE')">LIVE CHAT & UPDATE</button>
-                    <button class="preset-btn" onclick="setDate('FULL FRONT LINE')">Full Front Line</button>
+                    <button class="preset-btn" data-preset-group="date" data-preset-value="{Date} - Pt 1">{Date} - Pt 1</button>
+                    <button class="preset-btn" data-preset-group="date" data-preset-value="{Date} - Pt 2">{Date} - Pt 2</button>
+                    <button class="preset-btn" data-preset-group="date" data-preset-value="{Date} - Pt 3">{Date} - Pt 3</button>
+                    <button id="update-date-btn" class="preset-btn">Update Date</button>
+                    <button class="preset-btn" data-preset-group="date" data-preset-value="LIVE CHAT & UPDATE">LIVE CHAT & UPDATE</button>
+                    <button class="preset-btn" data-preset-group="date" data-preset-value="FULL FRONT LINE">Full Front Line</button>
                 </div>            
                 <div class="text-input-group">
                     <div class="text-input">
@@ -592,20 +611,20 @@
                         </div>
                     </div>
                     <div class="toggle-controls-container">
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'pos4')">Position</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'style4')">Style</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'bg4')">Background</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'shadow4')">Shadow</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'fx4')">FX</button>
-                        <button class="toggle-btn" onclick="toggleControlVisibility(this, 'presets4')">Presets</button>
+                        <button class="toggle-btn" data-controls="pos4">Position</button>
+                        <button class="toggle-btn" data-controls="style4">Style</button>
+                        <button class="toggle-btn" data-controls="bg4">Background</button>
+                        <button class="toggle-btn" data-controls="shadow4">Shadow</button>
+                        <button class="toggle-btn" data-controls="fx4">FX</button>
+                        <button class="toggle-btn" data-controls="presets4">Presets</button>
                     </div>
                     <div id="pos4" class="collapsible-controls">
                         <div class="text-position-controls">
                             <label>X: <input type="number" id="x4" class="pos-input" value="960"></label>
                             <label>Y: <input type="number" id="y4" class="pos-input" value="756"></label>
-                            <button class="align-btn" onclick="setTextAlignment(3, 'left')">L</button>
-                            <button class="align-btn" onclick="setTextAlignment(3, 'center')">C</button>
-                            <button class="align-btn" onclick="setTextAlignment(3, 'right')">R</button>
+                            <button class="align-btn" data-align="left" data-line-index="3">L</button>
+                            <button class="align-btn" data-align="center" data-line-index="3">C</button>
+                            <button class="align-btn" data-align="right" data-line-index="3">R</button>
                         </div>
                     </div>
                     <div id="style4" class="collapsible-controls">
@@ -668,11 +687,11 @@
                     </div>   
                 </div> 
                 <div class="presets" id="line4Presets">
-                    <button class="preset-btn" onclick="setLine4('HITS, STRIKES, LOSSES, OTHER')">Hits, Losses, Strikes, Other</button>
-                    <button class="preset-btn" onclick="setLine4('MILITARY AID')">Military Aid</button>
-                    <button class="preset-btn" onclick="setLine4('GEOPOLITICAL NEWS')">Geopolitical news</button>
-                    <button class="preset-btn" onclick="setLine4('WITH JONATHAN FINK')">With Jonathan Fink</button>
-                    <button class="preset-btn" onclick="setLine4('3 DAY UPDATE')">3 Day Update</button>
+                    <button class="preset-btn" data-preset-group="line4" data-preset-value="HITS, STRIKES, LOSSES, OTHER">Hits, Losses, Strikes, Other</button>
+                    <button class="preset-btn" data-preset-group="line4" data-preset-value="MILITARY AID">Military Aid</button>
+                    <button class="preset-btn" data-preset-group="line4" data-preset-value="GEOPOLITICAL NEWS">Geopolitical news</button>
+                    <button class="preset-btn" data-preset-group="line4" data-preset-value="WITH JONATHAN FINK">With Jonathan Fink</button>
+                    <button class="preset-btn" data-preset-group="line4" data-preset-value="3 DAY UPDATE">3 Day Update</button>
                 </div>
             </div>
 
@@ -695,7 +714,7 @@
 
             <div class="panel-section">
                 <h2>Export</h2>
-                <button onclick="exportLayoutToClipboard()" class="upload-btn" style="width: 100%;">Copy Layout Code</button>
+                <button id="export-layout-btn" class="upload-btn" style="width: 100%;">Copy Layout Code</button>
                 <div id="copy-feedback"></div>
             </div>
         </aside>
@@ -706,14 +725,14 @@
         <main class="center-panel">
             <!-- The canvas and its direct controls go here -->
             <div class="canvas-controls">
-                 <button class="upload-btn" onclick="document.getElementById('imageInput').click()">Upload Image</button>
+                 <button id="upload-image-btn" class="upload-btn">Upload Image</button>
                  <input type="file" id="imageInput" accept="image/*" style="display: none;">
-                 <button class="upload-btn" style="background-color: #9C27B0;" onclick="showAiModal()">Generate AI Image</button>
+                 <button id="show-ai-modal-btn" class="upload-btn" style="background-color: #9C27B0;">Generate AI Image</button>
             </div>
             <div class="canvas-container">
                 <canvas id="thumbnailCanvas"></canvas>
             </div>
-            <button onclick="downloadThumbnail()" style="width: 100%; font-size: 20px; padding: 15px;">Download Thumbnail</button>
+            <button id="download-thumbnail-btn" style="width: 100%; font-size: 20px; padding: 15px;">Download Thumbnail</button>
         </main>
 
         <aside class="right-panel">
@@ -815,25 +834,11 @@
             </div>
             <div class="panel-section" id="object-properties-panel" style="display: none;">
                 <h2 class="section-header">Selected Object Properties</h2>
+                    
+                
             
-                <div id="text-properties-content">
-                    <!-- All existing text property controls will be moved here by JS -->
-                </div>
-            
-                <div id="image-properties-content">
-                    <div class="property-group">
-                        <label>Size: <input type="range" id="image-size" min="50" max="1000" value="200"></label>
-                    </div>
-                    <div class="property-group">
-                        <label>Stroke Color: <input type="color" id="image-stroke-color" value="#000000"></label>
-                        <label>Stroke Width: <input type="range" id="image-stroke-width" min="0" max="50" value="2"></label>
-                    </div>
-                    <div class="property-group">
-                        <label>Shadow Color: <input type="color" id="image-shadow-color" value="#000000"></label>
-                        <label>Shadow Blur: <input type="range" id="image-shadow-blur" min="0" max="50" value="5"></label>
-                        <label>Shadow Offset X: <input type="range" id="image-shadow-offset-x" min="-50" max="50" value="5"></label>
-                        <label>Shadow Offset Y: <input type="range" id="image-shadow-offset-y" min="-50" max="50" value="5"></label>
-                    </div>
+                <div id="properties-content">
+                 
                 </div>
             
                 <button onclick="deleteSelectedObject()" style="background-color: #f44336; margin-top: 15px;" id="delete-object-btn">Delete Selected Object</button>
@@ -901,14 +906,14 @@
                     <div id="ai-loader" class="loader" style="display: none;"></div>
                     <img id="ai-preview-img" src="" alt="AI Generated Image Preview"/>
                     <div class="placeholder-text">Generated image will appear here.</div>
-                    <button class="ai-action-btn" id="ai-download-btn" onclick="downloadAiImage()" disabled>Download Output</button>
-                    <button class="ai-action-btn" id="ai-set-bg-btn" onclick="setAiImageAsBackground()" disabled>Download & Set Background</button>
+                    <button class="ai-action-btn" id="ai-download-btn" disabled>Download Output</button>
+                    <button class="ai-action-btn" id="ai-set-bg-btn" disabled>Download & Set Background</button>
                 </div>
             </div>
 
             <!-- Old .ai-actions div is removed as its buttons are relocated -->
 
-            <button onclick="closeAiModal()" style="margin-top: 20px; background-color: #f44336;">Close</button>
+            <button id="ai-close-btn" style="margin-top: 20px; background-color: #f44336;">Close</button>
         </div>
     </div>
     <div id="snippet-modal" class="modal-overlay" style="display: none;">
@@ -925,14 +930,14 @@
                 <!-- Word choice buttons will be generated here -->
                 </div>
             </div>
-            <button onclick="closeSnippetModal()" style="margin-top: 20px; background-color: #f44336;">Cancel</button>
+            <button id="snippet-cancel-btn" style="margin-top: 20px; background-color: #f44336;">Cancel</button>
         </div>
     </div>
 
     <!-- Font Preview Modal -->
     <div id="fontPreviewModal" class="modal-overlay"> <!-- ID changed to camelCase, inline style removed -->
         <div class="font-preview-modal-content"> <!-- Class changed to be more specific -->
-            <span class="close-modal-btn" onclick="closeFontPreviewModal()">&times;</span>
+            <span id="font-preview-close-btn" class="close-modal-btn">&times;</span>
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                 <h2 style="margin: 0;">Font Previews</h2>
             </div>
@@ -951,13 +956,13 @@
     <!-- Image Enlarge Modal -->
     <div id="enlarge-image-modal" class="modal-overlay" style="display: none;">
         <div class="modal-content image-modal-content">
-            <span class="close-modal-btn" onclick="closeEnlargeImageModal()">&times;</span>
+            <span id="enlarge-image-close-btn" class="close-modal-btn">&times;</span>
             <img id="enlarged-image-element" src="" alt="Enlarged Image"/>
         </div>
     </div>
     <div id="person-picker-modal" class="modal">
         <div class="modal-content">
-            <span class="close-button" onclick="closePersonPicker()">&times;</span>
+            <span id="person-picker-close-btn" class="close-button">&times;</span>
             <div id="person-picker-step1">
                 <h2>Select a Person</h2>
                 <div id="person-selection-grid" class="selection-grid"></div>
@@ -969,7 +974,7 @@
                     <input type="checkbox" id="flip-person-image">
                     <label for="flip-person-image">Flip Image Vertically</label>
                 </div>
-                <button onclick="showPersonPickerStep1()">Back to People</button>
+                <button id="person-picker-back-btn">Back to People</button>
             </div>
         </div>
     </div>
