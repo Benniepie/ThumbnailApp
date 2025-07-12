@@ -163,12 +163,17 @@ function drawTextWithEffect(ctx, el, precalculatedLines = null) {
         }
         ctx.restore();
     }
-    // Apply shadow if it's enabled and properly defined
-    if (el.shadow && el.shadow.enabled) {
-        ctx.shadowColor = el.shadow.color || 'rgba(0,0,0,0.7)';
-        ctx.shadowBlur = el.shadow.blur || 5;
-        ctx.shadowOffsetX = el.shadow.offsetX || 2;
-        ctx.shadowOffsetY = el.shadow.offsetY || 2;
+    // Apply shadow (works for both main text elements and snippet objects)
+    const shadowEnabled = (el.shadow && el.shadow.enabled) || el.shadowEnabled;
+    if (shadowEnabled) {
+        const shadowColor  = (el.shadow ? el.shadow.color  : el.shadowColor)  || 'rgba(0,0,0,0.7)';
+        const shadowBlur   = (el.shadow ? el.shadow.blur   : el.shadowBlur)   || 5;
+        const shadowOffsetX = (el.shadow ? el.shadow.offsetX : el.shadowOffsetX) || 2;
+        const shadowOffsetY = (el.shadow ? el.shadow.offsetY : el.shadowOffsetY) || 2;
+        ctx.shadowColor = shadowColor;
+        ctx.shadowBlur = shadowBlur;
+        ctx.shadowOffsetX = shadowOffsetX;
+        ctx.shadowOffsetY = shadowOffsetY;
     }
 
     // For styled text objects, the property panel sets 'stroke' and 'strokeWidth'.
