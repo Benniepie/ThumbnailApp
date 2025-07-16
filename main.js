@@ -46,9 +46,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 }
                 if (button.id === 'show-font-preview-modal-btn') showFontPreviewModal();
-                if (button.id === 'add-arrow-btn') addObject('arrow');
-                if (button.id === 'add-circle-btn') addObject('circle');
-                if (button.id === 'add-square-btn') addObject('square');
+                if (button.id === 'add-shape-btn') showShapePicker();
                 if (button.id === 'add-person-btn') showPersonPicker();
                 if (button.id === 'add-styled-text-btn') showPresetPickerForSnippet();
                 if (button.id === 'update-date-btn') updateDate();
