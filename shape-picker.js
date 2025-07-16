@@ -96,7 +96,7 @@ const shapePresets = {
         },
         {
             id: 'arrow-curved-left',
-            name: 'Curve Left',
+            name: 'Sharp Left',
             type: 'arrow',
             text: '↰',
             size: 120,
@@ -107,7 +107,7 @@ const shapePresets = {
         },
         {
             id: 'arrow-curved-right',
-            name: 'Curve Right',
+            name: 'Sharp Right',
             type: 'arrow',
             text: '↱',
             size: 120,
@@ -118,7 +118,7 @@ const shapePresets = {
         },
         {
             id: 'arrow-curved-down-left',
-            name: 'Curve Down Left',
+            name: 'Diag Down Left',
             type: 'arrow',
             text: '↙',
             size: 120,
@@ -129,7 +129,7 @@ const shapePresets = {
         },
         {
             id: 'arrow-curved-down-right',
-            name: 'Curve Down Right',
+            name: 'Diag Down Right',
             type: 'arrow',
             text: '↘',
             size: 120,
@@ -225,7 +225,162 @@ const shapePresets = {
             stroke: '#000000',
             strokeWidth: 4,
             fill: '#dc3545'
+        },
+        {
+            id: 'arrow-curved-up-left',
+            name: 'Diag Up Left',
+            type: 'arrow',
+            text: '↖',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#6f42c1'
+        },
+        {
+            id: 'arrow-curved-up-right',
+            name: 'Diag Up Right',
+            type: 'arrow',
+            text: '↗',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#6f42c1'
+        },
+        {
+            id: 'arrow-curved-down-up',
+            name: 'Sharp Down Right',
+            type: 'arrow',
+            text: '↳',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#28a745'
+        },
+        {
+            id: 'arrow-curved-up-down',
+            name: 'Sharp Down Left',
+            type: 'arrow',
+            text: '↲',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#28a745'
+        },
+        {
+            id: 'arrow-curved-clockwise',
+            name: 'Clockwise',
+            type: 'arrow',
+            text: '↻',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#ff6b35'
+        },
+        {
+            id: 'arrow-curved-counter-clockwise',
+            name: 'Counter Clockwise',
+            type: 'arrow',
+            text: '↺',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#ff6b35'
+        },
+        {
+            id: 'arrow-curved-refresh',
+            name: 'Refresh Arrow',
+            type: 'arrow',
+            text: '⟲',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#28a745'
+        },
+        {
+            id: 'arrow-curved-reload',
+            name: 'Reload Arrow',
+            type: 'arrow',
+            text: '⟳',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#28a745'
+        },
+        {
+            id: 'arrow-curved-hook-left',
+            name: 'Hook Left',
+            type: 'arrow',
+            text: '↩',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#dc3545'
+        },
+        {
+            id: 'arrow-curved-hook-right',
+            name: 'Hook Right',
+            type: 'arrow',
+            text: '↪',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#dc3545'
+        },
+        {
+            id: 'arrow-curved-return',
+            name: 'Return Arrow',
+            type: 'arrow',
+            text: '↵',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#ffc107'
+        },
+        {
+            id: 'arrow-curved-tab',
+            name: 'Tab Arrow',
+            type: 'arrow',
+            text: '↹',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#ffc107'
+        },
+        {
+            id: 'arrow-curved-upanddown',
+            name: 'Up and down left',
+            type: 'arrow',
+            text: '↶',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#ffc107'
+        },
+        {
+            id: 'arrow-curved-downandup',
+            name: 'Up and down right',
+            type: 'arrow',
+            text: '↷',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#ffc107'
         }
+
     ],
     circle: [
         {
@@ -385,6 +540,94 @@ const shapePresets = {
             stroke: '#000000',
             strokeWidth: 3,
             fill: '#28a745'
+        },
+        {
+            id: 'target-cross',
+            name: 'Cross Target',
+            type: 'target',
+            text: '✚',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 4,
+            fill: '#dc3545'
+        },
+        {
+            id: 'target-plus',
+            name: 'Plus Target',
+            type: 'target',
+            text: '⊞',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#28a745'
+        },
+        {
+            id: 'target-x',
+            name: 'X Target',
+            type: 'target',
+            text: '⊗',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 4,
+            fill: '#6f42c1'
+        },
+        {
+            id: 'target-star',
+            name: 'Star Target',
+            type: 'target',
+            text: '✦',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#ffc107'
+        },
+        {
+            id: 'target-asterisk',
+            name: 'Asterisk Target',
+            type: 'target',
+            text: '✱',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#ff6b35'
+        },
+        {
+            id: 'target-heavy-cross',
+            name: 'Heavy Cross',
+            type: 'target',
+            text: '✞',
+            size: 130,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 4,
+            fill: '#dc3545'
+        },
+        {
+            id: 'target-outlined-cross',
+            name: 'Outlined Cross',
+            type: 'target',
+            text: '✠',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#28a745'
+        },
+        {
+            id: 'target-diamond-cross',
+            name: 'Diamond Cross',
+            type: 'target',
+            text: '✢',
+            size: 120,
+            color: '#ffffff',
+            stroke: '#000000',
+            strokeWidth: 3,
+            fill: '#6f42c1'
         }
     ],
     line: [
