@@ -76,16 +76,33 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     canvas.addEventListener('mouseup', () => {
+        // Always reset drag state, even if selection changed during drag
+        if (dragState.isDragging && dragState.target === 'object' && typeof dragState.index === 'number' && canvasObjects[dragState.index]) {
+            // If the dragged object is a styled text snippet, recalc dimensions and redraw to prevent bounding box jumps
+            const obj = canvasObjects[dragState.index];
+            if (obj && obj.type === 'text') {
+                // If wrapped, recalc anchor and wrap width based on new X
+                if (obj.wrap && (obj.align === 'left' || obj.align === 'right' || obj.align === 'center')) {
+                    recalcSnippetDimensionsWithAnchor(obj, obj.align);
+                } else {
+                    recalcSnippetDimensions(obj);
+                }
+                drawThumbnail(); // Redraw with updated bounding box
+            }
+            // Update panel so X/Y fields reflect new position
+            updateObjectPropertiesPanel();
+        }
         dragState.isDragging = false;
         dragState.target = null;
+        dragState.index = null;
         canvas.style.cursor = 'default';
     });
 
     canvas.addEventListener('mouseleave', () => {
-        if (dragState.isDragging) {
-            dragState.isDragging = false;
-            dragState.target = null;
-            canvas.style.cursor = 'default';
-        }
+        // Always reset drag state on mouseleave to prevent stuck dragging
+        dragState.isDragging = false;
+        dragState.target = null;
+        dragState.index = null;
+        canvas.style.cursor = 'default';
     });
 });

@@ -94,8 +94,9 @@ function getTextElementAt(mouseX, mouseY) {
  * @param {number} index The index of the object in the canvasObjects array.
  */
 function selectObject(index) {
+    const prevIndex = selectedObjectIndex;
     selectedObjectIndex = index;
-    updateObjectPropertiesPanel();
+    if (index !== prevIndex) updateObjectPropertiesPanel();
     drawThumbnail();
 }
 
@@ -139,8 +140,21 @@ function updateObjectPropertiesPanel() {
     let html = '<div class="prop-grid">';
 
     // Position and Rotation for all objects
-    html += `<label for="obj-pos-x">X</label><input type="number" id="obj-pos-x" value="${Math.round(obj.x)}">`;
-    html += `<label for="obj-pos-y">Y</label><input type="number" id="obj-pos-y" value="${Math.round(obj.y)}">`;
+    let displayX = obj.x;
+    let displayY = obj.y;
+    if (obj.type === 'text' && typeof obj.id === 'number') {
+        const halfW = obj.width / 2 || 0;
+        const halfH = obj.height / 2 || 0;
+        if (obj.align === 'left') {
+            displayX = obj.x - halfW;
+        } else if (obj.align === 'right') {
+            displayX = obj.x + halfW;
+        }
+        // Y is measured from top
+        displayY = obj.y - halfH;
+    }
+    html += `<label for="obj-pos-x">X</label><input type="number" id="obj-pos-x" value="${Math.round(displayX)}">`;
+    html += `<label for="obj-pos-y">Y</label><input type="number" id="obj-pos-y" value="${Math.round(displayY)}">`;
     html += `<label for="obj-rotation">Rotation</label><input type="number" id="obj-rotation" min="0" max="360" value="${obj.rotation}">`;
 
 
@@ -154,14 +168,13 @@ function updateObjectPropertiesPanel() {
         html += `<label for="obj-align">Align</label><select id="obj-align"><option value="left" ${obj.align === 'left' ? 'selected' : ''}>Left</option><option value="center" ${obj.align === 'center' ? 'selected' : ''}>Center</option><option value="right" ${obj.align === 'right' ? 'selected' : ''}>Right</option></select>`;
         html += `<label for="obj-wrap">Wrap</label><input type="checkbox" id="obj-wrap" ${obj.wrap ? 'checked' : ''}>`;
 
-        // Add style preset selector if the object was created from a preset
-        if (obj.stylePresetId) {
-            html += `<label for="obj-style-preset">Style Preset</label><select id="obj-style-preset">`;
-            stylePresets.forEach(preset => {
-                html += `<option value="${preset.id}" ${obj.stylePresetId === preset.id ? 'selected' : ''}>${preset.name}</option>`;
-            });
-            html += `</select>`;
-        }
+        // Style preset selector (includes blank option to clear style)
+        html += `<label for="obj-style-preset">Style Preset</label><select id="obj-style-preset">`;
+        html += `<option value="" ${obj.stylePresetId ? '' : 'selected'}>-- None --</option>`;
+        stylePresets.forEach(preset => {
+            html += `<option value="${preset.id}" ${obj.stylePresetId === preset.id ? 'selected' : ''}>${preset.name}</option>`;
+        });
+        html += `</select>`;
     } else if (obj.type === 'image' || obj.type === 'person') {
         html += `<label for="obj-height">Height</label><input type="number" id="obj-height" value="${Math.round(obj.height)}">`;
     }
@@ -188,10 +201,23 @@ function handleObjectPropertyChange(e) {
 
     switch (id) {
         case 'obj-pos-x': 
-            obj.x = parseInt(value, 10);
+            if (obj.type === 'text' && typeof obj.id === 'number') {
+                const halfW = obj.width / 2 || 0;
+                const numeric = parseInt(value, 10);
+                if (obj.align === 'left') obj.x = numeric + halfW;
+                else if (obj.align === 'right') obj.x = numeric - halfW;
+                else obj.x = numeric; // center
+            } else {
+                obj.x = parseInt(value, 10);
+            }
             break;
         case 'obj-pos-y': 
-            obj.y = parseInt(value, 10);
+            if (obj.type === 'text' && typeof obj.id === 'number') {
+                const halfH = obj.height / 2 || 0;
+                obj.y = parseInt(value, 10) + halfH;
+            } else {
+                obj.y = parseInt(value, 10);
+            }
             break;
         case 'obj-rotation': 
             obj.rotation = parseInt(value, 10);
@@ -210,6 +236,7 @@ function handleObjectPropertyChange(e) {
         case 'obj-text-content': 
             obj.text = value;
             dimensionsNeedUpdate = true;
+            // Do NOT call updateObjectPropertiesPanel() here to avoid losing focus.
             break;
         case 'obj-text-color': obj.color = value; break;
         case 'obj-font-size': 
@@ -222,18 +249,50 @@ function handleObjectPropertyChange(e) {
             break;
         case 'obj-align': 
             obj.align = value;
+            let panelNeedsUpdate = false;
+            // For styled text snippets (numeric id), adjust X to mirror Lines 1-4 behaviour (measure from edges with 38px margin)
+            if (typeof obj.id === 'number' && obj.type === 'text') {
+                const margin = 38;
+                const canvasWidth = canvas.width;
+                const halfWidth = obj.width / 2 || 0;
+                switch (value) {
+                    case 'left':
+                        obj.x = margin + halfWidth; // center positioned so left edge is at margin
+                        break;
+                    case 'center':
+                        obj.x = canvasWidth / 2;
+                        break;
+                    case 'right':
+                        obj.x = canvasWidth - margin - halfWidth; // center positioned so right edge is at margin
+                        break;
+                }
+                panelNeedsUpdate = true;
+            }
+            if (panelNeedsUpdate) {
+                updateObjectPropertiesPanel();
+            }
             break;
         case 'obj-wrap': 
             obj.wrap = target.checked;
-            dimensionsNeedUpdate = true;
+            if (typeof obj.id === 'number') {
+                // DO NOT update obj.x or obj.y on wrap toggle, just like Line 1–4
+                recalcSnippetDimensions(obj); // Only recalc width/height for visuals
+                updateObjectPropertiesPanel();
+                drawThumbnail();
+            }
             break;
         case 'obj-style-preset':
+            if (value === '') {
+                delete obj.stylePresetId;
+                // Optionally reset style-related properties to defaults here if desired
+                break;
+            }
             const newPreset = stylePresets.find(p => p.id === value);
             if (newPreset) {
                 const preservedProps = { text: obj.text, x: obj.x, y: obj.y, width: obj.width, height: obj.height, rotation: obj.rotation };
                 Object.assign(obj, newPreset, preservedProps);
                 obj.stylePresetId = newPreset.id;
-                delete obj.id;
+                delete obj.id; // Ensure uniqueness on next add
                 updateObjectPropertiesPanel();
             }
             break;
@@ -266,11 +325,14 @@ function handleObjectPropertyChange(e) {
     }
 
     if (dimensionsNeedUpdate && obj.type === 'text') {
+        if (typeof obj.id === 'number') {
+            recalcSnippetDimensions(obj);
+        } else {
         const dims = calculateTextDimensions(obj);
         obj.width = dims.width;
         obj.height = dims.height;
+        }
     }
-
     drawThumbnail();
 }
 
@@ -412,18 +474,107 @@ function addNewImageObject(file) {
 }
 
 /**
- * Calculates the width and height of a text object.
- * @param {object} textObject The text object to measure.
- * @returns {{width: number, height: number}} The calculated dimensions.
+ * Calculates the visual width and height of a text object using an off-screen canvas.
+ * For snippets we only need single-line measurement; wrapped width will be recalculated
+ * by recalcSnippetDimensions after wrapText.
  */
 function calculateTextDimensions(textObject) {
-    ctx.font = `bold ${textObject.size}px "${textObject.fontFamily || 'Berlin Sans FB Demi Bold'}"`;
-    const metrics = ctx.measureText(textObject.text);
-    return {
-        width: metrics.width,
-        height: textObject.size
-    };
+    const tmpCtx = document.createElement('canvas').getContext('2d');
+    const family = textObject.fontFamily || '"Twemoji Country Flags", "Berlin Sans FB Demi Bold", sans-serif';
+    const finalFamily = family.includes('Twemoji Country Flags') ? family : `"Twemoji Country Flags", ${family}`;
+    tmpCtx.font = `bold ${textObject.size}px ${finalFamily}`;
+    const metrics = tmpCtx.measureText(textObject.text || '');
+    const width = metrics.width;
+    const height = textObject.size * 1.2; 
+    return { width, height };
 }
+
+/**
+ * Recalculates width/height of a styled text snippet while keeping its visual anchor
+ * (left/top edge) fixed. Assumes obj.x is centre X and obj.y is centre Y.
+ * @param {object} obj Styled text snippet object
+ */
+function recalcSnippetDimensions(obj) {
+    // Only update width/height, never x/y here!
+    const prevWidth = obj.width || 0;
+    const prevHeight = obj.height || 0;
+    const tmpCtx = document.createElement('canvas').getContext('2d');
+    const fontFamily = obj.fontFamily || '"Twemoji Country Flags", "Berlin Sans FB Demi Bold", sans-serif';
+    tmpCtx.font = `bold ${obj.size || 100}px ${fontFamily}`;
+    const lineHeight = (obj.size || 100) * 1.2;
+    let lines = [obj.text || ''];
+    if (obj.wrap) {
+        // Use wrapText logic as in drawTextWithEffect
+        const margin = 38;
+        const canvasWidth = canvas.width;
+        let maxWrapWidth = canvasWidth - margin * 2;
+        let anchorX = obj.x;
+        if (obj.align === 'left') {
+            anchorX = margin;
+            maxWrapWidth = canvasWidth - anchorX - margin;
+        } else if (obj.align === 'right') {
+            anchorX = canvasWidth - margin;
+            maxWrapWidth = anchorX - margin;
+        } else {
+            anchorX = canvasWidth / 2;
+            maxWrapWidth = canvasWidth - margin * 2;
+        }
+        lines = wrapText(tmpCtx, obj.text || '', anchorX, 0, maxWrapWidth, lineHeight, obj.align, anchorX, canvasWidth);
+    }
+    const widest = Math.max(...lines.map(l => tmpCtx.measureText(l).width), 1);
+    obj.width = widest;
+    obj.height = lines.length * lineHeight;
+    // Do NOT update obj.x or obj.y here unless explicitly requested (e.g. alignment change)
+}
+
+// Helper: Only call this after alignment change or explicit anchor update
+function recalcSnippetDimensionsWithAnchor(obj, anchorMode) {
+    // anchorMode: 'left', 'center', 'right'
+    const prevWidth = obj.width || 0;
+    const prevHeight = obj.height || 0;
+    const tmpCtx = document.createElement('canvas').getContext('2d');
+    const fontFamily = obj.fontFamily || '"Twemoji Country Flags", "Berlin Sans FB Demi Bold", sans-serif';
+    tmpCtx.font = `bold ${obj.size || 100}px ${fontFamily}`;
+    const lineHeight = (obj.size || 100) * 1.2;
+    let lines = [obj.text || ''];
+    const margin = 38;
+    const canvasWidth = canvas.width;
+    let maxWrapWidth = canvasWidth - margin * 2;
+    let anchorX = obj.x;
+    if (obj.wrap) {
+        if (anchorMode === 'left') {
+            anchorX = margin;
+            maxWrapWidth = canvasWidth - anchorX - margin;
+        } else if (anchorMode === 'right') {
+            anchorX = canvasWidth - margin;
+            maxWrapWidth = anchorX - margin;
+        } else {
+            anchorX = canvasWidth / 2;
+            maxWrapWidth = canvasWidth - margin * 2;
+        }
+        lines = wrapText(tmpCtx, obj.text || '', anchorX, 0, maxWrapWidth, lineHeight, anchorMode, anchorX, canvasWidth);
+    }
+    const widest = Math.max(...lines.map(l => tmpCtx.measureText(l).width), 1);
+    const dims = { width: widest, height: lines.length * lineHeight };
+    const deltaW = dims.width - prevWidth;
+    const deltaH = dims.height - prevHeight;
+    // Horizontal anchor (update obj.x)
+    if (obj.wrap) {
+        if (anchorMode === 'left') {
+            obj.x = margin + dims.width / 2;
+        } else if (anchorMode === 'right') {
+            obj.x = canvasWidth - margin - dims.width / 2;
+        } else {
+            obj.x = canvasWidth / 2;
+        }
+    }
+    // Vertical: keep top fixed
+    obj.y += deltaH / 2;
+    obj.width = dims.width;
+    obj.height = dims.height;
+}
+
+
 
 // Set up a global keydown listener for object deletion
 document.addEventListener('keydown', function(e) {

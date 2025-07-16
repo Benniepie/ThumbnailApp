@@ -14,6 +14,11 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, align = 'center', eleme
          effectiveMaxWidth = Math.min(maxWidth, canvasWidth - 2 * padding); // Max width considering canvas padding
     }
     effectiveMaxWidth = Math.max(50, effectiveMaxWidth); // Ensure a minimum wrapping width
+
+    // EARLY EXIT: if entire text already fits within the allowed width, do not wrap
+    if (ctx.measureText(text).width <= effectiveMaxWidth) {
+        return [text.trim()];
+    }
     for(let n = 0; n < words.length; n++) {
         const testLine = line + words[n] + ' ';
         const metrics = ctx.measureText(testLine);
@@ -52,17 +57,47 @@ function drawTextWithEffect(ctx, el, precalculatedLines = null) {
     let lines;
 
     if (isCanvasObjectSnippet) {
-        xToDraw = 0;
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'middle'; // Use middle for simpler centering math with yBaseForText = 0
-        const yBaseForText = 0; // Vertical center for the text block in local coords
+        // Determine horizontal start so text sits inside bounding box correctly
+        if (alignmentSetting === 'left') {
+            xToDraw = -el.width / 2; // left edge of box
+        } else if (alignmentSetting === 'right') {
+            xToDraw = el.width / 2; // right edge of box
+        } else { // center
+            xToDraw = 0;
+        }
+        ctx.textAlign = alignmentSetting;
+        ctx.textBaseline = 'top'; // top baseline similar to Lines 1-4
+        const yBaseForText = 0;
 
-        // For wrapText, parameters are relative to the snippet's local (0,0) center.
-        // MaxWidth for wrapping should be the snippet's bounding box width.
-        lines = precalculatedLines || (el.wrap ? wrapText(ctx, text, 0, 0, el.width, lineHeight, 'center', 0, el.width) : [text]);
+        // When wrapping is enabled we want behaviour similar to main text lines:
+        // wrap based on canvas edges rather than the object’s initial width so the
+        // text reflows when the snippet is dragged toward an edge.
+        const maxWrapWidth = canvas.width * 0.96; // match Lines 1-4 behaviour
+        const anchorX = alignmentSetting === 'left' ? 38 : alignmentSetting === 'right' ? canvas.width - 38 : el.x;
+        lines = precalculatedLines || (el.wrap ? wrapText(ctx, text, anchorX, 0, maxWrapWidth, lineHeight, alignmentSetting, anchorX, canvas.width) : [text]);
 
+        const previousHeight = el.height || 0;
         const totalTextHeight = lines.length * lineHeight;
-        yInitialLinePos = yBaseForText - (totalTextHeight / 2) + (lineHeight / 2); // Y for the middle of the first line
+        // draw first line so that top of text aligns with -height/2 after translate
+        yInitialLinePos = -totalTextHeight / 2;
+        // keep top constant: adjust center when height changes
+        if (previousHeight !== 0 && previousHeight !== totalTextHeight) {
+            const delta = totalTextHeight - previousHeight;
+            el.y += delta / 2;
+        }
+        // Update object width/height so selection box follows wrapped text
+        const widestLine = Math.max(...lines.map(l => ctx.measureText(l).width));
+        el.width = widestLine;
+        el.height = totalTextHeight;
+
+        // Determine drawing anchor based on alignment
+        if (alignmentSetting === 'left') {
+            xToDraw = -el.width / 2;
+        } else if (alignmentSetting === 'right') {
+            xToDraw = el.width / 2;
+        } else {
+            xToDraw = 0;
+        }
 
     } else if (isMainTextElement) {
         xToDraw = el.x;
