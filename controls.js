@@ -27,7 +27,7 @@ function populateFontSelectors() {
 }
 
 function updateColorPreviews() {
-    for(let i = 1; i <= 4; i++) {
+    for (let i = 1; i <= 4; i++) {
         const color = document.getElementById(`color${i}`).value;
         document.getElementById(`preview${i}`).style.backgroundColor = color;
     }
@@ -64,7 +64,7 @@ function downloadThumbnail() {
             quality = (min + max) / 2;
             dataUrl = await compressImage(quality);
             fileSize = getFileSize(dataUrl);
-            if (fileSize < 1.8) { bestQuality = quality; bestSize = fileSize; min = quality + 0.01; } 
+            if (fileSize < 1.8) { bestQuality = quality; bestSize = fileSize; min = quality + 0.01; }
             else { max = quality - 0.01; }
         }
         return await compressImage(bestQuality);
@@ -75,7 +75,7 @@ function downloadThumbnail() {
         link.download = filename;
         link.href = dataUrl;
         link.click();
-        
+
         // After download is initiated, restore the normal canvas view
         drawThumbnail(false);
     });
@@ -85,12 +85,12 @@ function toggleTheme() {
     document.body.classList.toggle('dark-mode');
     // Redraw the main canvas and the style presets to reflect the theme change.
     drawThumbnail();
-    populateStylePresets(); 
+    populateStylePresets();
 }
 
 document.addEventListener('DOMContentLoaded', (event) => {
     document.querySelectorAll('input, textarea, select').forEach(input => {
-        input.addEventListener('input', function(e) {
+        input.addEventListener('input', function (e) {
             const targetId = e.target.id;
             let redrawNeeded = true;
             const match = targetId.match(/^([a-zA-Z]+)(\d+)$/);
@@ -129,7 +129,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                             const g = parseInt(newColorHex.slice(3, 5), 16);
                             const b = parseInt(newColorHex.slice(5, 7), 16);
                             textElements[elementIndex].bgColor = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`;
-                            } break;
+                        } break;
                         case 'bgAlpha': {
                             const newAlpha = parseFloat(e.target.value) / 100;
                             document.getElementById(`bgAlphaValue${elementIndex + 1}`).textContent = `${Math.round(newAlpha * 100)}%`;
@@ -143,7 +143,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                                 const b = parseInt(hexColor.slice(5, 7), 16);
                                 textElements[elementIndex].bgColor = `rgba(${r}, ${g}, ${b}, ${newAlpha})`;
                             }
-                            } break;
+                        } break;
                         case 'bgFullWidth': textElements[elementIndex].bgFullWidth = e.target.checked; break;
                         case 'bgPadding': textElements[elementIndex].bgPadding = parseFloat(e.target.value); break;
                         case 'shadowEnabled': textElements[elementIndex].shadowEnabled = e.target.checked; break;
@@ -154,7 +154,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                             const g = parseInt(newColorHex.slice(3, 5), 16);
                             const b = parseInt(newColorHex.slice(5, 7), 16);
                             textElements[elementIndex].shadowColor = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`;
-                            } break;
+                        } break;
                         case 'shadowAlpha': {
                             const newAlpha = parseFloat(e.target.value) / 100;
                             document.getElementById(`shadowAlphaValue${elementIndex + 1}`).textContent = `${Math.round(newAlpha * 100)}%`;
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
                                 const b = parseInt(hexColor.slice(5, 7), 16);
                                 textElements[elementIndex].shadowColor = `rgba(${r}, ${g}, ${b}, ${newAlpha})`;
                             }
-                            } break;
+                        } break;
                         case 'shadowBlur': textElements[elementIndex].shadowBlur = parseFloat(e.target.value); break;
                         case 'shadowOffsetX': textElements[elementIndex].shadowOffsetX = parseFloat(e.target.value); break;
                         case 'shadowOffsetY': textElements[elementIndex].shadowOffsetY = parseFloat(e.target.value); break;
@@ -178,21 +178,27 @@ document.addEventListener('DOMContentLoaded', (event) => {
 
             if (targetId === 'imageOpacity') { document.getElementById('opacityValue').textContent = e.target.value + '%'; }
             else if (targetId === 'imageZoomSlider') { document.getElementById('zoomValue').textContent = e.target.value + '%'; }
-            else if (targetId === 'bg-brightness') { backgroundImageState.brightness = e.target.value; document.getElementById('bg-brightness-value').textContent = e.target.value + '%';}
-            else if (targetId === 'bg-contrast') { backgroundImageState.contrast = e.target.value; document.getElementById('bg-contrast-value').textContent = e.target.value + '%';}
-            else if (targetId === 'bg-saturate') { backgroundImageState.saturate = e.target.value; document.getElementById('bg-saturate-value').textContent = e.target.value + '%';
-            } else if (targetId === 'bg-warmth') { backgroundImageState.warmth = e.target.value; document.getElementById('bg-warmth-value').textContent = e.target.value + '%';
-            } else if (targetId === 'bg-exposure') { backgroundImageState.exposure = e.target.value; document.getElementById('bg-exposure-value').textContent = e.target.value + '%';
-            } else if (targetId === 'bg-tint-color') { backgroundImageState.tintColor = e.target.value;
-            } else if (targetId === 'bg-tint-strength') { backgroundImageState.tintStrength = e.target.value; document.getElementById('bg-tint-strength-value').textContent = e.target.value + '%';
-            } else if (targetId === 'bg-vignette') { backgroundImageState.vignette = e.target.value; document.getElementById('bg-vignette-value').textContent = e.target.value + '%';
+            else if (targetId === 'bg-brightness') { backgroundImageState.brightness = e.target.value; document.getElementById('bg-brightness-value').textContent = e.target.value + '%'; }
+            else if (targetId === 'bg-contrast') { backgroundImageState.contrast = e.target.value; document.getElementById('bg-contrast-value').textContent = e.target.value + '%'; }
+            else if (targetId === 'bg-saturate') {
+                backgroundImageState.saturate = e.target.value; document.getElementById('bg-saturate-value').textContent = e.target.value + '%';
+            } else if (targetId === 'bg-warmth') {
+                backgroundImageState.warmth = e.target.value; document.getElementById('bg-warmth-value').textContent = e.target.value + '%';
+            } else if (targetId === 'bg-exposure') {
+                backgroundImageState.exposure = e.target.value; document.getElementById('bg-exposure-value').textContent = e.target.value + '%';
+            } else if (targetId === 'bg-tint-color') {
+                backgroundImageState.tintColor = e.target.value;
+            } else if (targetId === 'bg-tint-strength') {
+                backgroundImageState.tintStrength = e.target.value; document.getElementById('bg-tint-strength-value').textContent = e.target.value + '%';
+            } else if (targetId === 'bg-vignette') {
+                backgroundImageState.vignette = e.target.value; document.getElementById('bg-vignette-value').textContent = e.target.value + '%';
             }
             if (redrawNeeded) { drawThumbnail(); }
         });
     });
 
     document.querySelectorAll('input[id^="size"]').forEach(sizeInput => {
-        sizeInput.addEventListener('wheel', function(e) {
+        sizeInput.addEventListener('wheel', function (e) {
             e.preventDefault();
             const direction = e.deltaY < 0 ? 1 : -1;
             let currentValue = parseInt(this.value, 10);
@@ -206,13 +212,13 @@ document.addEventListener('DOMContentLoaded', (event) => {
         });
     });
 
-    document.getElementById('imageInput').addEventListener('change', function(e) {
+    document.getElementById('imageInput').addEventListener('change', function (e) {
         const file = e.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(event) {
+            reader.onload = function (event) {
                 const img = new Image();
-                img.onload = function() {
+                img.onload = function () {
                     currentImage = img;
                     const imageAspectRatio = currentImage.width / currentImage.height;
                     const canvasAspectRatio = canvas.width / canvas.height;

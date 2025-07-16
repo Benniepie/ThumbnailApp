@@ -1,44 +1,22 @@
 function updateFxControlsVisibility(index) {
     const i = index + 1;
     const effectType = document.getElementById(`advancedEffectType${i}`).value;
-    const color1Group = document.getElementById(`effectColor1-group-${i}`);
-    const color2Group = document.getElementById(`effectColor2-group-${i}`);
-    const color3Group = document.getElementById(`effectColor3-group-${i}`);
-    const distanceGroup = document.getElementById(`effectDistance-group-${i}`);
-    const angleGroup = document.getElementById(`effectAngle-group-${i}`);
-    const glowSizeGroup = document.getElementById(`effectGlowSize-group-${i}`);
-
-    // Hide all first
-    [color1Group, color2Group, color3Group, distanceGroup, angleGroup, glowSizeGroup].forEach(group => {
-        if (group) group.style.display = 'none';
+    const fxParamsContainer = document.getElementById(`fx-params${i}`);
+    
+    if (!fxParamsContainer) return;
+    
+    // Hide all FX parameter controls first
+    const allFxControls = fxParamsContainer.querySelectorAll('.fx-param-control');
+    allFxControls.forEach(control => {
+        control.style.display = 'none';
     });
 
-    // Show based on type
-    switch (effectType) {
-        case 'none':
-            break;
-        case 'neon':
-            if (color1Group) color1Group.style.display = 'block';
-            if (color2Group) color2Group.style.display = 'block';
-            if (glowSizeGroup) glowSizeGroup.style.display = 'block';
-            break;
-        case '3d':
-        case 'outline':
-            if (color1Group) color1Group.style.display = 'block';
-            if (distanceGroup) distanceGroup.style.display = 'block';
-            if (angleGroup) angleGroup.style.display = 'block';
-            break;
-        case 'double-outline':
-            if (color1Group) color1Group.style.display = 'block';
-            if (color2Group) color2Group.style.display = 'block';
-            if (distanceGroup) distanceGroup.style.display = 'block';
-            break;
-        case 'triple-outline':
-            if (color1Group) color1Group.style.display = 'block';
-            if (color2Group) color2Group.style.display = 'block';
-            if (color3Group) color3Group.style.display = 'block';
-            if (distanceGroup) distanceGroup.style.display = 'block';
-            break;
+    // Show controls based on effect type
+    if (effectType !== 'none') {
+        const controlsToShow = fxParamsContainer.querySelectorAll(`[data-fx-for*="${effectType}"]`);
+        controlsToShow.forEach(control => {
+            control.style.display = 'block';
+        });
     }
 }
 

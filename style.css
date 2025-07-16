@@ -201,7 +201,7 @@ input[type="text"], input[type="password"], input[type="number"], textarea, sele
 .toggle-btn.active { background-color: #007bff; }
 .collapsible-controls { max-height: 0; overflow: hidden; transition: all 0.3s ease-out; background-color: #f8f9fa; border-radius: 4px; margin-top: 5px; }
 .dark-mode .collapsible-controls { background-color: #3a3a3a; }
-.collapsible-controls.show { max-height: 200px; padding: 10px; }
+.collapsible-controls.show { max-height: 300px; padding: 10px; }
 /* Ensure preset galleries expand correctly */
 .preset-gallery.show { max-height: 500px; /* Adjust as needed for content */ overflow-y: auto; padding: 10px; }
 
