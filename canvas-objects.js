@@ -95,9 +95,25 @@ function getTextElementAt(mouseX, mouseY) {
  */
 function selectObject(index) {
     const prevIndex = selectedObjectIndex;
-    selectedObjectIndex = index;
-    if (index !== prevIndex) updateObjectPropertiesPanel();
-    drawThumbnail();
+    
+    // If we're switching to a different object, ensure proper cleanup
+    if (index !== prevIndex) {
+        // Clear any active input focus to prevent cross-contamination
+        if (document.activeElement && document.activeElement.blur) {
+            document.activeElement.blur();
+        }
+        
+        // Force a small delay to ensure any pending property changes are processed
+        setTimeout(() => {
+            selectedObjectIndex = index;
+            updateObjectPropertiesPanel();
+            drawThumbnail();
+        }, 10);
+    } else {
+        selectedObjectIndex = index;
+        updateObjectPropertiesPanel();
+        drawThumbnail();
+    }
 }
 
 /**
@@ -404,7 +420,21 @@ function addObject(type, options = {}) {
         newObject.width = dims.width;
         newObject.height = dims.height;
     } else { // For shapes and other potential future objects
-        newObject = { id: objectIdCounter, type: type, x: canvas.width / 2, y: canvas.height / 2, width: 300, height: 300, rotation: 0, stroke: '#000000', strokeWidth: 5, shadow: { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 }, ...options };
+        // Create default shadow object to avoid reference sharing
+        const defaultShadow = { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 };
+        newObject = { 
+            id: objectIdCounter, 
+            type: type, 
+            x: canvas.width / 2, 
+            y: canvas.height / 2, 
+            width: 300, 
+            height: 300, 
+            rotation: 0, 
+            stroke: '#000000', 
+            strokeWidth: 5, 
+            shadow: { ...defaultShadow, ...(options.shadow || {}) },
+            ...options 
+        };
     };
 
     if (type === 'square' || type === 'circle' || type === 'arrow') {
@@ -420,9 +450,11 @@ function addObject(type, options = {}) {
         const img = new Image();
         img.onload = () => {
             newObject.img = img;
-            const maxDim = 400;
-            if (img.width > img.height) { newObject.width = maxDim; newObject.height = img.height * (maxDim / img.width); }
-            else { newObject.height = maxDim; newObject.width = img.width * (maxDim / img.height); }
+            // For person objects, use the specified height from options, otherwise default to 400
+            const targetHeight = (type === 'person' && options.height) ? options.height : (newObject.height || 400);
+            const aspectRatio = img.width / img.height;
+            newObject.height = targetHeight;
+            newObject.width = targetHeight * aspectRatio;
             drawThumbnail();
         };
         img.src = newObject.src;
@@ -458,9 +490,9 @@ function addNewImageObject(file) {
                 width: img.width / 2, 
                 height: img.height / 2,
                 rotation: 0,
-                stroke: '#000000',
-                strokeWidth: 0,
-                shadowEnabled: false,
+                stroke: '#00ff00',
+                strokeWidth: 15,
+                shadowEnabled: true,
                 shadowColor: '#000000',
                 shadowBlur: 0,
                 shadowOffsetX: 0

@@ -34,7 +34,11 @@ function updateColorPreviews() {
 }
 
 function downloadThumbnail() {
-    // 1. Redraw the canvas specifically for download (without selection boxes)
+    // 1. Deselect any selected objects to avoid blue bounding boxes in download
+    const wasSelected = selectedObjectIndex;
+    selectedObjectIndex = -1;
+    
+    // 2. Redraw the canvas specifically for download (without selection boxes)
     drawThumbnail(true);
 
     const now = new Date();

@@ -7,11 +7,11 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, align = 'center', eleme
     if (align === 'left') { effectiveMaxWidth = canvasWidth - elementX - padding; }
     else if (align === 'right') { effectiveMaxWidth = elementX - padding; }
     else { // center alignment
-         // For centered text, elementX is the center. Text can go half width to left/right.
-         // So, effectiveMaxWidth is the full width allowed for the text block.
-         // If elementX is 0 (like for a snippet in its local coords), this means it's centered in `maxWidth`.
-         // If elementX is a canvas coord, it's centered there.
-         effectiveMaxWidth = Math.min(maxWidth, canvasWidth - 2 * padding); // Max width considering canvas padding
+        // For centered text, elementX is the center. Text can go half width to left/right.
+        // So, effectiveMaxWidth is the full width allowed for the text block.
+        // If elementX is 0 (like for a snippet in its local coords), this means it's centered in `maxWidth`.
+        // If elementX is a canvas coord, it's centered there.
+        effectiveMaxWidth = Math.min(maxWidth, canvasWidth - 2 * padding); // Max width considering canvas padding
     }
     effectiveMaxWidth = Math.max(50, effectiveMaxWidth); // Ensure a minimum wrapping width
 
@@ -19,7 +19,7 @@ function wrapText(ctx, text, x, y, maxWidth, lineHeight, align = 'center', eleme
     if (ctx.measureText(text).width <= effectiveMaxWidth) {
         return [text.trim()];
     }
-    for(let n = 0; n < words.length; n++) {
+    for (let n = 0; n < words.length; n++) {
         const testLine = line + words[n] + ' ';
         const metrics = ctx.measureText(testLine);
         const testWidth = metrics.width;
@@ -118,7 +118,7 @@ function drawTextWithEffect(ctx, el, precalculatedLines = null) {
         yInitialLinePos = el.y - (totalTextHeight / 2) + (lineHeight / 2);
     }
 
-                if (el.bgColor && el.bgColor !== 'rgba(0, 0, 0, 0)' && isMainTextElement) {
+    if (el.bgColor && el.bgColor !== 'rgba(0, 0, 0, 0)' && isMainTextElement) {
         ctx.fillStyle = el.bgColor;
         const padding = el.bgPadding || 0;
 
@@ -131,26 +131,48 @@ function drawTextWithEffect(ctx, el, precalculatedLines = null) {
         ctx.shadowOffsetX = 0;
         ctx.shadowOffsetY = 0;
 
-        lines.forEach((line, index) => {
-            const textMetrics = ctx.measureText(line);
-            const textWidth = textMetrics.width;
-            
-            let lineX;
-            if (ctx.textAlign === 'center') {
-                lineX = xToDraw - (textWidth / 2);
-            } else if (ctx.textAlign === 'right') {
-                lineX = xToDraw - textWidth;
-            } else { // left
-                lineX = xToDraw;
-            }
+        if (el.bgFullWidth) {
+            // For full-width backgrounds, draw a single rectangle covering all lines
+            const totalHeight = lines.length * lineHeight;
+            const bgY = yInitialLinePos - padding;
+            const bgHeight = totalHeight + (padding * 2);
+            ctx.fillRect(0, bgY, canvas.width, bgHeight);
+        } else {
+            // For text-width backgrounds, create a single background that covers all lines
+            // to prevent opacity stacking when lines overlap with semi-transparent backgrounds
 
-            const bgX = el.bgFullWidth ? 0 : lineX - padding;
-            const bgY = yInitialLinePos + (index * lineHeight) - padding;
-            const bgWidth = el.bgFullWidth ? canvas.width : textWidth + (padding * 2);
-            const bgHeight = lineHeight + (padding * 2);
+            // Find the bounds of all text lines
+            let minX = Infinity, maxX = -Infinity;
+            const totalHeight = lines.length * lineHeight;
+
+            lines.forEach((line, index) => {
+                const textMetrics = ctx.measureText(line);
+                const textWidth = textMetrics.width;
+
+                let lineX;
+                if (ctx.textAlign === 'center') {
+                    lineX = xToDraw - (textWidth / 2);
+                } else if (ctx.textAlign === 'right') {
+                    lineX = xToDraw - textWidth;
+                } else { // left
+                    lineX = xToDraw;
+                }
+
+                const bgX = lineX - padding;
+                const bgWidth = textWidth + (padding * 2);
+
+                minX = Math.min(minX, bgX);
+                maxX = Math.max(maxX, bgX + bgWidth);
+            });
+
+            // Draw a single rectangle that encompasses all text lines
+            const bgX = minX;
+            const bgY = yInitialLinePos - padding;
+            const bgWidth = maxX - minX;
+            const bgHeight = totalHeight + (padding * 2);
 
             ctx.fillRect(bgX, bgY, bgWidth, bgHeight);
-        });
+        }
 
         ctx.shadowColor = savedShadowColor;
         ctx.shadowBlur = savedShadowBlur;
@@ -201,8 +223,8 @@ function drawTextWithEffect(ctx, el, precalculatedLines = null) {
     // Apply shadow (works for both main text elements and snippet objects)
     const shadowEnabled = (el.shadow && el.shadow.enabled) || el.shadowEnabled;
     if (shadowEnabled) {
-        const shadowColor  = (el.shadow ? el.shadow.color  : el.shadowColor)  || 'rgba(0,0,0,0.7)';
-        const shadowBlur   = (el.shadow ? el.shadow.blur   : el.shadowBlur)   || 5;
+        const shadowColor = (el.shadow ? el.shadow.color : el.shadowColor) || 'rgba(0,0,0,0.7)';
+        const shadowBlur = (el.shadow ? el.shadow.blur : el.shadowBlur) || 5;
         const shadowOffsetX = (el.shadow ? el.shadow.offsetX : el.shadowOffsetX) || 2;
         const shadowOffsetY = (el.shadow ? el.shadow.offsetY : el.shadowOffsetY) || 2;
         ctx.shadowColor = shadowColor;
@@ -313,7 +335,7 @@ function drawImageObject(ctx, obj) {
         }
         ctx.restore(); // Restore context to re-enable shadow for the main image
     }
-    
+
     // Draw the main image on top
     ctx.drawImage(obj.img, -w / 2, -h / 2, w, h);
 
@@ -416,7 +438,7 @@ function drawThumbnail(isForDownload = false) {
                 break;
             case 'image':
             case 'person':
-                drawImageObject(ctx, obj); 
+                drawImageObject(ctx, obj);
                 break;
             case 'text': drawTextWithEffect(ctx, obj, null); break;
         }

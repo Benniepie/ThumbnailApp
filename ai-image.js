@@ -149,7 +149,7 @@ async function generateAiImage() {
     document.querySelector('#ai-output-preview-box .placeholder-text').textContent = 'Generating...';
 
     try {
-        const response = await fetch('/generate-ai-image', {
+        const response = await fetch('https://desc-maker.shark-ray.ts.net/api/generate-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ 

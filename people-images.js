@@ -6,9 +6,22 @@ const peopleData = {
         'Angry': 'images/people/donald-trump/4.png',
         'Surprised': 'images/people/donald-trump/5.png',
     },
-    'Placeholder Person': {
-        'Default': 'images/placeholder.png',
+    'JP': {
+        'Default': 'images/people/jp/anime-jp-rant.png',
+        'Angry': 'images/people/jp/anime-jp-angry.png',
+        'Blondie': 'images/people/jp/anime-jp-blondie.png',
+        'Red': 'images/people/jp/anime-jp-red.png',
+        'Thinking': 'images/people/jp/anime-jp-thinking.png',
+        'Whaaat': 'images/people/jp/anime-jp-whaat.png',
+    },
+    'Greg': {
+        'Default': 'images/people/greg/channelpic.png',
+        'Cartoon Greg': 'images/people/greg/cartoonpic.png',
+    },
+    'Rick': {
+        'Default': 'images/people/rick/rick.png',
     }
+
 };
 
 function showPersonPicker() {
@@ -37,7 +50,7 @@ function showPersonPickerStep1() {
         const img = document.createElement('img');
         img.src = peopleData[personName]['Default'];
         img.alt = personName;
-        
+
         const label = document.createElement('p');
         label.textContent = personName;
 
@@ -79,6 +92,19 @@ function selectPerson(personName) {
 
 function addPersonImageToCanvas(src) {
     const flipped = document.getElementById('flip-person-image').checked;
-    addObject('person', { src, flipped });
+    addObject('person', {
+        src,
+        flipped,
+        height: 900,
+        stroke: '#FFFF00', // Yellow
+        strokeWidth: 20,
+        shadow: {
+            enabled: true,
+            color: '#FFFF00', // Yellow shadow
+            blur: 20,
+            offsetX: 10,
+            offsetY: -25
+        }
+    });
     closePersonPicker();
 }
