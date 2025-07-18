@@ -855,6 +855,7 @@ emoji-picker {
 .selection-grid .grid-item p {
     margin: 0;
     font-size: 14px;
+    line-height: 0.4; /* Reduced line height to make items more square */
 }
 
 #person-picker-step2 .flip-option {

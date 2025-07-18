@@ -66,8 +66,8 @@ const shapePresets = {
             name: 'Thick Arrow',
             type: 'arrow',
             text: '➤',
-            canvasSize: 140,
-            size: 140,
+            canvasSize: 300,
+            size: 300,
             color: '#ff6b35', // Use the intended color, not red
             stroke: '#000000',
             strokeWidth: 5,
@@ -79,8 +79,8 @@ const shapePresets = {
             name: 'Thick Left',
             type: 'arrow',
             text: '◀',
-            canvasSize: 140,
-            size: 140,
+            canvasSize: 300,
+            size: 300,
             color: '#ff6b35', // Use the intended color, not red
             stroke: '#000000',
             strokeWidth: 5,
@@ -92,8 +92,8 @@ const shapePresets = {
             name: 'Thick Up',
             type: 'arrow',
             text: '▲',
-            canvasSize: 140,
-            size: 140,
+            canvasSize: 300,
+            size: 300,
             color: '#28a745', // Use the intended color, not red
             stroke: '#000000',
             strokeWidth: 5,
@@ -105,8 +105,8 @@ const shapePresets = {
             name: 'Thick Down',
             type: 'arrow',
             text: '▼',
-            canvasSize: 140,
-            size: 140,
+            canvasSize: 300,
+            size: 300,
             color: '#dc3545', // Use the intended color, not red
             stroke: '#000000',
             strokeWidth: 5,
@@ -222,8 +222,8 @@ const shapePresets = {
             name: 'Heavy Arrow',
             type: 'arrow',
             text: '➡',
-            canvasSize: 130,
-            size: 130,
+            canvasSize: 300,
+            size: 300,
             color: '#ff6b35', // Use the intended color, not red
             stroke: '#000000',
             strokeWidth: 8, // Reduced to show fill properly
@@ -235,8 +235,8 @@ const shapePresets = {
             name: 'Heavy Left',
             type: 'arrow',
             text: '⬅',
-            canvasSize: 130,
-            size: 130,
+            canvasSize: 300,
+            size: 300,
             color: '#ff6b35', // Use the intended color, not red
             stroke: '#000000',
             strokeWidth: 8, // Reduced to show fill properly
@@ -248,8 +248,8 @@ const shapePresets = {
             name: 'Heavy Up',
             type: 'arrow',
             text: '⬆',
-            canvasSize: 130,
-            size: 130,
+            canvasSize: 300,
+            size: 300,
             color: '#28a745', // Use the intended color, not red
             stroke: '#000000',
             strokeWidth: 8, // Reduced to show fill properly
@@ -261,8 +261,8 @@ const shapePresets = {
             name: 'Heavy Down',
             type: 'arrow',
             text: '⬇',
-            canvasSize: 130,
-            size: 130,
+            canvasSize: 300,
+            size: 300,
             color: '#dc3545', // Use the intended color, not red
             stroke: '#000000',
             strokeWidth: 8, // Reduced to show fill properly
@@ -485,8 +485,8 @@ const shapePresets = {
             name: 'Small Dot',
             type: 'circle',
             text: '•',
-            canvasSize: 80,
-            size: 80,
+            canvasSize: 300,
+            size: 300,
             color: '#dc3545',
             stroke: '#000000',
             strokeWidth: 2,
@@ -498,8 +498,8 @@ const shapePresets = {
             name: 'Large Circle',
             type: 'circle',
             text: '●',
-            canvasSize: 160,
-            size: 160,
+            canvasSize: 300,
+            size: 300,
             color: '#28a745',
             stroke: '#000000',
             strokeWidth: 8,
@@ -511,8 +511,8 @@ const shapePresets = {
             name: 'Gradient Style',
             type: 'circle',
             text: '●',
-            canvasSize: 130,
-            size: 130,
+            canvasSize: 300,
+            size: 300,
             color: '#ff6b35',
             stroke: '#ffc107',
             strokeWidth: 6,
@@ -552,8 +552,8 @@ const shapePresets = {
             name: 'Small Square',
             type: 'square',
             text: '▪',
-            canvasSize: 80,
-            size: 80,
+            canvasSize: 300,
+            size: 300,
             color: '#dc3545',
             stroke: '#000000',
             strokeWidth: 2,
@@ -619,8 +619,8 @@ const shapePresets = {
             name: 'Bullseye',
             type: 'target',
             text: '◎',
-            canvasSize: 130,
-            size: 130,
+            canvasSize: 300,
+            size: 300,
             color: '#dc3545',
             stroke: '#000000',
             strokeWidth: 5,
@@ -632,8 +632,8 @@ const shapePresets = {
             name: 'Target Dot',
             type: 'target',
             text: '⊚',
-            canvasSize: 110,
-            size: 110,
+            canvasSize: 300,
+            size: 300,
             color: '#28a745',
             stroke: '#000000',
             strokeWidth: 8,
@@ -710,8 +710,8 @@ const shapePresets = {
             name: 'Heavy Cross',
             type: 'target',
             text: '✞',
-            canvasSize: 130,
-            size: 130,
+            canvasSize: 300,
+            size: 300,
             color: '#dc3545',
             stroke: '#000000',
             strokeWidth: 8,
@@ -882,7 +882,7 @@ function showShapePickerStep2(shapeType) {
                 transform: scale(${previewScale});
                 transform-origin: center;
                 display: inline-block;
-                line-height: 1;
+                line-height: 0.4;
             ">
                 ${preset.text}
             </div>

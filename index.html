@@ -862,7 +862,7 @@
                 <!-- Row for Prompt Textarea and Generate Button -->
                 <div class="ai-prompt-row">
                     <textarea id="ai-prompt" placeholder="Describe the image you want to create..."></textarea>
-                    <button id="ai-generate-btn" class="ai-action-btn" onclick="generateAiImage()">Generate</button>
+                    <button id="ai-generate-btn" class="ai-action-btn">Generate</button>
                 </div>
 
                 <!-- Row for Preset Prompts and AI Model Selection -->
@@ -876,25 +876,30 @@
                     </select>
                     <label>Model:</label>
                     <select id="ai-model">
-                        <option value="text-to-image">Text to Image</option>
-                        <option value="image-to-image">Image & Text to Image</option>
+                        <option value="black-forest-labs/flux-schnell">Flux Schnell</option>
+                        <option value="minimax/image-01">Minimax Image-01</option>
+                        <option value="luma/photon-flash">Luma Photon Flash</option>
+                        <option value="google/imagen-4-fast">Google Imagen 4 Fast</option>
+                        <option value="luma/photon">Luma Photon</option>
+                        <option value="bytedance/seedream-3">ByteDance SeeD-ream 3</option>
+                        <option value="google/imagen-4">Google Imagen 4</option>
+                        <option value="recraft-ai/recraft-v3">Recraft V3</option>
+                        <option value="google/imagen-4-ultra">Google Imagen 4 Ultra</option>
+                        <option value="ideogram-ai/ideogram-v3-balanced">Ideogram V3 Balanced</option>
+                        <option value="stability-ai/stable-diffusion-3.5-large">Stable Diffusion 3.5 Large</option>
+                        <option value="ideogram-ai/ideogram-v3-turbo">Ideogram V3 Turbo</option>
+                        <optgroup label="Edit Models (require input image)">
+                            <option value="bytedance/seededit-3.0">ByteDance SeedEdit 3.0</option>
+                            <option value="black-forest-labs/flux-kontext-max">Flux Kontext Max</option>
+                            <option value="black-forest-labs/flux-kontext-pro">Flux Kontext Pro</option>
+                        </optgroup>
                     </select>
                 </div>
 
                 <!-- Hidden File Input for Image Upload -->
                 <input type="file" id="ai-input-image-upload" accept="image/*" style="display: none;">
 
-                <!-- Advanced Settings Toggle -->
-                <button class="toggle-btn" onclick="this.nextElementSibling.classList.toggle('show')">Advanced</button>
-                <div class="collapsible-controls">
-                    <div class="ai-row">
-                        <label>Seed:</label>
-                        <input type="text" id="ai-seed" placeholder="Leave blank for random">
-                        <label>Guidance:</label>
-                        <input type="range" id="ai-guidance" min="0" max="10" value="2.5" step="0.1">
-                        <span id="ai-guidance-value">2.5</span>
-                    </div>
-                </div>
+
             </div>
 
             <div class="ai-previews-container">
@@ -902,7 +907,7 @@
                 <div class="ai-preview-box" id="ai-input-preview-box">
                     <h4>Input Image</h4>
                     <img id="ai-input-image-preview" src="#" alt="Input Preview" style="display:none;"/>
-                    <div class="placeholder-text">Upload an image for Image-to-Image models.</div>
+                    <div class="placeholder-text">Upload an image (optional for most models, required for edit models).</div>
                     <button class="ai-action-btn" id="ai-upload-btn-under-preview" onclick="document.getElementById('ai-input-image-upload').click();">Upload Image</button>
                 </div>
 

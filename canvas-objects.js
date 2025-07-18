@@ -81,7 +81,7 @@ function getTextElementAt(mouseX, mouseY) {
         const y2 = y + textHeight;
 
         const buffer = 10; // Click buffer
-        if (mouseX >= x1 - buffer && mouseX <= x2 + buffer && 
+        if (mouseX >= x1 - buffer && mouseX <= x2 + buffer &&
             mouseY >= y1 - buffer && mouseY <= y2 + buffer) {
             return i;
         }
@@ -95,14 +95,14 @@ function getTextElementAt(mouseX, mouseY) {
  */
 function selectObject(index) {
     const prevIndex = selectedObjectIndex;
-    
+
     // If we're switching to a different object, ensure proper cleanup
     if (index !== prevIndex) {
         // Clear any active input focus to prevent cross-contamination
         if (document.activeElement && document.activeElement.blur) {
             document.activeElement.blur();
         }
-        
+
         // Force a small delay to ensure any pending property changes are processed
         setTimeout(() => {
             selectedObjectIndex = index;
@@ -216,7 +216,7 @@ function handleObjectPropertyChange(e) {
     let dimensionsNeedUpdate = false;
 
     switch (id) {
-        case 'obj-pos-x': 
+        case 'obj-pos-x':
             if (obj.type === 'text' && typeof obj.id === 'number') {
                 const halfW = obj.width / 2 || 0;
                 const numeric = parseInt(value, 10);
@@ -227,7 +227,7 @@ function handleObjectPropertyChange(e) {
                 obj.x = parseInt(value, 10);
             }
             break;
-        case 'obj-pos-y': 
+        case 'obj-pos-y':
             if (obj.type === 'text' && typeof obj.id === 'number') {
                 const halfH = obj.height / 2 || 0;
                 obj.y = parseInt(value, 10) + halfH;
@@ -235,7 +235,7 @@ function handleObjectPropertyChange(e) {
                 obj.y = parseInt(value, 10);
             }
             break;
-        case 'obj-rotation': 
+        case 'obj-rotation':
             obj.rotation = parseInt(value, 10);
             break;
         case 'obj-height':
@@ -249,21 +249,21 @@ function handleObjectPropertyChange(e) {
             }
             break;
         case 'obj-fill-color': obj.fill = value; break;
-        case 'obj-text-content': 
+        case 'obj-text-content':
             obj.text = value;
             dimensionsNeedUpdate = true;
             // Do NOT call updateObjectPropertiesPanel() here to avoid losing focus.
             break;
         case 'obj-text-color': obj.color = value; break;
-        case 'obj-font-size': 
+        case 'obj-font-size':
             obj.size = parseInt(value, 10) || 10;
             dimensionsNeedUpdate = true;
             break;
-        case 'obj-font-family': 
+        case 'obj-font-family':
             obj.fontFamily = value;
             dimensionsNeedUpdate = true;
             break;
-        case 'obj-align': 
+        case 'obj-align':
             obj.align = value;
             let panelNeedsUpdate = false;
             // For styled text snippets (numeric id), adjust X to mirror Lines 1-4 behaviour (measure from edges with 38px margin)
@@ -288,7 +288,7 @@ function handleObjectPropertyChange(e) {
                 updateObjectPropertiesPanel();
             }
             break;
-        case 'obj-wrap': 
+        case 'obj-wrap':
             obj.wrap = target.checked;
             if (typeof obj.id === 'number') {
                 // DO NOT update obj.x or obj.y on wrap toggle, just like Line 1–4
@@ -313,11 +313,11 @@ function handleObjectPropertyChange(e) {
             }
             break;
         case 'obj-stroke-color': obj.stroke = value; break;
-        case 'obj-stroke-width': 
+        case 'obj-stroke-width':
             obj.strokeWidth = parseInt(value, 10) || 0;
             dimensionsNeedUpdate = true;
             break;
-        case 'obj-shadow-enabled': 
+        case 'obj-shadow-enabled':
             if (!obj.shadow) obj.shadow = {};
             obj.shadow.enabled = target.checked;
             updateObjectPropertiesPanel();
@@ -344,9 +344,9 @@ function handleObjectPropertyChange(e) {
         if (typeof obj.id === 'number') {
             recalcSnippetDimensions(obj);
         } else {
-        const dims = calculateTextDimensions(obj);
-        obj.width = dims.width;
-        obj.height = dims.height;
+            const dims = calculateTextDimensions(obj);
+            obj.width = dims.width;
+            obj.height = dims.height;
         }
     }
     drawThumbnail();
@@ -422,18 +422,18 @@ function addObject(type, options = {}) {
     } else { // For shapes and other potential future objects
         // Create default shadow object to avoid reference sharing
         const defaultShadow = { enabled: false, color: '#000000', blur: 5, offsetX: 5, offsetY: 5 };
-        newObject = { 
-            id: objectIdCounter, 
-            type: type, 
-            x: canvas.width / 2, 
-            y: canvas.height / 2, 
-            width: 300, 
-            height: 300, 
-            rotation: 0, 
-            stroke: '#000000', 
-            strokeWidth: 5, 
+        newObject = {
+            id: objectIdCounter,
+            type: type,
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+            width: 300,
+            height: 300,
+            rotation: 0,
+            stroke: '#000000',
+            strokeWidth: 5,
             shadow: { ...defaultShadow, ...(options.shadow || {}) },
-            ...options 
+            ...options
         };
     };
 
@@ -479,15 +479,15 @@ function deleteSelectedObject() {
  */
 function addNewImageObject(file) {
     const reader = new FileReader();
-    reader.onload = function(event) {
+    reader.onload = function (event) {
         const img = new Image();
-        img.onload = function() {
+        img.onload = function () {
             const newImageObject = {
                 type: 'person',
                 img: img,
                 x: canvas.width / 2,
                 y: canvas.height / 2,
-                width: img.width / 2, 
+                width: img.width / 2,
                 height: img.height / 2,
                 rotation: 0,
                 stroke: '#00ff00',
@@ -517,7 +517,7 @@ function calculateTextDimensions(textObject) {
     tmpCtx.font = `bold ${textObject.size}px ${finalFamily}`;
     const metrics = tmpCtx.measureText(textObject.text || '');
     const width = metrics.width;
-    const height = textObject.size * 1.2; 
+    const height = textObject.size * 1.2;
     return { width, height };
 }
 
@@ -609,7 +609,7 @@ function recalcSnippetDimensionsWithAnchor(obj, anchorMode) {
 
 
 // Set up a global keydown listener for object deletion
-document.addEventListener('keydown', function(e) {
+document.addEventListener('keydown', function (e) {
     // Make sure we're not typing in an input field
     if (document.activeElement.tagName === 'INPUT' || document.activeElement.tagName === 'TEXTAREA') {
         return;

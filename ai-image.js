@@ -4,16 +4,14 @@
 
 // --- Global AI State ---
 let lastGeneratedImageUrl = null;
-let lastGeneratedSeed = null;
 let aiInputImageBase64 = null;
 
 // --- Function Definitions ---
 
 function setupAiImageHandlers() {
     const aiModelSelect = document.getElementById('ai-model');
-    const aiInputImage = document.getElementById('ai-input-image');
+    const aiInputImage = document.getElementById('ai-input-image-upload');
     const aiPresetPrompts = document.getElementById('ai-preset-prompts');
-    const aiGuidance = document.getElementById('ai-guidance');
     const aiGenerateBtn = document.getElementById('ai-generate-btn');
     const aiDownloadBtn = document.getElementById('ai-download-btn');
     const aiSetBgBtn = document.getElementById('ai-set-bg-btn');
@@ -21,16 +19,7 @@ function setupAiImageHandlers() {
     const aiPreviewImg = document.getElementById('ai-preview-img');
     const enlargeImageModal = document.getElementById('enlarge-image-modal');
 
-    if (aiModelSelect) {
-        aiModelSelect.addEventListener('change', function(e) {
-            const inputImageSection = document.getElementById('ai-input-image-section');
-            if (e.target.value === 'sdxl-turbo' || e.target.value === 'sd3-medium') {
-                inputImageSection.style.display = 'block';
-            } else {
-                inputImageSection.style.display = 'none';
-            }
-        });
-    }
+    // Input image section is now always visible - no need to hide/show based on model
 
     if (aiInputImage) {
         aiInputImage.addEventListener('change', function(e) {
@@ -39,7 +28,9 @@ function setupAiImageHandlers() {
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(event) {
-                    document.getElementById('ai-input-image-preview').src = event.target.result;
+                    const previewImg = document.getElementById('ai-input-image-preview');
+                    previewImg.src = event.target.result;
+                    previewImg.style.display = 'block'; // Show the image
                     aiInputImageBase64 = event.target.result;
                     if (downloadInputBtn) downloadInputBtn.style.display = 'inline-block';
                 };
@@ -56,11 +47,7 @@ function setupAiImageHandlers() {
         });
     }
 
-    if (aiGuidance) {
-        aiGuidance.addEventListener('input', (e) => {
-            document.getElementById('ai-guidance-value').textContent = e.target.value;
-        });
-    }
+
 
     if (aiGenerateBtn) aiGenerateBtn.addEventListener('click', generateAiImage);
     if (aiDownloadBtn) aiDownloadBtn.addEventListener('click', downloadAiImage);
@@ -118,11 +105,13 @@ function downloadAiInputImage() {
 
 function copyAiOutputToInput() {
     if (lastGeneratedImageUrl) {
-        document.getElementById('ai-input-image-preview').src = lastGeneratedImageUrl;
+        const previewImg = document.getElementById('ai-input-image-preview');
+        previewImg.src = lastGeneratedImageUrl;
+        previewImg.style.display = 'block'; // Show the image
         aiInputImageBase64 = lastGeneratedImageUrl;
-        document.getElementById('ai-model').value = 'sdxl-turbo';
-        document.getElementById('ai-input-image-section').style.display = 'block';
-        document.getElementById('ai-download-input-btn').style.display = 'inline-block';
+        document.getElementById('ai-model').value = 'bytedance/seededit-3.0';
+        const downloadInputBtn = document.getElementById('ai-download-input-btn');
+        if (downloadInputBtn) downloadInputBtn.style.display = 'inline-block';
     }
 }
 
@@ -134,10 +123,23 @@ async function generateAiImage() {
     const setBgBtn = document.getElementById('ai-set-bg-btn');
     const prompt = document.getElementById('ai-prompt').value;
     const model = document.getElementById('ai-model').value;
-    const guidance = document.getElementById('ai-guidance').value;
 
     if (!prompt) {
         alert('Please enter a prompt.');
+        return;
+    }
+
+    // Check if this is an edit model that requires an input image
+    const editModels = [
+        'bytedance/seededit-3.0',
+        'black-forest-labs/flux-kontext-max',
+        'black-forest-labs/flux-kontext-pro'
+    ];
+    
+    const isEditModel = editModels.includes(model);
+    
+    if (isEditModel && !aiInputImageBase64) {
+        alert('This model requires an input image. Please upload an image first.');
         return;
     }
 
@@ -149,16 +151,20 @@ async function generateAiImage() {
     document.querySelector('#ai-output-preview-box .placeholder-text').textContent = 'Generating...';
 
     try {
+        // Build request body - only include image for edit models
+        const requestBody = {
+            prompt,
+            model
+        };
+        
+        if (isEditModel) {
+            requestBody.image = aiInputImageBase64;
+        }
+
         const response = await fetch('https://desc-maker.shark-ray.ts.net/api/generate-image', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                prompt, 
-                model, 
-                guidance: parseFloat(guidance),
-                seed: lastGeneratedSeed,
-                image: aiInputImageBase64
-            })
+            body: JSON.stringify(requestBody)
         });
 
         if (!response.ok) {
@@ -168,7 +174,7 @@ async function generateAiImage() {
 
         const prediction = await response.json();
         lastGeneratedImageUrl = prediction.output;
-        lastGeneratedSeed = prediction.seed;
+        // Note: seed is no longer expected from the endpoint
         previewImg.src = lastGeneratedImageUrl;
         previewImg.style.display = 'block';
         document.querySelector('#ai-output-preview-box .placeholder-text').style.display = 'none';
@@ -191,7 +197,7 @@ async function downloadAiImage() {
     const url = window.URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.style.display = 'none'; a.href = url;
-    a.download = `ai_img_seed_${lastGeneratedSeed}.png`;
+    a.download = `ai_generated_image.png`;
     document.body.appendChild(a); a.click();
     window.URL.revokeObjectURL(url);
 }

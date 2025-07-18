@@ -63,8 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
             // Modal-specific buttons
             if (button.id === 'ai-close-btn') closeAiModal();
-            if (button.id === 'ai-download-btn') downloadAiImage();
-            if (button.id === 'ai-set-bg-btn') setAiImageAsBackground();
             if (button.id === 'snippet-cancel-btn') closeSnippetModal();
             if (button.id === 'font-preview-close-btn') closeFontPreviewModal();
             if (button.id === 'enlarge-image-close-btn') closeEnlargeImageModal();
