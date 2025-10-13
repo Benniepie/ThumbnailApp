@@ -92,6 +92,41 @@ function toggleTheme() {
     populateStylePresets();
 }
 
+async function pasteImageFromClipboard() {
+    try {
+        const clipboardItems = await navigator.clipboard.read();
+        for (const clipboardItem of clipboardItems) {
+            for (const type of clipboardItem.types) {
+                if (type.startsWith('image/')) {
+                    const blob = await clipboardItem.getType(type);
+                    const img = new Image();
+                    img.onload = function () {
+                        currentImage = img;
+                        const imageAspectRatio = currentImage.width / currentImage.height;
+                        const canvasAspectRatio = canvas.width / canvas.height;
+                        if (imageAspectRatio > canvasAspectRatio) {
+                            currentImageBaseCoverZoom = canvas.height / currentImage.height;
+                        } else {
+                            currentImageBaseCoverZoom = canvas.width / currentImage.width;
+                        }
+                        imageOffsetX = 0;
+                        imageOffsetY = 0;
+                        document.getElementById('imageZoomSlider').value = 100;
+                        document.getElementById('zoomValue').textContent = '100%';
+                        drawThumbnail();
+                    };
+                    img.src = URL.createObjectURL(blob);
+                    return;
+                }
+            }
+        }
+        alert('No image found in clipboard. Please copy an image first.');
+    } catch (err) {
+        console.error('Failed to read clipboard:', err);
+        alert('Failed to paste image. Make sure you have copied an image and granted clipboard permissions.');
+    }
+}
+
 document.addEventListener('DOMContentLoaded', (event) => {
     document.querySelectorAll('input, textarea, select').forEach(input => {
         input.addEventListener('input', function (e) {

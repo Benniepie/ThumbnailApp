@@ -57,6 +57,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Center Panel Buttons
             if (centerPanel && centerPanel.contains(button)) {
                 if (button.id === 'upload-image-btn') document.getElementById('imageInput').click();
+                if (button.id === 'paste-image-btn') pasteImageFromClipboard();
                 if (button.id === 'show-ai-modal-btn') showAiModal();
                 if (button.id === 'download-thumbnail-btn') downloadThumbnail();
             }
