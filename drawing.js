@@ -463,6 +463,46 @@ function drawThumbnail(isForDownload = false) {
         ctx.strokeStyle = '#007bff';
         ctx.lineWidth = 4;
         ctx.strokeRect(-obj.width / 2, -obj.height / 2, obj.width, obj.height);
+        
+        // Draw resize handles (corners)
+        const handleSize = 12;
+        ctx.fillStyle = '#ffffff';
+        ctx.strokeStyle = '#007bff';
+        ctx.lineWidth = 2;
+        
+        // Top-left
+        ctx.fillRect(-obj.width / 2 - handleSize / 2, -obj.height / 2 - handleSize / 2, handleSize, handleSize);
+        ctx.strokeRect(-obj.width / 2 - handleSize / 2, -obj.height / 2 - handleSize / 2, handleSize, handleSize);
+        
+        // Top-right
+        ctx.fillRect(obj.width / 2 - handleSize / 2, -obj.height / 2 - handleSize / 2, handleSize, handleSize);
+        ctx.strokeRect(obj.width / 2 - handleSize / 2, -obj.height / 2 - handleSize / 2, handleSize, handleSize);
+        
+        // Bottom-left
+        ctx.fillRect(-obj.width / 2 - handleSize / 2, obj.height / 2 - handleSize / 2, handleSize, handleSize);
+        ctx.strokeRect(-obj.width / 2 - handleSize / 2, obj.height / 2 - handleSize / 2, handleSize, handleSize);
+        
+        // Bottom-right
+        ctx.fillRect(obj.width / 2 - handleSize / 2, obj.height / 2 - handleSize / 2, handleSize, handleSize);
+        ctx.strokeRect(obj.width / 2 - handleSize / 2, obj.height / 2 - handleSize / 2, handleSize, handleSize);
+        
+        // Draw rotation handle (top center)
+        ctx.beginPath();
+        ctx.arc(0, -obj.height / 2 - 25, 8, 0, Math.PI * 2);
+        ctx.fillStyle = '#28a745';
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Draw line connecting rotation handle to object
+        ctx.beginPath();
+        ctx.moveTo(0, -obj.height / 2);
+        ctx.lineTo(0, -obj.height / 2 - 17);
+        ctx.strokeStyle = '#28a745';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
         ctx.restore();
     }
 

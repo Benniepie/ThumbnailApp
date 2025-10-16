@@ -147,15 +147,42 @@ function generateFontOptions(selectedFont) {
 
 function updateObjectPropertiesPanel() {
     const panel = document.getElementById('object-properties-panel');
-    const contentDiv = document.getElementById('properties-content');
     if (selectedObjectIndex < 0) {
         panel.style.display = 'none';
         return;
     }
     const obj = canvasObjects[selectedObjectIndex];
-    let html = '<div class="prop-grid">';
-
-    // Position and Rotation for all objects
+    
+    // Build main controls (Text, Color, Size - always visible)
+    let mainHtml = '<div class="text-input">';
+    
+    if (['shape', 'square', 'circle', 'arrow'].includes(obj.type)) {
+        mainHtml += `<input type="text" id="obj-text-content" value="${obj.text || ''}" placeholder="Shape Text">`;
+        mainHtml += `<div class="color-input-container"><input type="color" id="obj-fill-color" value="${obj.fill}"><div class="color-preview"></div></div>`;
+        mainHtml += `<input type="number" id="obj-font-size" min="1" max="1000" value="${obj.size || 100}">`;
+    } else if (obj.type === 'text') {
+        mainHtml += `<input type="text" id="obj-text-content" value="${obj.text}" placeholder="Text">`;
+        mainHtml += `<div class="color-input-container"><input type="color" id="obj-text-color" value="${obj.color}"><div class="color-preview"></div></div>`;
+        mainHtml += `<input type="number" id="obj-font-size" min="1" max="1000" value="${obj.size}">`;
+    } else if (obj.type === 'image' || obj.type === 'person') {
+        mainHtml += `<span style="flex-grow: 1;">Image Object</span>`;
+        mainHtml += `<div class="color-input-container"><input type="color" id="obj-stroke-color" value="${obj.stroke}"><div class="color-preview"></div></div>`;
+        mainHtml += `<input type="number" id="obj-height" value="${Math.round(obj.height)}" min="10" max="2000">`;
+    }
+    
+    mainHtml += '</div>';
+    document.getElementById('obj-main-controls').innerHTML = mainHtml;
+    
+    // Build toggle buttons
+    let toggleHtml = '';
+    toggleHtml += `<button class="toggle-btn" data-obj-controls="obj-position-controls">Position</button>`;
+    toggleHtml += `<button class="toggle-btn" data-obj-controls="obj-style-controls">Style</button>`;
+    toggleHtml += `<button class="toggle-btn" data-obj-controls="obj-background-controls">Background</button>`;
+    toggleHtml += `<button class="toggle-btn" data-obj-controls="obj-shadow-controls">Shadow</button>`;
+    toggleHtml += `<button class="toggle-btn" data-obj-controls="obj-fx-controls">FX</button>`;
+    document.getElementById('obj-toggle-container').innerHTML = toggleHtml;
+    
+    // Build Position controls
     let displayX = obj.x;
     let displayY = obj.y;
     if (obj.type === 'text' && typeof obj.id === 'number') {
@@ -166,44 +193,131 @@ function updateObjectPropertiesPanel() {
         } else if (obj.align === 'right') {
             displayX = obj.x + halfW;
         }
-        // Y is measured from top
         displayY = obj.y - halfH;
     }
-    html += `<label for="obj-pos-x">X</label><input type="number" id="obj-pos-x" value="${Math.round(displayX)}">`;
-    html += `<label for="obj-pos-y">Y</label><input type="number" id="obj-pos-y" value="${Math.round(displayY)}">`;
-    html += `<label for="obj-rotation">Rotation</label><input type="number" id="obj-rotation" min="0" max="360" value="${obj.rotation}">`;
-
-
-    if (['shape', 'square', 'circle', 'arrow'].includes(obj.type)) {
-        html += `<label for="obj-fill-color">Fill</label><input type="color" id="obj-fill-color" value="${obj.fill}">`;
-    } else if (obj.type === 'text') {
-        html += `<label for="obj-text-content">Text</label><input type="text" id="obj-text-content" value="${obj.text}">`;
-        html += `<label for="obj-text-color">Color</label><div class="color-picker-wrapper"><input type="color" id="obj-text-color" value="${obj.color}"><div class="color-preview"></div></div>`;
-        html += `<label for="obj-font-size">Size</label><input type="number" id="obj-font-size" min="1" max="1000" value="${obj.size}">`;
-        html += `<label for="obj-font-family">Font</label><select id="obj-font-family">${generateFontOptions(obj.fontFamily)}</select>`;
-        html += `<label for="obj-align">Align</label><select id="obj-align"><option value="left" ${obj.align === 'left' ? 'selected' : ''}>Left</option><option value="center" ${obj.align === 'center' ? 'selected' : ''}>Center</option><option value="right" ${obj.align === 'right' ? 'selected' : ''}>Right</option></select>`;
-        html += `<label for="obj-wrap">Wrap</label><input type="checkbox" id="obj-wrap" ${obj.wrap ? 'checked' : ''}>`;
-
-        // Style preset selector (includes blank option to clear style)
-        html += `<label for="obj-style-preset">Style Preset</label><select id="obj-style-preset">`;
-        html += `<option value="" ${obj.stylePresetId ? '' : 'selected'}>-- None --</option>`;
-        stylePresets.forEach(preset => {
-            html += `<option value="${preset.id}" ${obj.stylePresetId === preset.id ? 'selected' : ''}>${preset.name}</option>`;
-        });
-        html += `</select>`;
-    } else if (obj.type === 'image' || obj.type === 'person') {
-        html += `<label for="obj-height">Height</label><input type="number" id="obj-height" value="${Math.round(obj.height)}">`;
+    
+    let posHtml = '<div class="text-position-controls">';
+    posHtml += `<label>X: <input type="number" id="obj-pos-x" class="pos-input" value="${Math.round(displayX)}"></label>`;
+    posHtml += `<label>Y: <input type="number" id="obj-pos-y" class="pos-input" value="${Math.round(displayY)}"></label>`;
+    if (obj.type === 'text') {
+        posHtml += `<button class="align-btn" data-obj-align="left">L</button>`;
+        posHtml += `<button class="align-btn" data-obj-align="center">C</button>`;
+        posHtml += `<button class="align-btn" data-obj-align="right">R</button>`;
     }
-    html += `<label for="obj-stroke-color">Stroke</label><div class="color-picker-wrapper"><input type="color" id="obj-stroke-color" value="${obj.stroke}"><div class="color-preview"></div></div>`;
-    html += `<label for="obj-stroke-width">Stroke Width</label><input type="number" id="obj-stroke-width" min="0" max="100" value="${obj.strokeWidth}">`;
-    html += `<label for="obj-shadow-enabled">Shadow</label><input type="checkbox" id="obj-shadow-enabled" ${obj.shadow.enabled ? 'checked' : ''}>`;
-    html += `<label for="obj-shadow-color">Shadow Color</label><div class="color-picker-wrapper"><input type="color" id="obj-shadow-color" value="${obj.shadow.color}"><div class="color-preview"></div></div>`;
-    html += `<label for="obj-shadow-blur">Shadow Blur</label><input type="number" id="obj-shadow-blur" min="0" max="100" value="${obj.shadow.blur || 0}">`;
-    html += `<label for="obj-shadow-offset-x">Shadow X</label><input type="number" id="obj-shadow-offset-x" min="-100" max="100" value="${obj.shadow.offsetX || 0}">`;
-    html += `<label for="obj-shadow-offset-y">Shadow Y</label><input type="number" id="obj-shadow-offset-y" min="-100" max="100" value="${obj.shadow.offsetY || 0}">`;
-    html += '</div>';
-    contentDiv.innerHTML = html;
+    posHtml += `</div><div class="text-position-controls" style="margin-top: 8px;">`;
+    posHtml += `<label>Rotation: <input type="number" id="obj-rotation" class="pos-input" min="0" max="360" value="${obj.rotation}"></label>`;
+    posHtml += '</div>';
+    document.getElementById('obj-position-controls').innerHTML = posHtml;
+    
+    // Build Style controls
+    let styleHtml = '<div class="text-style-controls">';
+    styleHtml += `<label>Stroke: <input type="color" id="obj-stroke-color" value="${obj.stroke}"></label>`;
+    styleHtml += `<label>Thick: <input type="number" id="obj-stroke-width" class="pos-input" value="${obj.strokeWidth}" min="0" max="50"></label>`;
+    styleHtml += '</div>';
+    document.getElementById('obj-style-controls').innerHTML = styleHtml;
+    
+    // Build Background controls (empty for now, but structure in place)
+    let bgHtml = '<div class="text-style-controls"><p style="color: #999; font-size: 0.9em;">No background options for this object type.</p></div>';
+    document.getElementById('obj-background-controls').innerHTML = bgHtml;
+    
+    // Build Shadow controls
+    const shadowColor = obj.shadow?.color || '#000000';
+    const shadowColorHex = shadowColor.startsWith('#') ? shadowColor : rgbaToHex(shadowColor);
+    const shadowAlpha = shadowColor.startsWith('rgba') ? Math.round(parseFloat(shadowColor.match(/[\d.]+\)$/)?.[0] || 0.7) * 100) : 70;
+    
+    let shadowHtml = '<div class="text-style-controls text-style-grid-row">';
+    shadowHtml += `<label title="Enable Shadow"><input type="checkbox" id="obj-shadow-enabled" ${obj.shadow?.enabled ? 'checked' : ''}> Enable Shadow</label>`;
+    shadowHtml += `<label>Shadow Color: <input type="color" id="obj-shadow-color" value="${shadowColorHex}"></label>`;
+    shadowHtml += '</div>';
+    shadowHtml += '<div class="text-style-controls text-style-grid-row">';
+    shadowHtml += `<label>Shadow Alpha: <input type="range" id="obj-shadow-alpha" min="0" max="100" value="${shadowAlpha}" step="5"> <span id="obj-shadow-alpha-value">${shadowAlpha}%</span></label>`;
+    shadowHtml += `<label>Shadow Blur: <input type="number" id="obj-shadow-blur" class="pos-input" value="${obj.shadow?.blur || 0}" min="0" max="50"></label>`;
+    shadowHtml += '</div>';
+    shadowHtml += '<div class="text-style-controls text-style-grid-row">';
+    shadowHtml += `<label>Offset X: <input type="number" id="obj-shadow-offset-x" class="pos-input" value="${obj.shadow?.offsetX || 0}" min="-50" max="50"></label>`;
+    shadowHtml += `<label>Offset Y: <input type="number" id="obj-shadow-offset-y" class="pos-input" value="${obj.shadow?.offsetY || 0}" min="-50" max="50"></label>`;
+    shadowHtml += '</div>';
+    document.getElementById('obj-shadow-controls').innerHTML = shadowHtml;
+    
+    // Build FX controls
+    let fxHtml = '<div class="text-style-controls">';
+    if (obj.type === 'text') {
+        fxHtml += `<label>Font: <select id="obj-font-family">${generateFontOptions(obj.fontFamily)}</select></label>`;
+        fxHtml += `<label>Style Preset: <select id="obj-style-preset">`;
+        fxHtml += `<option value="" ${obj.stylePresetId ? '' : 'selected'}>None</option>`;
+        stylePresets.forEach(preset => {
+            fxHtml += `<option value="${preset.id}" ${obj.stylePresetId === preset.id ? 'selected' : ''}>${preset.name}</option>`;
+        });
+        fxHtml += `</select></label>`;
+        fxHtml += '</div>';
+        
+        // FX parameters (show/hide based on style preset)
+        const effectType = obj.advancedEffect?.type || 'none';
+        fxHtml += '<div id="obj-fx-params" class="text-style-controls fx-params">';
+        fxHtml += `<label class="fx-param-control" data-fx-for="neon splice echo glitch">FX C1: <input type="color" id="obj-effect-color1" value="${obj.advancedEffect?.color1 || '#ff0000'}"></label>`;
+        fxHtml += `<label class="fx-param-control" data-fx-for="neon splice echo glitch">FX C2: <input type="color" id="obj-effect-color2" value="${obj.advancedEffect?.color2 || '#00ff00'}"></label>`;
+        fxHtml += `<label class="fx-param-control" data-fx-for="glitch">FX C3: <input type="color" id="obj-effect-color3" value="${obj.advancedEffect?.color3 || '#0000ff'}"></label>`;
+        fxHtml += `<label class="fx-param-control" data-fx-for="splice echo glitch">Dist: <input type="range" id="obj-effect-distance" min="0" max="50" value="${obj.advancedEffect?.distance || 10}"></label>`;
+        fxHtml += `<label class="fx-param-control" data-fx-for="splice echo">Angle: <input type="range" id="obj-effect-angle" min="-180" max="180" value="${obj.advancedEffect?.angle || -45}"></label>`;
+        fxHtml += `<label class="fx-param-control" data-fx-for="neon">Glow: <input type="range" id="obj-effect-glow" min="0" max="100" value="${obj.advancedEffect?.glowSize || 20}"></label>`;
+        fxHtml += '</div>';
+        
+        // Update FX visibility after rendering
+        setTimeout(() => updateObjFxControlsVisibility(effectType), 0);
+    } else {
+        fxHtml += '<p style="color: #999; font-size: 0.9em;">No FX options for this object type.</p>';
+    }
+    document.getElementById('obj-fx-controls').innerHTML = fxHtml;
+    
+    // Add mouse wheel support to size input
+    const sizeInput = document.getElementById('obj-font-size') || document.getElementById('obj-height');
+    if (sizeInput) {
+        sizeInput.addEventListener('wheel', handleSizeInputWheel);
+    }
+    
     panel.style.display = 'block';
+}
+
+// Helper function to convert rgba to hex
+function rgbaToHex(rgba) {
+    const match = rgba.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (!match) return '#000000';
+    const r = parseInt(match[1]).toString(16).padStart(2, '0');
+    const g = parseInt(match[2]).toString(16).padStart(2, '0');
+    const b = parseInt(match[3]).toString(16).padStart(2, '0');
+    return `#${r}${g}${b}`;
+}
+
+// Update FX controls visibility based on style preset
+function updateObjFxControlsVisibility(effectType) {
+    const fxParamsContainer = document.getElementById('obj-fx-params');
+    if (!fxParamsContainer) return;
+    
+    const allFxControls = fxParamsContainer.querySelectorAll('.fx-param-control');
+    allFxControls.forEach(control => {
+        control.style.display = 'none';
+    });
+    
+    if (effectType && effectType !== 'none') {
+        const controlsToShow = fxParamsContainer.querySelectorAll(`[data-fx-for*="${effectType}"]`);
+        controlsToShow.forEach(control => {
+            control.style.display = 'block';
+        });
+    }
+}
+
+// Mouse wheel handler for size inputs
+function handleSizeInputWheel(e) {
+    e.preventDefault();
+    const direction = e.deltaY < 0 ? 1 : -1;
+    let currentValue = parseInt(this.value, 10);
+    const min = parseInt(this.min, 10) || 1;
+    const max = parseInt(this.max, 10) || 1000;
+    let newValue = currentValue + direction;
+    if (newValue < min) newValue = min;
+    if (newValue > max) newValue = max;
+    this.value = newValue;
+    this.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 function handleObjectPropertyChange(e) {
@@ -263,44 +377,14 @@ function handleObjectPropertyChange(e) {
             obj.fontFamily = value;
             dimensionsNeedUpdate = true;
             break;
-        case 'obj-align':
-            obj.align = value;
-            let panelNeedsUpdate = false;
-            // For styled text snippets (numeric id), adjust X to mirror Lines 1-4 behaviour (measure from edges with 38px margin)
-            if (typeof obj.id === 'number' && obj.type === 'text') {
-                const margin = 38;
-                const canvasWidth = canvas.width;
-                const halfWidth = obj.width / 2 || 0;
-                switch (value) {
-                    case 'left':
-                        obj.x = margin + halfWidth; // center positioned so left edge is at margin
-                        break;
-                    case 'center':
-                        obj.x = canvasWidth / 2;
-                        break;
-                    case 'right':
-                        obj.x = canvasWidth - margin - halfWidth; // center positioned so right edge is at margin
-                        break;
-                }
-                panelNeedsUpdate = true;
-            }
-            if (panelNeedsUpdate) {
-                updateObjectPropertiesPanel();
-            }
-            break;
-        case 'obj-wrap':
-            obj.wrap = target.checked;
-            if (typeof obj.id === 'number') {
-                // DO NOT update obj.x or obj.y on wrap toggle, just like Line 1–4
-                recalcSnippetDimensions(obj); // Only recalc width/height for visuals
-                updateObjectPropertiesPanel();
-                drawThumbnail();
-            }
-            break;
         case 'obj-style-preset':
             if (value === '') {
                 delete obj.stylePresetId;
-                // Optionally reset style-related properties to defaults here if desired
+                // Reset advanced effect to none
+                if (obj.advancedEffect) {
+                    obj.advancedEffect.type = 'none';
+                }
+                updateObjectPropertiesPanel();
                 break;
             }
             const newPreset = stylePresets.find(p => p.id === value);
@@ -320,11 +404,29 @@ function handleObjectPropertyChange(e) {
         case 'obj-shadow-enabled':
             if (!obj.shadow) obj.shadow = {};
             obj.shadow.enabled = target.checked;
-            updateObjectPropertiesPanel();
             break;
         case 'obj-shadow-color':
             if (!obj.shadow) obj.shadow = {};
-            obj.shadow.color = value;
+            const currentAlpha = obj.shadow.color ? parseFloat(obj.shadow.color.match(/[\d.]+\)$/)?.[0] || 0.7) : 0.7;
+            const r = parseInt(value.slice(1, 3), 16);
+            const g = parseInt(value.slice(3, 5), 16);
+            const b = parseInt(value.slice(5, 7), 16);
+            obj.shadow.color = `rgba(${r}, ${g}, ${b}, ${currentAlpha})`;
+            break;
+        case 'obj-shadow-alpha':
+            if (!obj.shadow) obj.shadow = {};
+            const newAlpha = parseFloat(value) / 100;
+            document.getElementById('obj-shadow-alpha-value').textContent = `${Math.round(newAlpha * 100)}%`;
+            const rgbaMatch = obj.shadow.color?.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+            if (rgbaMatch) {
+                obj.shadow.color = `rgba(${rgbaMatch[1]}, ${rgbaMatch[2]}, ${rgbaMatch[3]}, ${newAlpha})`;
+            } else {
+                const hexColor = document.getElementById('obj-shadow-color').value;
+                const r = parseInt(hexColor.slice(1, 3), 16);
+                const g = parseInt(hexColor.slice(3, 5), 16);
+                const b = parseInt(hexColor.slice(5, 7), 16);
+                obj.shadow.color = `rgba(${r}, ${g}, ${b}, ${newAlpha})`;
+            }
             break;
         case 'obj-shadow-blur':
             if (!obj.shadow) obj.shadow = {};
@@ -337,6 +439,30 @@ function handleObjectPropertyChange(e) {
         case 'obj-shadow-offset-y':
             if (!obj.shadow) obj.shadow = {};
             obj.shadow.offsetY = parseInt(value, 10) || 0;
+            break;
+        case 'obj-effect-color1':
+            if (!obj.advancedEffect) obj.advancedEffect = {};
+            obj.advancedEffect.color1 = value;
+            break;
+        case 'obj-effect-color2':
+            if (!obj.advancedEffect) obj.advancedEffect = {};
+            obj.advancedEffect.color2 = value;
+            break;
+        case 'obj-effect-color3':
+            if (!obj.advancedEffect) obj.advancedEffect = {};
+            obj.advancedEffect.color3 = value;
+            break;
+        case 'obj-effect-distance':
+            if (!obj.advancedEffect) obj.advancedEffect = {};
+            obj.advancedEffect.distance = parseFloat(value);
+            break;
+        case 'obj-effect-angle':
+            if (!obj.advancedEffect) obj.advancedEffect = {};
+            obj.advancedEffect.angle = parseFloat(value);
+            break;
+        case 'obj-effect-glow':
+            if (!obj.advancedEffect) obj.advancedEffect = {};
+            obj.advancedEffect.glowSize = parseFloat(value);
             break;
     }
 
@@ -353,14 +479,73 @@ function handleObjectPropertyChange(e) {
 }
 
 function setupObjectPropertyHandlers() {
-    const contentDiv = document.getElementById('properties-content');
+    const panel = document.getElementById('object-properties-panel');
+    
     // Remove any existing listeners to prevent duplicates
-    contentDiv.removeEventListener('input', handleObjectPropertyChange);
-    contentDiv.removeEventListener('change', handleObjectPropertyChange);
+    panel.removeEventListener('input', handleObjectPropertyChange);
+    panel.removeEventListener('change', handleObjectPropertyChange);
+    panel.removeEventListener('click', handleObjectPanelClick);
 
     // Add fresh listeners
-    contentDiv.addEventListener('input', handleObjectPropertyChange);
-    contentDiv.addEventListener('change', handleObjectPropertyChange);
+    panel.addEventListener('input', handleObjectPropertyChange);
+    panel.addEventListener('change', handleObjectPropertyChange);
+    panel.addEventListener('click', handleObjectPanelClick);
+}
+
+// Handle clicks for toggles and align buttons
+function handleObjectPanelClick(e) {
+    const target = e.target;
+    
+    // Handle toggle buttons
+    if (target.classList.contains('toggle-btn') && target.dataset.objControls) {
+        const controlId = target.dataset.objControls;
+        const controlDiv = document.getElementById(controlId);
+        const isVisible = controlDiv.classList.contains('show');
+        
+        // Close all toggles in the right panel
+        document.querySelectorAll('#object-properties-panel .collapsible-controls').forEach(div => {
+            div.classList.remove('show');
+        });
+        document.querySelectorAll('#object-properties-panel .toggle-btn').forEach(btn => {
+            btn.classList.remove('active');
+        });
+        
+        // Open the clicked toggle if it wasn't already open
+        if (!isVisible) {
+            controlDiv.classList.add('show');
+            target.classList.add('active');
+        }
+    }
+    
+    // Handle align buttons
+    if (target.classList.contains('align-btn') && target.dataset.objAlign) {
+        const obj = getSelectedObject();
+        if (!obj || obj.type !== 'text') return;
+        
+        const alignValue = target.dataset.objAlign;
+        obj.align = alignValue;
+        
+        // For styled text snippets (numeric id), adjust X to mirror Lines 1-4 behaviour
+        if (typeof obj.id === 'number') {
+            const margin = 38;
+            const canvasWidth = canvas.width;
+            const halfWidth = obj.width / 2 || 0;
+            switch (alignValue) {
+                case 'left':
+                    obj.x = margin + halfWidth;
+                    break;
+                case 'center':
+                    obj.x = canvasWidth / 2;
+                    break;
+                case 'right':
+                    obj.x = canvasWidth - margin - halfWidth;
+                    break;
+            }
+        }
+        
+        updateObjectPropertiesPanel();
+        drawThumbnail();
+    }
 }
 
 /**

@@ -242,7 +242,7 @@ document.addEventListener('DOMContentLoaded', (event) => {
             const direction = e.deltaY < 0 ? 1 : -1;
             let currentValue = parseInt(this.value, 10);
             const min = parseInt(this.min, 10) || 10;
-            const max = parseInt(this.max, 10) || 500; // Updated max here too
+            const max = parseInt(this.max, 10) || 500;
             let newValue = currentValue + direction;
             if (newValue < min) { newValue = min; }
             if (newValue > max) { newValue = max; }
@@ -250,6 +250,22 @@ document.addEventListener('DOMContentLoaded', (event) => {
             this.dispatchEvent(new Event('input', { bubbles: true }));
         });
     });
+    
+    // Also add wheel support to object property size inputs (delegated)
+    document.addEventListener('wheel', function(e) {
+        if (e.target.id === 'obj-font-size' || e.target.id === 'obj-height') {
+            e.preventDefault();
+            const direction = e.deltaY < 0 ? 1 : -1;
+            let currentValue = parseInt(e.target.value, 10);
+            const min = parseInt(e.target.min, 10) || 1;
+            const max = parseInt(e.target.max, 10) || 1000;
+            let newValue = currentValue + direction;
+            if (newValue < min) { newValue = min; }
+            if (newValue > max) { newValue = max; }
+            e.target.value = newValue;
+            e.target.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+    }, { passive: false });
 
     document.getElementById('imageInput').addEventListener('change', function (e) {
         const file = e.target.files[0];

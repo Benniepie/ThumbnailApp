@@ -843,11 +843,36 @@
             </div>
             <div class="panel-section" id="object-properties-panel" style="display: none;">
                 <h2 class="section-header">Selected Object Properties</h2>
-                    
                 
-            
-                <div id="properties-content">
-                 
+                <!-- Main visible controls (always shown when object is selected) -->
+                <div id="obj-main-controls">
+                    <!-- Text, Color, Size will be populated here -->
+                </div>
+                
+                <!-- Toggle buttons for collapsible sections -->
+                <div class="toggle-controls-container" id="obj-toggle-container">
+                    <!-- Toggle buttons will be populated here -->
+                </div>
+                
+                <!-- Collapsible control sections -->
+                <div id="obj-position-controls" class="collapsible-controls">
+                    <!-- Position controls will be populated here -->
+                </div>
+                
+                <div id="obj-style-controls" class="collapsible-controls">
+                    <!-- Style controls will be populated here -->
+                </div>
+                
+                <div id="obj-background-controls" class="collapsible-controls">
+                    <!-- Background controls will be populated here -->
+                </div>
+                
+                <div id="obj-shadow-controls" class="collapsible-controls">
+                    <!-- Shadow controls will be populated here -->
+                </div>
+                
+                <div id="obj-fx-controls" class="collapsible-controls">
+                    <!-- FX controls will be populated here -->
                 </div>
             
                 <button onclick="deleteSelectedObject()" style="background-color: #f44336; margin-top: 15px;" id="delete-object-btn">Delete Selected Object</button>
