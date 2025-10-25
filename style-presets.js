@@ -115,6 +115,60 @@ const stylePresets = [
             distance: 10,
             angle: -45,
         }
+    },
+    {
+        id: 'hot-pink-bold',
+        name: 'Hot Pink Bold',
+        fontFamily: "'Black Ops One', cursive",
+        size: 120,
+        color: '#FF1493', // Hot Pink
+        strokeColor: '#000000',
+        strokeThickness: 20,
+        bgColor: 'rgba(0,0,0,0)',
+        bgFullWidth: false,
+        bgPadding: 10,
+        shadow: {
+            enabled: false,
+            color: 'rgba(0,0,0,0.7)',
+            blur: 5,
+            offsetX: 2,
+            offsetY: 2
+        },
+        advancedEffect: {
+            type: 'none',
+            color1: null,
+            color2: null,
+            color3: null,
+            distance: 0,
+            angle: 0,
+        }
+    },
+    {
+        id: 'lime-green-bold',
+        name: 'Lime Green Bold',
+        fontFamily: "'Black Ops One', cursive",
+        size: 120,
+        color: '#32CD32', // Lime Green
+        strokeColor: '#000000',
+        strokeThickness: 20,
+        bgColor: 'rgba(0,0,0,0)',
+        bgFullWidth: false,
+        bgPadding: 10,
+        shadow: {
+            enabled: false,
+            color: 'rgba(0,0,0,0.7)',
+            blur: 5,
+            offsetX: 2,
+            offsetY: 2
+        },
+        advancedEffect: {
+            type: 'none',
+            color1: null,
+            color2: null,
+            color3: null,
+            distance: 0,
+            angle: 0,
+        }
     }
 ];
 
